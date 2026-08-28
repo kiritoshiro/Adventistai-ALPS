@@ -21,41 +21,61 @@
         {{ $sabbathInitialEvent['type'] === 'end' ? 'Sabata baigiasi už:' : 'Sabata prasideda už:' }}
       </span>
       <strong class="adventistai-sabbath-timer__countdown" data-sabbath-countdown>--:--:--</strong>
-      <span class="adventistai-sabbath-timer__meta" data-sabbath-meta>
-        {{ $sabbathTimerData['cities'][$sabbathDefaultCity]['name'] }} · {{ $sabbathInitialEvent['time'] }}
-      </span>
-    </div>
 
-    <div class="adventistai-sabbath-timer__cities" aria-label="Pasirinkite miestą">
-      <span class="adventistai-sabbath-timer__cities-label">Saulėlydis pagal miestą</span>
-      @foreach ($sabbathTimerData['cities'] as $cityKey => $city)
-        @php
-          $cityInitialEvent = null;
-          foreach ($city['events'] as $event) {
-            if ($event['timestamp'] > $sabbathNow) {
-              $cityInitialEvent = $event;
-              break;
-            }
-          }
-        @endphp
+      <div class="adventistai-sabbath-timer__selector" data-sabbath-selector>
         <button
           type="button"
-          class="adventistai-sabbath-timer__city{{ $cityKey === $sabbathDefaultCity ? ' is-selected' : '' }}"
-          data-sabbath-city="{{ $cityKey }}"
-          aria-pressed="{{ $cityKey === $sabbathDefaultCity ? 'true' : 'false' }}"
+          class="adventistai-sabbath-timer__selector-button"
+          data-sabbath-selector-button
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          aria-controls="adventistai-sabbath-city-list"
         >
-          <span>{{ $city['name'] }}</span>
-          @if ($cityInitialEvent)
-            <time
-              class="adventistai-sabbath-timer__city-time"
-              data-sabbath-city-time
-              datetime="{{ $cityInitialEvent['iso'] }}"
-            >{{ $cityInitialEvent['time'] }}</time>
-          @else
-            <time class="adventistai-sabbath-timer__city-time" data-sabbath-city-time>—</time>
-          @endif
+          <span data-sabbath-selected-city>{{ $sabbathTimerData['cities'][$sabbathDefaultCity]['name'] }}</span>
         </button>
-      @endforeach
+
+        <div
+          class="adventistai-sabbath-timer__selector-popover"
+          data-sabbath-selector-popover
+          hidden
+        >
+          <div class="adventistai-sabbath-timer__selector-title">Pasirinkite miestą</div>
+          <div
+            id="adventistai-sabbath-city-list"
+            class="adventistai-sabbath-timer__selector-list"
+            role="listbox"
+            aria-label="Lietuvos miestai"
+          >
+            @foreach ($sabbathTimerData['cities'] as $cityKey => $city)
+              @php
+                $cityInitialEvent = null;
+                foreach ($city['events'] as $event) {
+                  if ($event['timestamp'] > $sabbathNow) {
+                    $cityInitialEvent = $event;
+                    break;
+                  }
+                }
+              @endphp
+              <button
+                type="button"
+                class="adventistai-sabbath-timer__selector-option{{ $cityKey === $sabbathDefaultCity ? ' is-selected' : '' }}"
+                data-sabbath-city="{{ $cityKey }}"
+                role="option"
+                aria-selected="{{ $cityKey === $sabbathDefaultCity ? 'true' : 'false' }}"
+              >
+                <span>{{ $city['name'] }}</span>
+                <time
+                  class="adventistai-sabbath-timer__selector-time"
+                  data-sabbath-city-time
+                  @if ($cityInitialEvent) datetime="{{ $cityInitialEvent['iso'] }}" @endif
+                >{{ $cityInitialEvent ? $cityInitialEvent['time'] : '—' }}</time>
+              </button>
+            @endforeach
+          </div>
+        </div>
+      </div>
+
+      <span class="adventistai-sabbath-timer__meta" data-sabbath-meta>{{ $sabbathInitialEvent['time'] }}</span>
     </div>
 
     <script type="application/json" data-sabbath-data>{!! wp_json_encode($sabbathTimerData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
