@@ -6,7 +6,7 @@
 <div class="adventistai-sabbath-timer" data-sabbath-timer hidden>
   <div class="adventistai-sabbath-timer__countdown-view" data-sabbath-countdown-view hidden>
     <div class="adventistai-sabbath-timer__main">
-      <span class="adventistai-sabbath-timer__label">Šabas prasideda už:</span>
+      <span class="adventistai-sabbath-timer__label">Sabata (šabas) prasideda už:</span>
       <strong class="adventistai-sabbath-timer__countdown" data-sabbath-countdown>--:--:--</strong>
 
       <div class="adventistai-sabbath-timer__selector" data-sabbath-selector>
