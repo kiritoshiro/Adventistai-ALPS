@@ -1,4 +1,9 @@
 @extends('layouts.app')
+
 @section('content')
-  @include('patterns.02-organisms.content.content-search')
+  @if (class_exists('Adv_Search') && Adv_Search::enabled())
+    {!! Adv_Search_Renderer::render_page() !!}
+  @else
+    @include('patterns.02-organisms.content.content-search')
+  @endif
 @endsection
