@@ -1,0 +1,36 @@
+name: Test advanced search
+
+on:
+  push:
+    branches:
+      - feature/advanced-search
+  pull_request:
+    paths:
+      - 'inc/search/**'
+      - 'assets/js/adv-search*.js'
+      - 'searchform.php'
+      - 'resources/views/search.blade.php'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check PHP syntax
+        run: find inc/search tests/search -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Run search unit checks
+        run: php tests/search/run.php
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/adv-search.js
+          node --check assets/js/adv-search-admin.js
