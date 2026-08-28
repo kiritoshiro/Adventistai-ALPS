@@ -27,6 +27,54 @@ final class Adventistai_Alps_GitHub_Updater
         add_filter( 'http_request_args', [ __CLASS__, 'authenticate_github_asset_request' ], 10, 2 );
         add_action( 'admin_notices', [ __CLASS__, 'token_notice' ] );
         add_action( 'upgrader_process_complete', [ __CLASS__, 'clear_cache_after_update' ], 10, 2 );
+
+        // Always fetch the latest GitHub release when an administrator explicitly
+        // opens either of WordPress' theme-update screens. Normal requests still
+        // use the cached release information below.
+        add_action( 'load-update-core.php', [ __CLASS__, 'refresh_on_update_screen' ], 20 );
+        add_action( 'load-themes.php', [ __CLASS__, 'refresh_on_update_screen' ], 20 );
+    }
+
+    /**
+     * Refresh this theme's update entry when Dashboard > Updates or
+     * Appearance > Themes is opened.
+     *
+     * This intentionally refreshes only the Adventistai ALPS GitHub release.
+     * It does not force WordPress.org checks for every installed theme.
+     */
+    public static function refresh_on_update_screen()
+    {
+        if ( ! current_user_can( 'update_themes' ) || ! self::token() ) {
+            return;
+        }
+
+        delete_site_transient( self::CACHE_KEY );
+        self::$release = null;
+
+        $theme_slug = get_template();
+        $theme      = wp_get_theme( $theme_slug );
+        $transient  = get_site_transient( 'update_themes' );
+
+        if ( ! is_object( $transient ) ) {
+            $transient = new stdClass();
+        }
+
+        if ( ! isset( $transient->checked ) || ! is_array( $transient->checked ) ) {
+            $transient->checked = [];
+        }
+
+        if ( ! isset( $transient->response ) || ! is_array( $transient->response ) ) {
+            $transient->response = [];
+        }
+
+        if ( ! isset( $transient->no_update ) || ! is_array( $transient->no_update ) ) {
+            $transient->no_update = [];
+        }
+
+        $transient->checked[ $theme_slug ] = $theme->get( 'Version' );
+        $transient                         = self::check_for_update( $transient );
+
+        set_site_transient( 'update_themes', $transient );
     }
 
     /**
@@ -41,6 +89,14 @@ final class Adventistai_Alps_GitHub_Updater
             return $transient;
         }
 
+        if ( ! isset( $transient->response ) || ! is_array( $transient->response ) ) {
+            $transient->response = [];
+        }
+
+        if ( ! isset( $transient->no_update ) || ! is_array( $transient->no_update ) ) {
+            $transient->no_update = [];
+        }
+
         $theme_slug = get_template();
         $theme      = wp_get_theme( $theme_slug );
         $current    = $theme->get( 'Version' );
@@ -52,22 +108,23 @@ final class Adventistai_Alps_GitHub_Updater
 
         if ( version_compare( $release['version'], $current, '>' ) ) {
             $transient->response[ $theme_slug ] = [
-                'theme'       => $theme_slug,
-                'new_version' => $release['version'],
-                'url'         => $release['html_url'],
-                'package'     => $release['package'],
-                'requires'    => '6.4.1',
-                'requires_php'=> '8.1',
+                'theme'        => $theme_slug,
+                'new_version'  => $release['version'],
+                'url'          => $release['html_url'],
+                'package'      => $release['package'],
+                'requires'     => '6.4.1',
+                'requires_php' => '8.1',
             ];
+            unset( $transient->no_update[ $theme_slug ] );
         } else {
             unset( $transient->response[ $theme_slug ] );
             $transient->no_update[ $theme_slug ] = [
-                'theme'       => $theme_slug,
-                'new_version' => $current,
-                'url'         => $release['html_url'],
-                'package'     => '',
-                'requires'    => '6.4.1',
-                'requires_php'=> '8.1',
+                'theme'        => $theme_slug,
+                'new_version'  => $current,
+                'url'          => $release['html_url'],
+                'package'      => '',
+                'requires'     => '6.4.1',
+                'requires_php' => '8.1',
             ];
         }
 
