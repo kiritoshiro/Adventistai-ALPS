@@ -7,6 +7,7 @@ use DateTimeZone;
 final class SabbathTimer
 {
     private const TIMEZONE = 'Europe/Vilnius';
+    private const FRIDAY_REVEAL_HOUR = 6;
 
     /**
      * Standard apparent sunset: Sun's centre 50 arc minutes below the horizon.
@@ -37,6 +38,20 @@ final class SabbathTimer
             'kretinga' => ['name' => 'Kretinga', 'lat' => 55.8888, 'lon' => 21.2445],
             'visaginas' => ['name' => 'Visaginas', 'lat' => 55.5968, 'lon' => 26.4398],
             'nida' => ['name' => 'Nida', 'lat' => 55.3039, 'lon' => 21.0067],
+        ];
+    }
+
+    /**
+     * Sabbath verses shown only between Friday sunset and Saturday sunset.
+     * More verses can be added here later without changing the front-end markup.
+     */
+    public static function verses(): array
+    {
+        return [
+            [
+                'text' => 'Atmink ir švęsk šabo dieną.',
+                'reference' => 'Išėjimo knyga 20, 8',
+            ],
         ];
     }
 
@@ -78,6 +93,8 @@ final class SabbathTimer
             'timezone' => self::TIMEZONE,
             'generatedAt' => $now->format(DATE_ATOM),
             'defaultCity' => 'vilnius',
+            'fridayRevealHour' => self::FRIDAY_REVEAL_HOUR,
+            'verses' => self::verses(),
             'cities' => $cities,
         ];
     }
@@ -157,12 +174,20 @@ final class SabbathTimer
 
     private static function event(string $type, DateTimeImmutable $sunset): array
     {
-        return [
+        $event = [
             'type' => $type,
             'timestamp' => $sunset->getTimestamp(),
             'iso' => $sunset->format(DATE_ATOM),
             'date' => $sunset->format('Y-m-d'),
             'time' => $sunset->format('H:i'),
         ];
+
+        if ($type === 'start') {
+            $reveal = $sunset->setTime(self::FRIDAY_REVEAL_HOUR, 0, 0);
+            $event['revealTimestamp'] = $reveal->getTimestamp();
+            $event['revealIso'] = $reveal->format(DATE_ATOM);
+        }
+
+        return $event;
     }
 }
