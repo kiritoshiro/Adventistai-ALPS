@@ -1,0 +1,624 @@
+/* ==========================================================================
+   adventistai.lt — site overrides
+   Loaded AFTER the ALPS stylesheet so these rules always win.
+   If you can read this file in your browser, the overrides are deployed.
+   ========================================================================== */
+
+/* --- 1. No focus box / tap highlight on links (mouse + Android) ----------- */
+a:focus,
+a:active,
+button:focus,
+.pg-card:focus,
+.pg-latest-link:focus {
+  outline: none !important;
+}
+a, button, .pg-card, [role="button"] {
+  -webkit-tap-highlight-color: transparent !important;
+}
+/* Keyboard users still get a quiet ring */
+a:focus-visible,
+button:focus-visible {
+  outline: 1px dotted currentColor !important;
+  outline-offset: 3px;
+}
+
+/* --- 2. Calm links: colour-only transitions, no thickening underline ------ */
+a {
+  transition: color .15s ease, border-color .15s ease, background-color .15s ease !important;
+}
+/* Underline only — never a box. `border-width` alone is not enough: ALPS's
+   `.text a:hover` sets the width on all four sides, so any rule giving the
+   other sides a style draws a full rectangle. The bottom stays pinned at 1px
+   so it does not thicken to 2px on hover either. */
+.text a,
+.text a:hover,
+.text a:focus,
+.text a:active,
+.text a:hover:not(.o-inline-list a),
+.text .wp-block-column a,
+.text .wp-block-column a:hover {
+  border-top: 0 none !important;
+  border-right: 0 none !important;
+  border-left: 0 none !important;
+  border-bottom-width: 1px !important;
+  border-bottom-style: solid !important;
+  box-shadow: none !important;
+}
+.o-button, button, input[type="submit"] {
+  transition: color .15s ease, background-color .15s ease, border-color .15s ease !important;
+}
+.o-button::after, .o-button font::before,
+button::after, button font::before {
+  transition: none !important;
+}
+.is-video { transition: border-color .15s ease-out !important; }
+
+/* --- 3. Tighter spacing scale (~30% less air, frame unchanged) ------------ */
+.u-padding--double          { padding: 1.75rem !important; }
+.u-padding--double--top     { padding-top: 1.75rem !important; }
+.u-padding--double--bottom  { padding-bottom: 1.75rem !important; }
+.u-padding--double--left    { padding-left: 1.75rem !important; }
+.u-padding--double--right   { padding-right: 1.75rem !important; }
+.u-spacing--double > * + *  { margin-top: 1.75rem !important; }
+.u-padding--triple          { padding: 2.5rem !important; }
+.u-padding--triple--top     { padding-top: 2.5rem !important; }
+.u-padding--triple--bottom  { padding-bottom: 2.5rem !important; }
+.u-padding--quad            { padding: 3.25rem !important; }
+.u-padding--quad--top       { padding-top: 3.25rem !important; }
+.u-padding--quad--bottom    { padding-bottom: 3.25rem !important; }
+.c-page-header__long        { padding-top: 2.5rem !important; }
+.c-page-header__long.has-background { padding-top: 4.5rem !important; }
+.c-page-header__long.has-background .c-page-header__content { padding-top: 3rem !important; }
+
+/* --- 4. Edge spacing is handled by the fluid gutter in section 11 ---------- */
+@media (max-width: 700px) {
+  .pg-wrap { padding-left: var(--site-gutter) !important; padding-right: var(--site-gutter) !important; }
+}
+
+/* --- 5. Editorial headings ------------------------------------------------ */
+.text > h1, .text > h2, .text > h3 {
+  font-family: "Noto Serif", Georgia, serif !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+  line-height: 1.2;
+}
+.text > h1 { font-size: 2.125rem !important; }
+.text > h2 { font-size: 1.75rem !important; }
+.text > h3 { font-size: 1.375rem !important; }
+
+/* --- 6. Reduced motion ---------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+  }
+}
+
+/* --- 7. Custom page templates (homepage lesson grid): calm hovers --------- */
+.pg-card { transition: box-shadow .15s ease, border-color .15s ease !important; }
+.pg-card:hover { transform: none !important; box-shadow: 0 2px 8px rgba(0,0,0,.08) !important; }
+.pg-latest-item { transition: background-color .15s ease !important; }
+.pg-latest-item:hover { box-shadow: none !important; }
+.pg-latest-link { border-bottom-width: 1px !important; }
+
+/* ==========================================================================
+   8. Gutenberg block content inside .text
+   ALPS only styles DIRECT children (.text > p, .text > h2 ...). Posts built
+   with columns/blocks nest their content inside .wp-block-column, so none of
+   that styling applied: no side padding, no paragraph spacing, no heading
+   styles. These rules cover the nested case.
+   ========================================================================== */
+.text .wp-block-column { box-sizing: border-box; }
+
+/* Readable rhythm between nested blocks */
+.text .wp-block-column > * + * { margin-top: 1.15em; }
+
+/* Headings inside blocks: match the editorial style, with real breathing room */
+.text .wp-block-column h1,
+.text .wp-block-column h2,
+.text .wp-block-column h3 {
+  font-family: "Noto Serif", Georgia, serif !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+  line-height: 1.25;
+  margin-top: 2em !important;
+  margin-bottom: .5em !important;
+}
+.text .wp-block-column h1 { font-size: 2rem !important; }
+.text .wp-block-column h2 { font-size: 1.625rem !important; }
+.text .wp-block-column h3 { font-size: 1.3125rem !important; }
+.text .wp-block-column > *:first-child { margin-top: 0 !important; }
+
+/* Lists and quotes inside blocks */
+.text .wp-block-column ol,
+.text .wp-block-column ul { padding-left: 1.25rem; margin-left: 1.25rem; }
+.text .wp-block-column li + li { margin-top: .5em; }
+.text .wp-block-column blockquote { margin-top: 1.5em; margin-bottom: 1.5em; }
+
+/* ==========================================================================
+   9. (superseded) Wide-screen capping now lives in section 16
+   The old rule here only applied above 1500px, which is exactly what made the
+   layout lurch when you zoomed past that width. Section 16 replaces it with a
+   single capped, centred measure that applies at every width.
+   ========================================================================== */
+
+/* ==========================================================================
+   10. Gutenberg columns
+   REVERTED to the version that works. Two attempts to make the stacking
+   threshold breakpoint-free both regressed: overriding `flex-wrap` removes the
+   `nowrap` that WordPress core applies above 782px, and once columns are
+   allowed to wrap, anything that makes the line total exceed 100% — a gap, a
+   min-width, a wide child inside a column — drops every sized column onto its
+   own row at every screen width. Flex wraps before it shrinks, so there is no
+   safe way to leave `wrap` on while columns carry editor-set flex-basis values.
+   So: core's own layout is left alone, and the only addition is an explicit
+   stack below 1100px, where two columns inside the article measure get too
+   narrow to read. `word-break: break-word` (core's, which split
+   "Krikščioniško" mid-word) is still undone.
+   ========================================================================== */
+.text .wp-block-columns { align-items: flex-start; }
+.text .wp-block-column {
+  word-break: normal !important;
+  overflow-wrap: break-word;
+  hyphens: none;
+}
+/* Below this the multi-column article layout is stacked outright */
+@media (max-width: 1100px) {
+  .text .wp-block-column { flex-basis: 100% !important; min-width: 0; }
+}
+/* Related-lesson titles: keep them on sensible lines */
+.text .wp-block-column .c-block__title,
+.text .wp-block-column .c-block__heading-title {
+  word-break: normal !important;
+  overflow-wrap: break-word;
+}
+
+/* ==========================================================================
+   11. ONE fluid gutter, applied at ONE level
+   ALPS switches side padding between .9375rem and 1.25rem at 901px, and adds
+   more padding on inner wrappers, so the inset jumped around at different
+   widths and doubled up in places. Instead: a single fluid value, set once on
+   the grid item, with the inner paddings zeroed so nothing stacks.
+   ========================================================================== */
+:root { --site-gutter: clamp(1rem, 2.2vw, 1.75rem); }
+
+[class*="grid--"] > .l-grid-item {
+  padding-left: var(--site-gutter) !important;
+  padding-right: var(--site-gutter) !important;
+}
+
+/* Zero the inner paddings so the gutter is never applied twice */
+.text > p, .text > h1, .text > h2, .text > h3, .text > h4, .text > h5, .text > h6,
+.text > ol, .text > ul, .text .c-breadcrumbs,
+.text .wp-block-column {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+/* Lists still need their marker indent */
+.text > ol, .text > ul,
+.text .wp-block-column ol, .text .wp-block-column ul {
+  padding-left: 1.25rem !important;
+  margin-left: .75rem;
+}
+
+/* ==========================================================================
+   12. Stop ALPS's vw-sized blocks squashing inside Gutenberg columns
+   The related-lesson list uses .l-grid-item--l--2-col etc., which are sized in
+   *viewport* units. Inside a 33%- or 50%-wide block column those widths bear no
+   relation to the space available, which is what squashed the titles at some
+   zoom levels. Inside a block column they simply fill their container.
+   ========================================================================== */
+.text .wp-block-column [class*="l-grid-item--"],
+.text .wp-block-column .l-grid-item,
+.text .wp-block-column [class*="l-grid-wrap--"],
+.text .wp-block-column .l-large-break,
+.text .wp-block-column .l-standard-break {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+.text .wp-block-column .c-media-block,
+.text .wp-block-column .l-grid { display: block !important; }
+
+/* ==========================================================================
+   13. No white gap beside the sabbath column
+   .l-wrap__content is a fixed 85.714vw and .l-sabbath 14.286vw. Any rounding,
+   scrollbar, or overflow leaves a visible strip between them, and it grows as
+   you zoom. Let flex share the row instead of trusting two vw values to add
+   up to exactly 100.
+   ========================================================================== */
+.l-wrap { display: flex !important; align-items: stretch; }
+.l-wrap__content {
+  flex: 1 1 auto !important;
+  width: auto !important;
+  min-width: 0;
+}
+.l-wrap__sabbath, .l-sabbath {
+  flex: 0 0 14.2857142857vw !important;
+  width: 14.2857142857vw !important;
+}
+
+/* ==========================================================================
+   14. ALPS post feed: items with a title but no excerpt
+   The feed widget only prints `<p class="c-block__body">` when there is an
+   excerpt or content, but the block's padding, its tall left rule and the
+   1.25rem gap between items stay regardless. With titles only you get a short
+   line floating inside a box built for a paragraph. When there is no
+   `.c-block__body`, the item becomes a compact index row instead. Items that
+   DO have body text are untouched.
+   ========================================================================== */
+.c-block-wrap__content .c-block__text:not(:has(.c-block__body)) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 1rem;
+  row-gap: .15rem;
+  padding-top: .55rem !important;
+  padding-bottom: .55rem !important;
+  padding-left: .85rem !important;
+  border-left-width: 3px !important;
+  transition: background-color .15s ease;
+}
+.c-block-wrap__content.u-spacing
+  > .c-block__text:not(:has(.c-block__body))
+  + .c-block__text:not(:has(.c-block__body)) {
+  margin-top: 0 !important;
+  border-top: 1px solid rgba(0, 0, 0, .09);
+}
+.c-block-wrap__content .c-block__text:not(:has(.c-block__body)):hover {
+  background-color: rgba(0, 0, 0, .035);
+}
+.c-block-wrap__content .c-block__text:not(:has(.c-block__body)) h3 {
+  flex: 1 1 14rem;
+  margin: 0 !important;
+  line-height: 1.35;
+}
+.c-block-wrap__content .c-block__text:not(:has(.c-block__body)) .c-block__meta {
+  flex: 0 0 auto;
+  margin: 0 !important;
+  opacity: .75;
+  white-space: nowrap;
+}
+.c-block-wrap__content .c-block__text:not(:has(.c-block__body)) h3 a {
+  border-bottom: 0 !important;
+}
+.c-block-wrap__content .c-block__text .c-block__image {
+  width: clamp(3.5rem, 18%, 7.5rem) !important;
+  height: auto;
+}
+.c-block-wrap__content .c-block__text.has-image > *:not(.c-block__image) {
+  margin-left: 0 !important;
+}
+.c-block-wrap__content .c-block__text.has-image:not(:has(.c-block__body)) {
+  align-items: center;
+}
+
+/* ==========================================================================
+   15. Continuous scales — no step changes while zooming
+   ALPS's spacing and type scales change VALUE at 701px and 901px rather than
+   scaling, so zooming past one shunts the whole page at once. Each scale below
+   is re-expressed as clamp() between exactly the same small and large values,
+   interpolating over roughly 700px–1300px, so the change is gradual.
+   Also: the scrollbar appearing and disappearing during zoom resizes the
+   viewport, which shifts everything centred. Reserving the gutter kills that.
+   ========================================================================== */
+html { scrollbar-gutter: stable; }
+
+/* Spacing scale */
+.u-spacing > * + *              { margin-top:    clamp(.9375rem, .573rem + .833vw, 1.25rem) !important; }
+.u-padding                      { padding:       clamp(.9375rem, .573rem + .833vw, 1.25rem) !important; }
+.u-padding--top                 { padding-top:   clamp(.9375rem, .573rem + .833vw, 1.25rem) !important; }
+.u-padding--bottom              { padding-bottom:clamp(.9375rem, .573rem + .833vw, 1.25rem) !important; }
+.u-space--top                   { margin-top:    clamp(.9375rem, .573rem + .833vw, 1.25rem) !important; }
+.u-space--bottom                { margin-bottom: clamp(.9375rem, .573rem + .833vw, 1.25rem) !important; }
+
+.u-spacing--half > * + *        { margin-top:    clamp(.46875rem, .286rem + .417vw, .625rem) !important; }
+.u-padding--half                { padding:       clamp(.46875rem, .286rem + .417vw, .625rem) !important; }
+.u-padding--half--top           { padding-top:   clamp(.46875rem, .286rem + .417vw, .625rem) !important; }
+.u-padding--half--bottom        { padding-bottom:clamp(.46875rem, .286rem + .417vw, .625rem) !important; }
+.u-space--half--top             { margin-top:    clamp(.46875rem, .286rem + .417vw, .625rem) !important; }
+.u-space--half--bottom          { margin-bottom: clamp(.46875rem, .286rem + .417vw, .625rem) !important; }
+.u-space--half--left            { margin-left:   clamp(.46875rem, .286rem + .417vw, .625rem) !important; }
+
+.u-spacing--quarter > * + *     { margin-top:    clamp(.2344rem, .143rem + .208vw, .3125rem) !important; }
+.u-padding--quarter             { padding:       clamp(.2344rem, .143rem + .208vw, .3125rem) !important; }
+.u-space--quarter               { margin:        clamp(.2344rem, .143rem + .208vw, .3125rem) !important; }
+
+/* Type scale — same endpoints ALPS uses, interpolated instead of stepped */
+.u-font--primary--xl   { font-size: clamp(1.875rem, 1.583rem + .667vw, 2.125rem) !important; }
+.u-font--primary--l    { font-size: clamp(1.375rem,  .792rem + 1.333vw, 1.875rem) !important; }
+.u-font--primary--m    { font-size: clamp(1.125rem,  .979rem + .333vw, 1.25rem) !important; }
+.u-font--primary--s    { font-size: clamp(.875rem,   .802rem + .167vw, .9375rem) !important; }
+.u-font--secondary--m  { font-size: clamp(1rem,      .708rem + .667vw, 1.25rem) !important; }
+.u-font--secondary--s  { font-size: clamp(.8125rem,  .667rem + .333vw, .9375rem) !important; }
+
+/* Article body copy — ALPS steps this from .875rem to 1rem at 901px */
+.text > p,
+.text .wp-block-column > p,
+.text > ol li, .text > ul li,
+.text .wp-block-column ol li, .text .wp-block-column ul li,
+.text > dl dd, .text > dl dt {
+  font-size: clamp(.875rem, .8rem + .23vw, 1rem) !important;
+}
+
+/* Pagination: fixed cells and tabular figures, so the row keeps identical
+   geometry whichever digits are showing and however far you have zoomed */
+.pagination {
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  column-gap: .15rem;
+  row-gap: .35rem;
+  min-height: 2.75rem;
+  font-variant-numeric: tabular-nums;
+}
+.pagination__page,
+.pagination__page--current {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding: .35rem !important;
+  line-height: 1;
+  font-size: clamp(1rem, .9rem + .28vw, 1.25rem) !important;
+  font-variant-numeric: tabular-nums;
+}
+.pagination__divide {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  min-height: 2.25rem;
+}
+.pagination__prev,
+.pagination__next {
+  flex: 0 0 auto;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding: .3125rem !important;
+}
+.pagination .u-icon,
+.pagination .u-icon svg { width: 1.25rem; height: 1.25rem; margin: 0 !important; }
+
+/* ==========================================================================
+   16. The left gap — one fluid measure instead of viewport columns
+   This is the cause of the wasted space on the left. Every content section
+   carries `u-shift--left--1-col--at-large`, which is literally
+   `margin-left: 14.2857vw` — a whole empty seventh of the page. On top of that
+   the section itself is `width: 85.714vw` while its parent `.l-wrap__content`
+   is ALSO 85.714vw, so shift + width add up to 100vw inside an 85.7vw box and
+   the surplus has to go somewhere. Because both numbers are viewport units and
+   the old cap only kicked in above 1500px, the gap changed character every time
+   zooming crossed a breakpoint.
+   The approach here is different: nothing horizontal is measured against the
+   viewport any more. The shift is dropped, wraps become 100% of the column they
+   sit in, and the whole thing is one centred measure that grows and shrinks
+   continuously. There is no width at which anything snaps.
+   ========================================================================== */
+:root {
+  --site-measure: min(100%, 90rem);
+  --site-rail: 14.2857142857vw;
+}
+
+/* (a) Drop the empty-column offset at every width */
+[class*="u-shift--left--"] { margin-left: 0 !important; }
+
+/* (b) Wraps and items are shares of their container, never of the viewport.
+   `.l-main__content` and `.c-footer--inner` carry `l-grid-wrap--6-of-7` on the
+   same element, so they must be excluded here — otherwise this rule's higher
+   specificity would beat the capped measure in (c) and pin them to full width. */
+.l-wrap__content [class*="l-grid-wrap--"]:not(.l-main__content):not(.c-footer--inner) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+.l-wrap__content .l-grid-item { max-width: 100% !important; }
+
+/* (c) One capped measure, centred in the content column — at ALL widths.
+   This uses plain auto margins. An earlier version offset the block by half the
+   rail so it centred against the window instead; that produced a band of widths
+   (roughly 1680–2016px) where the offset it wanted exceeded the space available
+   and the content was pinned hard against the rail. Symmetric centring has no
+   such band: the white to the left of the text always equals the white to its
+   right, at every width, with no threshold to cross while zooming. */
+.l-wrap .l-main__content,
+.l-wrap .c-page-header__long--inner,
+.l-wrap .c-page-header__simple--inner,
+.l-wrap .c-footer--inner,
+.c-page-header__long--inner,
+.c-page-header__simple--inner {
+  display: flex !important;
+  flex-wrap: wrap;
+  width: 100% !important;
+  max-width: var(--site-measure) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box;
+}
+
+/* (d) Article / sidebar split as percentages of that measure */
+@media (min-width: 901px) {
+  .l-main__content > .c-article { width: 62% !important; }
+  .l-main__content > .c-sidebar { width: 38% !important; }
+  .l-main__content > .c-article:last-child { width: 100% !important; }
+}
+@media (max-width: 900px) {
+  .l-main__content > .l-grid-item { width: 100% !important; }
+}
+
+/* (e) The rail keeps ALPS's exact 14.2857vw. Do NOT cap it: its background
+   image is drawn by `.l-sabbath.u-background-image--sabbath::after`, which is
+   hard-coded to `width: 14.2857142857vw; right: 0`. Give the box any other
+   width and the strip no longer lines up with it. */
+.l-wrap__sabbath, .l-sabbath {
+  flex: 0 0 var(--site-rail) !important;
+  width: var(--site-rail) !important;
+}
+
+/* ==========================================================================
+   17. The last stepped horizontal utility
+   `.u-padding--container` is the one remaining rule that changes its side
+   padding by large amounts at breakpoints, and it does so with !important:
+
+       @media (min-width: 1101px)  padding: 1.25rem
+       @media (min-width: 901px)   padding: 14.2857vw !important
+       @media (min-width: 1501px)  padding: 21vw !important
+
+   Crossing 1501px while zooming therefore widens both side insets from a
+   seventh of the viewport to a fifth in one step — which matches a gap that
+   suddenly grows and then comes back. Nothing in the theme's own templates
+   uses this class, but page content and plugins can, so it is made fluid here
+   rather than left as a trap.
+   ========================================================================== */
+.u-padding--container {
+  padding-left: clamp(1.25rem, 8vw, 10rem) !important;
+  padding-right: clamp(1.25rem, 8vw, 10rem) !important;
+}
+
+/* A grid wrap with no `--n-of-7` modifier is `width: 100vw`, which overflows
+   the content column once the rail is taken out. Fill the container instead. */
+.l-wrap__content .l-grid-wrap:not(.l-main__content):not(.c-footer--inner) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* ==========================================================================
+   18. Page Builder Template: alignment escapes
+   partials/content-page.blade.php now wraps page-builder content in the same
+   grid + .text structure the default template uses, so everything in this file
+   reaches it. Blocks the editor marks "Wide" or "Full width" still need to
+   break back out of that measure, which is what these two rules do.
+   ========================================================================== */
+.text > .alignwide,
+.text .wp-block-column > .alignwide {
+  width: min(100vw - var(--site-rail) - 2rem, 105rem);
+  max-width: none;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+.text > .alignfull {
+  width: calc(100vw - var(--site-rail));
+  max-width: none;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  padding-left: var(--site-gutter);
+  padding-right: var(--site-gutter);
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   19. Footer columns
+   The footer inner is capped to the measure like everything else, but its five
+   children were still sized in viewport units — `l-grid-item--m--3-col` is
+   42.857vw, `--l--2-col` is 28.57vw and so on. Once the inner stopped being
+   85.714vw wide, those widths bore no relation to the box holding them, so the
+   description block ran under the navigation lists. Same treatment the article
+   and sidebar got in section 16(d): shares of the measure, not of the window.
+
+   The wrap is six columns, so 1 col = 16.667%, 2 = 33.333%, 3 = 50%. Row one
+   is description + primary nav + secondary nav (3 + 1 + 2 = 6). Row two is the
+   legal block, with the logo alongside it when the sabbath rail is hidden.
+   ========================================================================== */
+@media (min-width: 901px) {
+  .l-wrap .c-footer--inner > .c-footer__description   { width: 50% !important; }
+  .l-wrap .c-footer--inner > .c-footer__primary-nav   { width: 16.6667% !important; }
+  .l-wrap .c-footer--inner > .c-footer__secondary-nav { width: 33.3333% !important; }
+  .l-wrap .c-footer--inner > .c-footer__legal         { width: 50% !important; }
+  .l-wrap .c-footer--inner > .c-footer__logo          { width: 16.6667% !important; }
+}
+@media (max-width: 900px) {
+  .l-wrap .c-footer--inner > * { width: 100% !important; }
+}
+
+/* The logo block carries `l-grid-item--7-col` but not plain `.l-grid-item`, so
+   the fluid gutter in section 11 never reached it. Match the others. */
+.l-wrap .c-footer--inner > .c-footer__logo {
+  padding-left: var(--site-gutter);
+  padding-right: var(--site-gutter);
+  box-sizing: border-box;
+}
+
+/* The nav lists inside those columns also carried inherited widths and default
+   list indentation, which pushed them out over the description block. Keep them
+   inside their column. */
+.l-wrap .c-footer--inner .c-footer__primary-nav ul,
+.l-wrap .c-footer--inner .c-footer__secondary-nav ul,
+.l-wrap .c-footer--inner [class*="l-grid-item"] > ul {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  list-style: none;
+}
+
+/* ==========================================================================
+   20. The drawer menu must never go full-bleed
+   The drawer markup sits inside `.l-wrap__content`, and its sliding panel
+   (`.c-drawer__container`) carries the class `l-grid-wrap--6-of-7`. Section
+   16(b) rewrites every `l-grid-wrap--*` inside the content column to
+   `width: 100%` — and because that panel is absolutely positioned inside a
+   `position: fixed`, full-viewport `.c-drawer`, 100% means the entire screen.
+   That is why the menu started covering the whole window instead of sliding
+   in over six of the seven columns.
+   The panel is pinned back to six sevenths here, in percent rather than the
+   `vw` the theme ships, so its edge lines up exactly with the rail in
+   section 21 no matter what the scrollbar is doing.
+   ========================================================================== */
+.l-wrap .l-wrap__content .c-drawer .c-drawer__container,
+.l-wrap .l-wrap__content .c-drawer [class*="l-grid-wrap--"] {
+  width: 85.7142857143% !important;
+  max-width: 85.7142857143% !important;
+}
+
+/* ==========================================================================
+   21. The sabbath rail: exactly one seventh, flush to the right edge
+   ALPS sizes the rail in `vw`. `vw` includes the scrollbar; the page box does
+   not. The two therefore never agree exactly, and the difference shows up as
+   a pale strip beside the rail whose apparent size changes as the page is
+   zoomed. Percentages are measured against the same box the rail sits in, so
+   content + rail always add up to exactly 100% at every zoom level.
+   ========================================================================== */
+.l-wrap {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.l-wrap__content {
+  flex: 1 1 auto !important;
+  width: auto !important;
+  min-width: 0;
+}
+.l-wrap__sabbath,
+.l-sabbath {
+  flex: 0 0 14.2857142857% !important;
+  width: 14.2857142857% !important;
+  max-width: 14.2857142857% !important;
+  margin: 0 !important;
+}
+
+/* The rail's background strip is a fixed-position pseudo-element hard-coded to
+   `width: 14.2857vw; right: 0`. On a fixed element a percentage is measured
+   against the same viewport box that `right: 0` uses, so switching the width
+   to a percentage keeps strip and column on identical edges. */
+.l-sabbath.u-background-image--sabbath::after {
+  width: 14.2857142857% !important;
+  right: 0 !important;
+}
+
+/* While the page scrolls, the sticky script switches the icon to
+   `position: fixed` and writes `left` and `width` into the element in pixels,
+   measured once. Those pixels stop matching the column as soon as the page is
+   zoomed, which drifts the icon sideways and leaves white beside it. Giving
+   the fixed box both edges of the last seventh and auto margins centres the
+   icon in the column instead, at any zoom, without relying on the script's
+   arithmetic. */
+.l-sabbath .js-sticky.sticky-is-active {
+  left: 85.7142857143% !important;
+  right: 0 !important;
+  width: auto !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}

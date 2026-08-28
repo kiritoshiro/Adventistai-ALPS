@@ -1,0 +1,75 @@
+{
+    "$schema": "https:\/\/schemas.wp.org\/trunk\/theme.json",
+    "version": 2,
+    "settings": {
+        "color": {
+            "palette": [
+                {
+                    "slug": "darker",
+                    "color": "#04132b",
+                    "name": "Darker"
+                },
+                {
+                    "slug": "dark",
+                    "color": "#04132b",
+                    "name": "Dark"
+                },
+                {
+                    "slug": "primary",
+                    "color": "#2f557f",
+                    "name": "Primary"
+                },
+                {
+                    "slug": "light",
+                    "color": "#2e6de7",
+                    "name": "Light"
+                },
+                {
+                    "slug": "lighter",
+                    "color": "#84adfc",
+                    "name": "Lighter"
+                },
+                {
+                    "slug": "dark-gray",
+                    "color": "#7e7f80",
+                    "name": "Dark Gray"
+                },
+                {
+                    "slug": "gray",
+                    "color": "#bdbebf",
+                    "name": "Gray"
+                },
+                {
+                    "slug": "light-gray",
+                    "color": "#f2f4f5",
+                    "name": "Light Gray"
+                }
+            ],
+            "custom": false,
+            "customGradient": false,
+            "defaultPalette": false,
+            "defaultGradients": false
+        },
+        "custom": {
+            "spacing": {},
+            "typography": {
+                "font-size": {},
+                "line-height": {}
+            }
+        },
+        "spacing": {
+            "padding": true,
+            "units": [
+                "px",
+                "%",
+                "em",
+                "rem",
+                "vw",
+                "vh"
+            ]
+        },
+        "typography": {
+            "customFontSize": false
+        }
+    }
+}
