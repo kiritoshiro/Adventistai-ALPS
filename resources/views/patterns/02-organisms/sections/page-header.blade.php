@@ -89,15 +89,19 @@
 @if (empty($remove_header))
   <header class="{{ $page_header_classes }} {{ $page_header_class }}">
     <div class="c-page-header__long--inner l-grid l-grid--7-col {{ $page_header_inner_class }}">
-      <div class="c-page-header__content c-page-header__long__content l-grid-wrap l-grid-wrap--5-of-7 u-border--left {{ $page_header_content_class }}">
-        @if ($long_header_kicker)
-          <span class="o-kicker u-color--white">{{ $long_header_kicker }}</span>
-        @endif
-        <h1 class="u-font--primary--xl u-color--white u-font-weight--bold">
-          {!! wp_kses_post($long_header_title) !!}
-        </h1>
-        @if ($long_header_subtitle)
-          <span class="o-kicker u-color--white">{{ $long_header_subtitle }}</span>
+      <div class="c-page-header__content c-page-header__long__content l-grid-wrap l-grid-wrap--5-of-7 u-border--left {{ $page_header_content_class }}{{ is_front_page() ? ' adventistai-sabbath-timer-host' : '' }}">
+        @if (is_front_page())
+          @include('partials.sabbath-timer')
+        @else
+          @if ($long_header_kicker)
+            <span class="o-kicker u-color--white">{{ $long_header_kicker }}</span>
+          @endif
+          <h1 class="u-font--primary--xl u-color--white u-font-weight--bold">
+            {!! wp_kses_post($long_header_title) !!}
+          </h1>
+          @if ($long_header_subtitle)
+            <span class="o-kicker u-color--white">{{ $long_header_subtitle }}</span>
+          @endif
         @endif
       </div>
     </div>
