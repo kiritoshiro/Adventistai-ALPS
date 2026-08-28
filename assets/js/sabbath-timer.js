@@ -169,7 +169,7 @@
 
     if (state.mode === 'active' && state.end) {
       renderVerse();
-      if (endMetaNode) endMetaNode.textContent = `· Šabas baigiasi ${formatTime(state.end)}`;
+      if (endMetaNode) endMetaNode.textContent = `· Sabata (šabas) baigiasi ${formatTime(state.end)}`;
     }
 
     renderOptions(nowMs);
