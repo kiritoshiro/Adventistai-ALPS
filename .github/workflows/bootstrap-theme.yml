@@ -23,6 +23,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          cp .github/workflows/bootstrap-theme.yml /tmp/bootstrap-theme.yml
           cat bootstrap-payload/part-* | base64 --decode > /tmp/adventistai-alps-theme-source.tar.gz
           echo "e2a7ceeca238943b9267032da3e9ce498315f9444c847b0c2e1e744012ed0b3a  /tmp/adventistai-alps-theme-source.tar.gz" | sha256sum --check -
           tar -tzf /tmp/adventistai-alps-theme-source.tar.gz >/dev/null
@@ -31,6 +32,8 @@ jobs:
           test -f style.css
           test -f app/AdventistaiAlpsUpdater.php
           test -f .github/workflows/release-theme.yml
+          rm -f .github/workflows/release-theme.yml
+          cp /tmp/bootstrap-theme.yml .github/workflows/bootstrap-theme.yml
 
       - name: Commit imported project
         shell: bash
