@@ -1,0 +1,43 @@
+name: Import verified ALPS theme source
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'bootstrap-payload/**'
+      - '.github/workflows/bootstrap-theme.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out bootstrap commit
+        uses: actions/checkout@v4
+
+      - name: Verify and extract theme source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat bootstrap-payload/part-* | base64 --decode > /tmp/adventistai-alps-theme-source.tar.gz
+          echo "e2a7ceeca238943b9267032da3e9ce498315f9444c847b0c2e1e744012ed0b3a  /tmp/adventistai-alps-theme-source.tar.gz" | sha256sum --check -
+          tar -tzf /tmp/adventistai-alps-theme-source.tar.gz >/dev/null
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf -- {} +
+          tar -xzf /tmp/adventistai-alps-theme-source.tar.gz -C .
+          test -f style.css
+          test -f app/AdventistaiAlpsUpdater.php
+          test -f .github/workflows/release-theme.yml
+
+      - name: Commit imported project
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git commit -m "Import ALPS-based Adventistai theme with GitHub updater"
+          git push origin HEAD:main

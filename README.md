@@ -1,3 +1,3 @@
-# Adventistai ALPS
+# Adventistai ALPS theme import
 
-Private source repository for the ALPS-based Adventistai WordPress theme.
+This temporary bootstrap commit expands the verified ALPS-based theme source into the repository. It is automatically replaced by the normal project source commit.
