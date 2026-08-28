@@ -6,6 +6,9 @@
   if ($theme_color && isset($alpsVersion['styles']['themes'][$theme_color])) {
       $stylesUrl = $alpsVersion['styles']['themes'][$theme_color];
   }
+
+  $sabbathTimerCssUrl = get_template_directory_uri() . '/assets/css/sabbath-timer.css';
+  $sabbathTimerJsUrl = get_template_directory_uri() . '/assets/js/sabbath-timer.js';
 @endphp
 <head>
   <meta charset="<?php bloginfo('charset'); ?>">
@@ -32,5 +35,9 @@
   <link rel="preload" href="<?php bloginfo('template_directory'); ?>/assets/fonts/noto-sans/NotoSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="<?php bloginfo('template_directory'); ?>/assets/fonts/source-serif/SourceSerif4-Variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" type="text/css" href="{{ $stylesUrl }}{{ alps_asset_version($stylesUrl) }}" media="all">
+  @if (is_front_page())
+    <link rel="stylesheet" type="text/css" href="{{ $sabbathTimerCssUrl }}{{ alps_asset_version($sabbathTimerCssUrl) }}" media="all">
+    <script src="{{ $sabbathTimerJsUrl }}{{ alps_asset_version($sabbathTimerJsUrl) }}" type="text/javascript" defer></script>
+  @endif
   <script src="{{ $alpsVersion['scripts']['head'] }}{{ alps_asset_version($alpsVersion['scripts']['head']) }}" type="text/javascript" async></script>
 </head>
