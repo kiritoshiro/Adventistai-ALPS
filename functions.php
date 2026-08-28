@@ -53,6 +53,7 @@ require_once __DIR__ . '/vendor/htmlburger/carbon-fields/core/functions.php';
 require_once __DIR__ . '/app/carbon-fields/_init.php';
 require_once __DIR__ . '/defaults-themes.php';
 require_once __DIR__ . '/app/AdventistaiAlpsUpdater.php';
+require_once __DIR__ . '/inc/search/bootstrap.php';
 
 Adventistai_Alps_GitHub_Updater::bootstrap();
 
