@@ -21,6 +21,10 @@
   const labelNode = root.querySelector('[data-sabbath-label]');
   const countdownNode = root.querySelector('[data-sabbath-countdown]');
   const metaNode = root.querySelector('[data-sabbath-meta]');
+  const selector = root.querySelector('[data-sabbath-selector]');
+  const selectorButton = root.querySelector('[data-sabbath-selector-button]');
+  const selectedCityNode = root.querySelector('[data-sabbath-selected-city]');
+  const popover = root.querySelector('[data-sabbath-selector-popover]');
   const cityButtons = Array.from(root.querySelectorAll('[data-sabbath-city]'));
   const storageKey = 'adventistai-sabbath-city';
 
@@ -52,27 +56,51 @@
     return days > 0 ? `${days} d. ${clock}` : clock;
   };
 
-  const formatTarget = (event, weekdayStyle = 'long') => {
+  const formatTarget = (event, includeWeekday = true) => {
     const date = new Date(Number(event.timestamp) * 1000);
-    return new Intl.DateTimeFormat('lt-LT', {
-      weekday: weekdayStyle,
+    const options = {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false,
       timeZone: data.timezone || 'Europe/Vilnius',
-    }).format(date);
+    };
+    if (includeWeekday) options.weekday = 'long';
+    return new Intl.DateTimeFormat('lt-LT', options).format(date);
   };
 
-  const renderCityButtons = (nowMs) => {
+  const closeSelector = (restoreFocus = false) => {
+    if (!popover || !selectorButton) return;
+    popover.hidden = true;
+    selectorButton.setAttribute('aria-expanded', 'false');
+    if (restoreFocus) selectorButton.focus();
+  };
+
+  const openSelector = () => {
+    if (!popover || !selectorButton) return;
+    popover.hidden = false;
+    selectorButton.setAttribute('aria-expanded', 'true');
+    const selected = cityButtons.find((button) => button.getAttribute('data-sabbath-city') === selectedCity);
+    if (selected) selected.focus();
+  };
+
+  const renderCityOptions = (nowMs) => {
     cityButtons.forEach((button) => {
       const cityKey = button.getAttribute('data-sabbath-city');
       const event = nextEvent(cityKey, nowMs);
       const timeNode = button.querySelector('[data-sabbath-city-time]');
-      button.classList.toggle('is-selected', cityKey === selectedCity);
-      button.setAttribute('aria-pressed', cityKey === selectedCity ? 'true' : 'false');
-      if (event && timeNode) {
-        timeNode.textContent = formatTarget(event, 'short');
-        timeNode.setAttribute('datetime', event.iso || '');
+      const isSelected = cityKey === selectedCity;
+
+      button.classList.toggle('is-selected', isSelected);
+      button.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+
+      if (timeNode) {
+        if (event) {
+          timeNode.textContent = formatTarget(event, false);
+          timeNode.setAttribute('datetime', event.iso || '');
+        } else {
+          timeNode.textContent = '—';
+          timeNode.removeAttribute('datetime');
+        }
       }
     });
   };
@@ -80,42 +108,84 @@
   const renderStatic = (nowMs) => {
     const city = cities[selectedCity];
     const event = nextEvent(selectedCity, nowMs);
+
     if (!city || !event) {
       if (labelNode) labelNode.textContent = 'Sabatos laikas';
       if (countdownNode) countdownNode.textContent = '—';
       if (metaNode) metaNode.textContent = '';
       return null;
     }
-    if (labelNode) labelNode.textContent = event.type === 'end' ? 'Sabata baigiasi už:' : 'Sabata prasideda už:';
-    if (metaNode) metaNode.textContent = `${city.name} · ${formatTarget(event)}`;
+
+    if (labelNode) {
+      labelNode.textContent = event.type === 'end' ? 'Sabata baigiasi už:' : 'Sabata prasideda už:';
+    }
+    if (selectedCityNode) selectedCityNode.textContent = city.name;
+    if (metaNode) metaNode.textContent = `· ${formatTarget(event)}`;
+
     currentEventTimestamp = Number(event.timestamp);
-    renderCityButtons(nowMs);
+    renderCityOptions(nowMs);
     return event;
   };
 
   const tick = () => {
     const nowMs = Date.now();
     let event = nextEvent(selectedCity, nowMs);
+
     if (!event) {
       renderStatic(nowMs);
       return;
     }
+
     if (Number(event.timestamp) !== currentEventTimestamp) {
       event = renderStatic(nowMs);
       if (!event) return;
     }
-    if (countdownNode) countdownNode.textContent = formatCountdown(Number(event.timestamp) * 1000 - nowMs);
+
+    if (countdownNode) {
+      countdownNode.textContent = formatCountdown(Number(event.timestamp) * 1000 - nowMs);
+    }
   };
 
-  cityButtons.forEach((button) => {
+  if (selectorButton) {
+    selectorButton.addEventListener('click', () => {
+      const isOpen = selectorButton.getAttribute('aria-expanded') === 'true';
+      if (isOpen) closeSelector(); else openSelector();
+    });
+  }
+
+  cityButtons.forEach((button, index) => {
     button.addEventListener('click', () => {
       const cityKey = button.getAttribute('data-sabbath-city');
       if (!cityKey || !cities[cityKey]) return;
+
       selectedCity = cityKey;
-      try { window.localStorage.setItem(storageKey, selectedCity); } catch (error) {}
+      try {
+        window.localStorage.setItem(storageKey, selectedCity);
+      } catch (error) {}
+
       currentEventTimestamp = null;
       tick();
+      closeSelector(true);
     });
+
+    button.addEventListener('keydown', (event) => {
+      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+      event.preventDefault();
+      const direction = event.key === 'ArrowDown' ? 1 : -1;
+      cityButtons[(index + direction + cityButtons.length) % cityButtons.length].focus();
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!selector || !popover || popover.hidden) return;
+    if (!selector.contains(event.target)) closeSelector();
+  });
+
+  root.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && popover && !popover.hidden) {
+      event.preventDefault();
+      closeSelector(true);
+    }
   });
 
   tick();
