@@ -1,0 +1,83 @@
+name: Build theme release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer:v2
+
+      - name: Verify tag and theme version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          theme_version="$(sed -n 's/^Version:[[:space:]]*//p' style.css | tr -d '\r' | head -n1)"
+          test -n "$theme_version"
+          echo "version=$theme_version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$theme_version" >> "$GITHUB_OUTPUT"
+
+      - name: Check whether this version is already released
+        id: existing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          if gh release view "${{ steps.version.outputs.tag }}" >/dev/null 2>&1; then
+            echo "released=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "released=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install production PHP dependencies
+        if: steps.existing.outputs.released != 'true'
+        run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+
+      - name: Check PHP syntax
+        if: steps.existing.outputs.released != 'true'
+        shell: bash
+        run: find . -type f -name '*.php' -not -path './vendor/*' -not -path './build/*' -print0 | xargs -0 -n1 -P4 php -l
+
+      - name: Build installable WordPress ZIP
+        if: steps.existing.outputs.released != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/adventistai
+          rsync -a ./ build/adventistai/ \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='build/' \
+            --exclude='dist/' \
+            --exclude='node_modules/' \
+            --exclude='.env*' \
+            --exclude='*.log' \
+            --exclude='*~*'
+          cd build
+          zip -qr adventistai.zip adventistai
+
+      - name: Publish GitHub release
+        if: steps.existing.outputs.released != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" build/adventistai.zip \
+            --target "$GITHUB_SHA" \
+            --title "Adventistai ALPS ${{ steps.version.outputs.version }}" \
+            --generate-notes

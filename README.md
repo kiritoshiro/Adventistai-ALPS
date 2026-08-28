@@ -1,4 +1,12 @@
-# ALPS WordPress Theme Setup
+# Adventistai ALPS WordPress Theme
+
+This is the private Adventistai fork of the ALPS (Adventist Living Pattern System) WordPress theme. It preserves the Lithuanian site customizations and is detached from the official ALPS updater.
+
+Installable ZIP files and private-repository update notices are built from GitHub releases. See [UPDATING.md](UPDATING.md) for first installation, token configuration, and publishing instructions.
+
+The repository tracks source code and compiled frontend assets. Composer's generated `vendor/` directory is intentionally excluded from Git; the release workflow installs it and includes it in the WordPress ZIP.
+
+## ALPS WordPress Theme Setup
 
 ![](https://img.shields.io/badge/Required_PHP_version-8.4.1-green) ![](https://img.shields.io/badge/Required_WP_version-6.1.1-blue)
 
