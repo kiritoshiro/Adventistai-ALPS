@@ -18,6 +18,26 @@ add_action('wp_enqueue_scripts', function () {
 }, 100);
 
 /**
+ * Final responsive zoom fixes.
+ * Loaded after the main bundle and site-overrides.css so the responsive
+ * corrections remain authoritative without modifying the accumulated override
+ * stylesheet itself.
+ */
+add_action('wp_enqueue_scripts', function () {
+    $relative = '/assets/css/responsive-zoom-fixes.css';
+    $file = get_template_directory() . $relative;
+
+    if (is_readable($file)) {
+        wp_enqueue_style(
+            'adventistai-responsive-zoom-fixes',
+            get_template_directory_uri() . $relative,
+            ['adventistai-overrides'],
+            (string) filemtime($file)
+        );
+    }
+}, 1000);
+
+/**
  * Register the theme assets with the block editor.
  *
  * @return void
