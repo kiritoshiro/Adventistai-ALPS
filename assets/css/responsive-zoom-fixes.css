@@ -1,0 +1,126 @@
+/* Responsive zoom fixes for adventistai.lt.
+ * Loaded after site-overrides.css so these rules are the final layout authority.
+ */
+
+/* 1. Keep every footer/bottom content block inside the same centred measure
+   as the page body. Footer widgets are rendered outside .c-footer--inner, so
+   without this they can continue moving toward the viewport edge when zooming
+   out while the rest of the site stays centred. */
+.l-wrap__content > .c-footer-widgets,
+.l-wrap__content .c-footer-widgets,
+.l-wrap__content > footer.c-footer > .c-footer--inner {
+  width: 100% !important;
+  max-width: var(--site-measure, min(100%, 90rem)) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+}
+
+.l-wrap__content > .c-footer-widgets,
+.l-wrap__content .c-footer-widgets {
+  padding-left: var(--site-gutter, 1.25rem) !important;
+  padding-right: var(--site-gutter, 1.25rem) !important;
+}
+
+/* Do not allow footer text/nav/address content to escape its own column. */
+.c-footer--inner > *,
+.c-footer-widgets > *,
+.c-footer__description-text,
+.c-footer__legal,
+.c-footer__address,
+.c-footer__primary-nav,
+.c-footer__secondary-nav {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow-wrap: anywhere;
+}
+
+/* 2. Sabbath icon sizing should follow the rail, not the browser's stepped
+   font/rem scale. The rail itself stays one seventh of the visible layout;
+   sizing the mark as a percentage of that rail keeps its apparent size stable
+   while zooming. It only gets smaller if the rail itself genuinely narrows. */
+.l-sabbath__logo,
+.l-sabbath__logo--inner,
+.l-sabbath .js-sticky,
+.l-sabbath .js-sticky.sticky-is-active {
+  box-sizing: border-box !important;
+}
+
+.l-sabbath__logo--inner {
+  width: 58% !important;
+  max-width: 58% !important;
+  min-width: 0 !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.l-sabbath__logo--inner > div,
+.l-sabbath__logo--inner svg,
+.l-sabbath__logo--inner img,
+.l-sabbath__logo > svg,
+.l-sabbath__logo > img {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* When a custom image is used directly as the Sabbath mark, give it the same
+   rail-relative sizing as the inline Adventist logo. */
+.l-sabbath__logo > img.style-svg {
+  width: 58% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: block !important;
+}
+
+/* 3. Prevent body/sidebar text from being squeezed toward or underneath the
+   Sabbath rail during zoom-in. At this effective width there is no useful room
+   for the 62/38 split, so stack the content before it can collide with the rail. */
+@media (max-width: 1200px) {
+  .l-main__content > .c-article,
+  .l-main__content > .c-sidebar,
+  .l-main__content > .l-grid-item {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .l-main__content,
+  .c-page-header__long--inner,
+  .c-page-header__simple--inner,
+  .c-footer--inner {
+    min-width: 0 !important;
+    overflow: hidden;
+  }
+
+  .text,
+  .text p,
+  .text li,
+  .text h1,
+  .text h2,
+  .text h3,
+  .text h4,
+  .text h5,
+  .text h6,
+  .c-block__title,
+  .c-block__heading-title,
+  .c-footer--inner,
+  .c-footer-widgets {
+    max-width: 100% !important;
+    overflow-wrap: anywhere;
+    word-break: normal !important;
+  }
+
+  /* Wide/full Gutenberg blocks may not extend beneath the Sabbath rail at
+     narrow effective widths. They become ordinary contained blocks instead. */
+  .text > .alignwide,
+  .text .wp-block-column > .alignwide,
+  .text > .alignfull {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    transform: none !important;
+    box-sizing: border-box !important;
+  }
+}
