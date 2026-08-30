@@ -74,18 +74,23 @@
   display: block !important;
 }
 
-/* 3. Prevent body/sidebar text from being squeezed toward or underneath the
-   Sabbath rail during zoom-in. At this effective width there is no useful room
-   for the 62/38 split, so stack the content before it can collide with the rail. */
-@media (max-width: 1200px) {
+/* 3. Keep the desktop article/sidebar split on normal wide screens.
+   Only stack the sidebar once the effective viewport is genuinely narrow.
+   The previous 1200px cutoff was too early and moved desktop widget columns
+   below the article on otherwise wide layouts. */
+@media (max-width: 1000px) {
   .l-main__content > .c-article,
-  .l-main__content > .c-sidebar,
-  .l-main__content > .l-grid-item {
+  .l-main__content > .c-sidebar {
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
   }
+}
 
+/* Anti-overlap containment remains active a little earlier, but it does not
+   change the article/sidebar geometry. This prevents long content and wide
+   blocks from extending beneath the Sabbath rail during zoom-in. */
+@media (max-width: 1200px) {
   .l-main__content,
   .c-page-header__long--inner,
   .c-page-header__simple--inner,
@@ -112,8 +117,6 @@
     word-break: normal !important;
   }
 
-  /* Wide/full Gutenberg blocks may not extend beneath the Sabbath rail at
-     narrow effective widths. They become ordinary contained blocks instead. */
   .text > .alignwide,
   .text .wp-block-column > .alignwide,
   .text > .alignfull {
