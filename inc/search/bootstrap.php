@@ -2,6 +2,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/*
+ * Theme-level admin tooling is loaded here because this bootstrap is required
+ * on every theme request from functions.php. Keep it independent from the
+ * advanced-search enabled/disabled state.
+ */
+require_once get_template_directory() . '/app/AdventistaiAlpsReleaseManager.php';
+Adventistai_Alps_Release_Manager::bootstrap();
+
 $adv_search_files = array(
 	'class-adv-search-normalizer.php',
 	'class-adv-search-schema.php',
