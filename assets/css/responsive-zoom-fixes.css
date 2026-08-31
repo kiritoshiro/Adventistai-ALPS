@@ -102,23 +102,28 @@ html {
   top: 0;
   left: auto !important;
   right: auto !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
   width: 100% !important;
   min-width: 0 !important;
   max-width: none !important;
+  aspect-ratio: 1 / 1;
   margin: 0 !important;
-  padding: 1.05vw 0 0 !important;
+  padding: 0 !important;
   box-sizing: border-box !important;
   z-index: 2;
 }
 
-/* Size the mark from the real rail width. Percentages retain the same visible
-   proportion when browser zoom changes but the rail remains one seventh. */
+/* Official signage uses a seven-unit square with the Adventist symbol five
+   units wide. This leaves one unit of protected space on each side and keeps
+   the same physical proportion when browser zoom changes. */
 .l-sabbath__logo--inner,
 .l-sabbath__logo > img.style-svg {
   display: block !important;
-  width: 58% !important;
+  width: 71.4285714286% !important;
   min-width: 0 !important;
-  max-width: 58% !important;
+  max-width: 71.4285714286% !important;
   height: auto !important;
   margin-left: auto !important;
   margin-right: auto !important;
