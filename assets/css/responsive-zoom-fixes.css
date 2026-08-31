@@ -45,42 +45,97 @@
   }
 }
 
-/* 2. Sabbath icon sizing should follow the rail, not the browser's stepped
-   font/rem scale. The rail itself stays one seventh of the visible layout;
-   sizing the mark as a percentage of that rail keeps its apparent size stable
-   while zooming. It only gets smaller if the rail itself genuinely narrows. */
-.l-sabbath__logo,
+/* 2. Keep the Sabbath rail and logo tied to one consistent geometry.
+   Browser zoom fires resize events and crosses ALPS breakpoints, so viewport,
+   parent and JavaScript-calculated pixel widths must not be mixed here. */
+
+/* A reserved root scrollbar gutter is painted with the page background. At
+   high zoom its physical width becomes a conspicuous white strip beside the
+   rail, so let the browser place the scrollbar at the viewport edge normally. */
+html {
+  scrollbar-gutter: auto !important;
+}
+
+.l-wrap {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: clip;
+}
+
+.l-wrap__content {
+  flex: 1 1 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+}
+
+/* The content takes the available space and the rail takes exactly the final
+   seventh of the same flex row. Its right edge is therefore the row's edge. */
+.l-wrap__sabbath.l-sabbath {
+  flex: 0 0 calc(100% / 7) !important;
+  width: calc(100% / 7) !important;
+  min-width: 0 !important;
+  max-width: calc(100% / 7) !important;
+  margin: 0 !important;
+  overflow: clip !important;
+}
+
+/* Below 701px ALPS changes this pseudo-element from fixed to absolute.
+   Absolute percentages are relative to the rail, while fixed percentages are
+   relative to the viewport, so each mode needs its corresponding full width. */
+.l-sabbath.u-background-image--sabbath::after {
+  right: 0 !important;
+  left: auto !important;
+  width: 100% !important;
+}
+
+@media (min-width: 701px) {
+  .l-sabbath.u-background-image--sabbath::after {
+    width: calc(100vw / 7) !important;
+  }
+}
+
+/* The JS sticky helper stores pixel left/width values and recalculates them on
+   browser zoom. The logo no longer opts into that helper; native sticky keeps
+   it in its ALPS top position without horizontal jumps. */
+.l-sabbath__logo {
+  position: sticky !important;
+  top: 0;
+  left: auto !important;
+  right: auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 1.05vw 0 0 !important;
+  box-sizing: border-box !important;
+  z-index: 2;
+}
+
+/* Size the mark from the real rail width. Percentages retain the same visible
+   proportion when browser zoom changes but the rail remains one seventh. */
 .l-sabbath__logo--inner,
-.l-sabbath .js-sticky,
-.l-sabbath .js-sticky.sticky-is-active {
+.l-sabbath__logo > img.style-svg {
+  display: block !important;
+  width: 58% !important;
+  min-width: 0 !important;
+  max-width: 58% !important;
+  height: auto !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
   box-sizing: border-box !important;
 }
 
 .l-sabbath__logo--inner {
-  width: 58% !important;
-  max-width: 58% !important;
-  min-width: 0 !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
+  position: relative;
+  transition: opacity .25s ease !important;
 }
 
 .l-sabbath__logo--inner > div,
 .l-sabbath__logo--inner svg,
-.l-sabbath__logo--inner img,
-.l-sabbath__logo > svg,
-.l-sabbath__logo > img {
+.l-sabbath__logo--inner img {
   width: 100% !important;
   max-width: 100% !important;
   height: auto !important;
-}
-
-/* When a custom image is used directly as the Sabbath mark, give it the same
-   rail-relative sizing as the inline Adventist logo. */
-.l-sabbath__logo > img.style-svg {
-  width: 58% !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  display: block !important;
 }
 
 /* 3. Keep the desktop article/sidebar split on normal wide screens.

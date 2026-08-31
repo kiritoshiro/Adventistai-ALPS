@@ -19,12 +19,12 @@
       }
     </style>
     @if (!empty($sabbath_icon))
-      <div class="l-sabbath__logo u-path-fill--white js-sticky">
+      <div class="l-sabbath__logo u-path-fill--white">
         <img class="style-svg" src="{{ wp_get_attachment_url($sabbath_icon) }}" alt="{{ get_post_meta($sabbath_icon, '_wp_attachment_image_alt', true) }}">
       </div>
     @endif
   @else
-    <div class="l-sabbath__logo js-sticky">
+    <div class="l-sabbath__logo">
       <div class="l-sabbath__logo--inner @if (!empty($sabbath_icon_class)){{ $sabbath_icon_class }}@endif">
         <div class="l-sabbath__logo-light u-path-fill--white">
           @if (!empty($sabbath_icon))
