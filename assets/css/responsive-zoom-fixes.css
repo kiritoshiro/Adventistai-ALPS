@@ -36,6 +36,15 @@
   overflow-wrap: anywhere;
 }
 
+/* ALPS positions the legal/address block absolutely on desktop. Make the
+   centred footer measure its containing block, otherwise the address is
+   positioned against the full-width footer and sits on the viewport edge. */
+@media (min-width: 901px) {
+  .l-wrap .c-footer--inner {
+    position: relative !important;
+  }
+}
+
 /* 2. Sabbath icon sizing should follow the rail, not the browser's stepped
    font/rem scale. The rail itself stays one seventh of the visible layout;
    sizing the mark as a percentage of that rail keeps its apparent size stable
