@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1913e01420a4352eddb2e25b8dc4f7bb",
+    "content-hash": "a6c718fcb3f0c3e9707d58c5a41a858d",
     "packages": [
         {
             "name": "brick/math",
@@ -442,16 +442,16 @@
         },
         {
             "name": "htmlburger/carbon-fields",
-            "version": "v3.6.5",
+            "version": "v3.6.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/htmlburger/carbon-fields.git",
-                "reference": "b18f8e2a2cc4cc976306eb867ad1d740a8e7c1d9"
+                "reference": "d040371b5dbdc874aeef8f517045a0e82cedea8c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/htmlburger/carbon-fields/zipball/b18f8e2a2cc4cc976306eb867ad1d740a8e7c1d9",
-                "reference": "b18f8e2a2cc4cc976306eb867ad1d740a8e7c1d9",
+                "url": "https://api.github.com/repos/htmlburger/carbon-fields/zipball/d040371b5dbdc874aeef8f517045a0e82cedea8c",
+                "reference": "d040371b5dbdc874aeef8f517045a0e82cedea8c",
                 "shasum": ""
             },
             "require": {
@@ -578,7 +578,7 @@
                 "issues": "https://github.com/htmlburger/carbon-fields/issues",
                 "source": "https://github.com/htmlburger/carbon-fields"
             },
-            "time": "2024-07-31T08:17:38+00:00"
+            "time": "2026-08-27T06:31:08+00:00"
         },
         {
             "name": "illuminate/bus",
