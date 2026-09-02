@@ -50,10 +50,12 @@
       UTIL.fire('common');
 
       // Fire page-specific init JS, and then finalize JS
-      $.each(document.body.className.replace(/-/g, '_').split(/\s+/), function(i, classnm) {
-        UTIL.fire(classnm);
-        UTIL.fire(classnm, 'finalize');
-      });
+      if (document.body) {
+        $.each(document.body.className.replace(/-/g, '_').split(/\s+/), function(i, classnm) {
+          UTIL.fire(classnm);
+          UTIL.fire(classnm, 'finalize');
+        });
+      }
 
       // Fire common finalize JS
       UTIL.fire('common', 'finalize');
