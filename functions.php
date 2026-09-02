@@ -49,6 +49,15 @@ if (! file_exists($composer = __DIR__ . '/vendor/autoload.php')) {
 
 require $composer;
 
+/**
+ * Carbon Fields normally serves its editor assets from Composer's vendor
+ * directory. The server blocks public /vendor/ URLs, so use the browser assets
+ * copied into the public theme directory by the release workflow.
+ */
+if (! defined('Carbon_Fields\\URL')) {
+    define('Carbon_Fields\\URL', get_template_directory_uri() . '/public/carbon-fields');
+}
+
 require_once __DIR__ . '/vendor/htmlburger/carbon-fields/core/functions.php';
 require_once __DIR__ . '/app/carbon-fields/_init.php';
 require_once __DIR__ . '/defaults-themes.php';

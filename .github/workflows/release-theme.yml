@@ -48,6 +48,14 @@ jobs:
         if: steps.existing.outputs.released != 'true'
         run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
 
+      - name: Publish Carbon Fields browser assets
+        if: steps.existing.outputs.released != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/carbon-fields
+          cp -R vendor/htmlburger/carbon-fields/build public/carbon-fields/
+
       - name: Check PHP syntax
         if: steps.existing.outputs.released != 'true'
         shell: bash
