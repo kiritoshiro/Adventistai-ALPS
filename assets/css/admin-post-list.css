@@ -1,0 +1,35 @@
+/* Keep WordPress post-list titles readable while browser zoom narrows the
+ * effective viewport but core still uses its desktop table layout. */
+@media screen and (min-width: 783px) and (max-width: 1280px) {
+  /* Retain the useful primary information. Secondary and plugin-added columns
+   * return automatically above this range, while WordPress handles <= 782px. */
+  .wp-list-table.posts thead tr > th:not(.check-column):not(.column-primary):not(.column-title):not(.column-date),
+  .wp-list-table.posts tfoot tr > th:not(.check-column):not(.column-primary):not(.column-title):not(.column-date),
+  .wp-list-table.posts tbody tr:not(.inline-edit-row):not(.no-items) > th:not(.check-column):not(.column-primary):not(.column-title):not(.column-date),
+  .wp-list-table.posts tbody tr:not(.inline-edit-row):not(.no-items) > td:not(.check-column):not(.column-primary):not(.column-title):not(.column-date) {
+    display: none !important;
+  }
+
+  .wp-list-table.posts .column-title,
+  .wp-list-table.posts .column-primary {
+    width: auto !important;
+    min-width: 16rem;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word;
+    hyphens: none;
+  }
+
+  .wp-list-table.posts .column-date {
+    width: 10rem !important;
+    min-width: 8rem;
+  }
+
+  .wp-list-table.posts .column-title .row-title,
+  .wp-list-table.posts .column-primary .row-title {
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word;
+    hyphens: none;
+  }
+}
