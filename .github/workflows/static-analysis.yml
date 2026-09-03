@@ -1,0 +1,66 @@
+name: Static Analysis
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '47 4 * * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  codeql:
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['javascript-typescript']
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v3
+
+  suspicious-php:
+    name: Suspicious PHP patterns
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Look for risky PHP constructs
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'Scanning application PHP for high-risk constructs...'
+          matches="$(grep -RInE \
+            --include='*.php' \
+            --exclude-dir=vendor \
+            --exclude-dir=node_modules \
+            --exclude-dir=.git \
+            '(eval[[:space:]]*\(|assert[[:space:]]*\(|base64_decode[[:space:]]*\(|gzinflate[[:space:]]*\(|gzuncompress[[:space:]]*\(|shell_exec[[:space:]]*\(|passthru[[:space:]]*\(|proc_open[[:space:]]*\(|popen[[:space:]]*\(|system[[:space:]]*\(|exec[[:space:]]*\()' . || true)"
+
+          if [ -n "$matches" ]; then
+            echo "$matches"
+            echo '::warning::Potentially dangerous PHP constructs found. Review the matches above.'
+            exit 1
+          fi
+
+          echo 'No suspicious PHP constructs found.'
