@@ -1,0 +1,125 @@
+name: Remediate targeted code findings
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event.pull_request.head.ref == 'security/validate-and-remediate' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out remediation branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: security/validate-and-remediate
+
+      - name: Remove GET-driven write and sanitize request context
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('app/carbon-fields/cf-post-options.php')
+          text = path.read_text()
+
+          old = '''function setDefaultHeader() {
+              $default = false;
+              if (!empty($_GET['post'])){
+                  $id = $_GET['post'];
+                  $value = get_post_meta($id,'_featured_image_hero_layout',true);
+                  if ($value == 'hero_layout_1_3' || $value == 'hero_layout_3_3'){
+                      update_post_meta( $id, '_featured_image_hero_layout', 'header-block-featured');
+                      $default = 'header-block-featured';
+                  }
+              }else{
+                  $uri = $_SERVER['REQUEST_URI'];
+                  if (strpos($uri, 'post-new.php')){
+                      $default = 'header-block-featured';
+                  }
+                  if (strpos($uri, 'post_type=page')){
+                      $default = 'page-header';
+                  }
+              }
+              return $default;
+          }
+
+          function setDefaultRelatedImageCrop() {
+              $default = 'square';
+              if (!empty($_GET['post'])){
+                  $id = $_GET['post'];
+                  $grid = get_post_meta($id,'_related_grid',true);
+                  $oldCircle = get_post_meta($id,'_related_image_round',true);
+                  if (!empty($oldCircle)){
+                      $default = 'circle';
+                  }
+                  if (!empty($grid)){
+                      $default = 'landscape';
+                  }
+              }
+              return $default;
+          }
+          '''
+
+          new = '''function setDefaultHeader() {
+              $default = false;
+              $post_id = isset($_GET['post']) ? absint(wp_unslash($_GET['post'])) : 0;
+
+              if ($post_id > 0) {
+                  $value = get_post_meta($post_id, '_featured_image_hero_layout', true);
+                  if (in_array($value, array('hero_layout_1_3', 'hero_layout_3_3'), true)) {
+                      // Preserve the legacy display default without mutating post meta from a GET request.
+                      $default = 'header-block-featured';
+                  }
+              } else {
+                  $uri = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
+                  if (strpos($uri, 'post-new.php') !== false) {
+                      $default = 'header-block-featured';
+                  }
+                  if (strpos($uri, 'post_type=page') !== false) {
+                      $default = 'page-header';
+                  }
+              }
+
+              return $default;
+          }
+
+          function setDefaultRelatedImageCrop() {
+              $default = 'square';
+              $post_id = isset($_GET['post']) ? absint(wp_unslash($_GET['post'])) : 0;
+
+              if ($post_id > 0) {
+                  $grid = get_post_meta($post_id, '_related_grid', true);
+                  $oldCircle = get_post_meta($post_id, '_related_image_round', true);
+                  if (!empty($oldCircle)) {
+                      $default = 'circle';
+                  }
+                  if (!empty($grid)) {
+                      $default = 'landscape';
+                  }
+              }
+
+              return $default;
+          }
+          '''
+
+          if old in text:
+              path.write_text(text.replace(old, new, 1))
+          elif new not in text:
+              raise SystemExit('Expected cf-post-options.php block was not found; refusing an unsafe fuzzy edit.')
+
+      - name: Commit targeted code remediation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add app/carbon-fields/cf-post-options.php
+          if git diff --cached --quiet; then
+            echo 'Targeted remediation already applied.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'security: sanitize Carbon Fields request handling'
+          git push origin HEAD:security/validate-and-remediate
