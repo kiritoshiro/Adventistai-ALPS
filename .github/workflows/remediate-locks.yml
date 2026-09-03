@@ -1,15 +1,15 @@
 name: Remediate dependency locks
 
 on:
-  push:
-    branches: [security/validate-and-remediate]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: write
 
 jobs:
   update-locks:
-    if: github.actor != 'github-actions[bot]'
+    if: github.event.pull_request.head.ref == 'security/validate-and-remediate' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Check out remediation branch
@@ -36,7 +36,10 @@ jobs:
           node-version: '24'
           cache: npm
 
-      - name: Apply non-breaking npm security fixes
+      - name: Refresh npm lockfile from patched constraints
+        run: npm install --package-lock-only
+
+      - name: Apply remaining non-breaking npm security fixes
         run: npm audit fix --package-lock-only
 
       - name: Verify high/critical production npm advisories are resolved
