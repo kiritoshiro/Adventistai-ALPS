@@ -156,6 +156,77 @@ add_action('after_setup_theme', function () {
 }, 20);
 
 /**
+ * Ensure the built-in search and drawer controls are editable as part of the
+ * Secondary Navigation menu. This migration runs once for existing installs;
+ * afterwards administrators can rename, reorder, or remove the items normally.
+ */
+add_action('init', function () {
+    $migration_version = '1';
+
+    if (get_option('adventistai_secondary_navigation_actions_version') === $migration_version) {
+        return;
+    }
+
+    $locations = get_nav_menu_locations();
+    if (empty($locations['secondary_navigation'])) {
+        return;
+    }
+
+    $menu = wp_get_nav_menu_object($locations['secondary_navigation']);
+    if (!$menu) {
+        return;
+    }
+
+    $items = wp_get_nav_menu_items($menu->term_id);
+    $items = is_array($items) ? $items : [];
+    $actions = [
+        'search' => [
+            'title' => __('Search', 'alps'),
+            'class' => 'alps-search-toggle',
+        ],
+        'menu' => [
+            'title' => __('Menu', 'alps'),
+            'class' => 'alps-menu-toggle',
+        ],
+    ];
+    $synced = true;
+
+    foreach ($actions as $fragment => $action) {
+        $already_present = false;
+
+        foreach ($items as $item) {
+            $classes = array_filter((array) $item->classes);
+            $item_fragment = strtolower((string) wp_parse_url($item->url, PHP_URL_FRAGMENT));
+
+            if ($item_fragment === $fragment || in_array($action['class'], $classes, true)) {
+                $already_present = true;
+                break;
+            }
+        }
+
+        if ($already_present) {
+            continue;
+        }
+
+        $result = wp_update_nav_menu_item($menu->term_id, 0, [
+            'menu-item-title' => $action['title'],
+            'menu-item-url' => '#' . $fragment,
+            'menu-item-classes' => $action['class'],
+            'menu-item-type' => 'custom',
+            'menu-item-status' => 'publish',
+        ]);
+
+        if (is_wp_error($result)) {
+            $synced = false;
+        }
+    }
+
+    if ($synced) {
+        update_option('adventistai_secondary_navigation_actions_version', $migration_version, false);
+    }
+}, 20);
+
+/**
  * Register the theme sidebars.
  *
  * @return void

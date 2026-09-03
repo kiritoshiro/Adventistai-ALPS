@@ -3,7 +3,7 @@
     @if (has_nav_menu('secondary_navigation') or apply_filters('wpml_active_languages', NULL, 'skip_missing=0'))
       @if (apply_filters('wpml_active_languages', NULL, 'skip_missing=0') && !get_alps_option('project_alps_languages_hide_selector'))
         @php $languages = icl_get_languages('skip_missing=0'); @endphp
-        <li class="c-secondary-nav__list-item c-secondary-nav__list-item__languages has-subnav">
+        <li class="c-secondary-nav__list-item c-secondary-nav__list-item__languages has-subnav is-priority">
           <a href="" class="c-secondary-nav__link u-font--secondary-nav u-color--gray u-theme--link-hover--base"><span class="u-icon u-icon--xs u-path-fill--gray">@include('patterns.00-atoms.icons.icon-language')</span>Languages</a>
           <span class="c-subnav__arrow o-arrow--down u-path-fill--gray"></span>
           <ul class="c-secondary-nav__subnav c-subnav">
@@ -33,17 +33,31 @@
           @php
             $link_url = $nav->url;
             $link_text = $nav->title;
-            $link_classes = ($nav->classes ? ' ' . implode(' ', $nav->classes) : '');
+            $nav_classes = array_values(array_filter((array) $nav->classes));
+            $link_classes = ($nav_classes ? ' ' . implode(' ', $nav_classes) : '');
             $link_target = ($nav->target ? ' target="'. $nav->target . '"' : '');
             $link_title = ($nav->attr_title ? ' title="'. $nav->attr_title . '"' : '');
             $link_description = ($nav->description ? ' description="' . $nav->description . '"' : '');
             $link_rel = ($nav->xfn ? ' rel="'. $nav->xfn . '"' : '');
+            $nav_fragment = strtolower((string) wp_parse_url($link_url, PHP_URL_FRAGMENT));
+            $is_search_toggle = in_array('alps-search-toggle', $nav_classes, true) || $nav_fragment === 'search';
+            $is_menu_toggle = in_array('alps-menu-toggle', $nav_classes, true) || $nav_fragment === 'menu';
+            $toggle_classes = $is_search_toggle
+              ? ' js-toggle-menu js-toggle-search'
+              : ($is_menu_toggle ? ' js-toggle-menu' : '');
             $show_subnav = '';
             $has_subnav = array_search($nav->ID, array_column($nav_items, 'menu_item_parent'));
             if ($has_subnav) $show_subnav = ' has-subnav';
           @endphp
-          <li class="c-secondary-nav__list-item{{ $show_subnav }}">
-            <a href="{{ $link_url }}" class="c-secondary-nav__link u-font--secondary-nav u-color--gray u-theme--link-hover--base{{ $link_classes }}"{!! $link_target !!}{!! $link_title !!}{!! $link_description !!}{!! $link_rel !!}>{!! $link_text !!}</a>
+          <li class="c-secondary-nav__list-item{{ $show_subnav }}{{ $toggle_classes }} is-priority">
+            <a href="{{ $link_url }}" class="c-secondary-nav__link u-font--secondary-nav u-color--gray u-theme--link-hover--base{{ $link_classes }}"{!! $link_target !!}{!! $link_title !!}{!! $link_description !!}{!! $link_rel !!}>
+              @if ($is_search_toggle)
+                <span class="u-icon u-icon--xs u-path-fill--gray">@include('patterns.00-atoms.icons.icon-search')</span>
+              @elseif ($is_menu_toggle)
+                <span class="u-icon u-icon--xs u-path-fill--gray">@include('patterns.00-atoms.icons.icon-menu')</span>
+              @endif
+              {!! $link_text !!}
+            </a>
             @if ($has_subnav)
               @php
                 $parentID = $nav->ID;
@@ -71,15 +85,5 @@
         @endforeach
       @endif
     @endif
-    <li class="c-secondary-nav__list-item c-secondary-nav__list-item__toggle js-toggle-menu js-toggle-search is-priority">
-      <a href="#" class="c-secondary-nav__link u-font--secondary-nav u-color--gray u-theme--link-hover--base">
-        <span class="u-icon u-icon--xs u-path-fill--gray">@include('patterns.00-atoms.icons.icon-search')</span>{{__('Search', 'alps') }}
-      </a>
-    </li>
-    <li class="c-secondary-nav__list-item c-secondary-nav__list-item__toggle js-toggle-menu is-priority">
-      <a href="#" class="c-secondary-nav__link u-font--secondary-nav u-color--gray u-theme--link-hover--base">
-        <span class="u-icon u-icon--xs u-path-fill--gray">@include('patterns.00-atoms.icons.icon-menu')</span>{{ __('Menu', 'alps') }}
-      </a>
-    </li>
   </ul> <!-- /.c-secondary-nav__list -->
 </nav> <!-- /.c-secondary-nav -->
