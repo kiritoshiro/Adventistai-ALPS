@@ -1,5 +1,6 @@
 name: WordPress Quality & Security
 
+# Validation branch marker: exercise all pull-request security checks before remediation.
 on:
   push:
     branches: [main]
