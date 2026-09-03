@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ruleset name="Adventistai ALPS WordPress Security">
-    <description>Security-focused WordPress Coding Standards checks for the theme.</description>
+    <description>Security-focused WordPress Coding Standards checks for maintained theme code.</description>
 
     <file>app</file>
     <file>functions.php</file>
@@ -12,16 +12,11 @@
     <exclude-pattern>*/vendor/*</exclude-pattern>
     <exclude-pattern>*/node_modules/*</exclude-pattern>
     <exclude-pattern>*/resources/views/*</exclude-pattern>
+    <!-- Bundled upstream TGM Plugin Activation library; do not fork vendor code for local style/security rewrites. -->
+    <exclude-pattern>*/app/plugin-activation.php</exclude-pattern>
 
-    <!-- Input validation, sanitization, escaping, nonce checks and safe redirects. -->
     <rule ref="WordPress.Security"/>
-
-    <!-- SQL must use placeholders/preparation where dynamic data is involved. -->
     <rule ref="WordPress.DB.PreparedSQL"/>
-
-    <!-- Catch risky database helpers/functions. -->
     <rule ref="WordPress.DB.RestrictedFunctions"/>
-
-    <!-- Security-relevant discouraged PHP functions without enforcing WP formatting. -->
     <rule ref="WordPress.PHP.DiscouragedPHPFunctions"/>
 </ruleset>
