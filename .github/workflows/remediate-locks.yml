@@ -39,11 +39,11 @@ jobs:
       - name: Refresh npm lockfile from patched constraints
         run: npm install --package-lock-only
 
-      - name: Apply remaining non-breaking npm security fixes
-        run: npm audit fix --package-lock-only
+      - name: Apply available non-breaking npm security fixes
+        run: npm audit fix --package-lock-only || true
 
-      - name: Verify high/critical production npm advisories are resolved
-        run: npm audit --omit=dev --audit-level=high
+      - name: Verify production npm dependency set is clean
+        run: npm audit --omit=dev --audit-level=low
 
       - name: Verify reproducible installs and build
         run: |
