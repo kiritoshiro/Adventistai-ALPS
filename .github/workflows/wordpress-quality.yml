@@ -1,0 +1,114 @@
+name: WordPress Quality & Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '17 5 * * 3'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wordpress-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  wordpress-security:
+    name: WordPress security sniffs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install theme dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Install isolated WordPress QA tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .qa-tools
+          composer --working-dir=.qa-tools init --no-interaction --name=adventistai/qa-tools
+          composer --working-dir=.qa-tools config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer --working-dir=.qa-tools require --dev --no-interaction --no-progress \
+            'squizlabs/php_codesniffer:^3.13.6' \
+            'wp-coding-standards/wpcs:^3.4.1' \
+            'dealerdirect/phpcodesniffer-composer-installer:^1.1'
+
+      - name: Run blocking WordPress security checks
+        run: .qa-tools/vendor/bin/phpcs --standard=phpcs-security.xml.dist
+
+      - name: Run broader WordPress standards report
+        continue-on-error: true
+        run: .qa-tools/vendor/bin/phpcs -p app functions.php index.php --extensions=php --standard=WordPress-Extra
+
+  php-compatibility:
+    name: PHP 8.1–8.4 compatibility
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install isolated PHP compatibility tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .compat-tools
+          composer --working-dir=.compat-tools init --no-interaction --name=adventistai/compat-tools
+          composer --working-dir=.compat-tools config minimum-stability dev
+          composer --working-dir=.compat-tools config prefer-stable true
+          composer --working-dir=.compat-tools config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer --working-dir=.compat-tools require --dev --no-interaction --no-progress \
+            'squizlabs/php_codesniffer:^3.13.6' \
+            'phpcompatibility/phpcompatibility-wp:^3.0@dev' \
+            'dealerdirect/phpcodesniffer-composer-installer:^1.1'
+
+      - name: Check PHP compatibility
+        run: .compat-tools/vendor/bin/phpcs -p app functions.php index.php --extensions=php --standard=PHPCompatibilityWP --runtime-set testVersion 8.1-8.4
+
+  phpstan:
+    name: PHP static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install theme dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Install PHPStan and WordPress stubs
+        run: composer require --dev --no-interaction --no-progress phpstan/phpstan szepeviktor/phpstan-wordpress --with-all-dependencies
+
+      - name: Analyze application PHP
+        continue-on-error: true
+        run: vendor/bin/phpstan analyse app --level=5 --no-progress --memory-limit=1G
