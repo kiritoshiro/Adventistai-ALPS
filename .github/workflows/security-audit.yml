@@ -16,12 +16,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  dependencies:
-    name: Dependency vulnerabilities
+  composer:
+    name: Composer vulnerability audit
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -33,25 +33,35 @@ jobs:
       - name: Audit Composer dependencies
         run: composer audit --locked --no-interaction
 
+  npm:
+    name: npm vulnerability audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
           cache: npm
 
       - name: Audit npm production dependencies
         run: npm audit --omit=dev --audit-level=high
+
+      - name: Audit complete npm dependency graph
+        run: npm audit --audit-level=high
 
   secrets:
     name: Secret leak scan
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository with history
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Scan repository for leaked secrets
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
