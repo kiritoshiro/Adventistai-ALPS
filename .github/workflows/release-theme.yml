@@ -16,6 +16,26 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
 
+      - name: Enforce MEC plugin isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          forbidden_paths=(
+            "webnus/modern-events-calendar"
+            "webnus/modern-events-calendar-lite"
+            "single-mec-events.php"
+            "archive-mec-events.php"
+            "taxonomy-mec-category.php"
+            "header-mec.php"
+            "footer-mec.php"
+          )
+          for path in "${forbidden_paths[@]}"; do
+            if [ -e "$path" ]; then
+              echo "::error file=$path::MEC must remain plugin-owned; remove this theme override."
+              exit 1
+            fi
+          done
+
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -74,6 +94,13 @@ jobs:
             --exclude='.github/' \
             --exclude='/build/' \
             --exclude='/vendor/htmlburger/carbon-fields/build/' \
+            --exclude='/webnus/modern-events-calendar/' \
+            --exclude='/webnus/modern-events-calendar-lite/' \
+            --exclude='/single-mec-events.php' \
+            --exclude='/archive-mec-events.php' \
+            --exclude='/taxonomy-mec-category.php' \
+            --exclude='/header-mec.php' \
+            --exclude='/footer-mec.php' \
             --exclude='dist/' \
             --exclude='node_modules/' \
             --exclude='.env*' \

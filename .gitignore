@@ -9,3 +9,13 @@
 .DS_Store
 .idea/
 .vscode/
+
+# Keep Modern Events Calendar plugin-owned. Theme overrides silently bypass
+# updated plugin templates and assets.
+/webnus/modern-events-calendar/
+/webnus/modern-events-calendar-lite/
+/single-mec-events.php
+/archive-mec-events.php
+/taxonomy-mec-category.php
+/header-mec.php
+/footer-mec.php
