@@ -1,0 +1,62 @@
+name: Remediate dependency locks
+
+on:
+  push:
+    branches: [security/validate-and-remediate]
+
+permissions:
+  contents: write
+
+jobs:
+  update-locks:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out remediation branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: security/validate-and-remediate
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer:v2
+
+      - name: Refresh Composer lock within declared constraints
+        run: composer update --with-all-dependencies --no-interaction --prefer-dist --no-progress
+
+      - name: Verify Composer advisories are resolved
+        run: composer audit --locked --no-interaction
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Apply non-breaking npm security fixes
+        run: npm audit fix --package-lock-only
+
+      - name: Verify high/critical production npm advisories are resolved
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Verify reproducible installs and build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Commit refreshed locks
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add composer.lock package-lock.json
+          if git diff --cached --quiet; then
+            echo 'No lock-file changes needed.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'security: update vulnerable dependency locks'
+          git push origin HEAD:security/validate-and-remediate
