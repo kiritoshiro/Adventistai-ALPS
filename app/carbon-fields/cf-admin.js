@@ -35,19 +35,25 @@ jQuery(function() {
     }
   }
 
+  const editor = document.querySelector('#editor');
+  if (!editor) {
+    return;
+  }
+
   new MutationObserver(function(mutations) {
     let check = checkToggle();
-    if (check) {
+    let sidebar = document.querySelector('.edit-post-sidebar, .interface-interface-skeleton__sidebar');
+    if (check && sidebar) {
       this.disconnect();
       new MutationObserver(function(mutations) {
         checkToggle();
-      }).observe(document.querySelector('.edit-post-sidebar'), {
+      }).observe(sidebar, {
         subtree: true,
         childList: true,
         characterData: true
       });
     }
-  }).observe(document.querySelector('#editor'), {
+  }).observe(editor, {
     subtree: true,
     childList: true,
   });

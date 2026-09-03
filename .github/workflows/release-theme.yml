@@ -53,8 +53,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p public/carbon-fields
+          mkdir -p public/carbon-fields/core/Libraries/Sidebar_Manager
           cp -R vendor/htmlburger/carbon-fields/build public/carbon-fields/
+          cp -R vendor/htmlburger/carbon-fields/core/Libraries/Sidebar_Manager/assets \
+            public/carbon-fields/core/Libraries/Sidebar_Manager/
 
       - name: Check PHP syntax
         if: steps.existing.outputs.released != 'true'
@@ -70,14 +72,22 @@ jobs:
           rsync -a ./ build/adventistai/ \
             --exclude='.git/' \
             --exclude='.github/' \
-            --exclude='build/' \
+            --exclude='/build/' \
+            --exclude='/vendor/htmlburger/carbon-fields/build/' \
             --exclude='dist/' \
             --exclude='node_modules/' \
             --exclude='.env*' \
             --exclude='*.log' \
             --exclude='*~*'
+          test -s build/adventistai/public/carbon-fields/build/classic/core.min.js
+          test -s build/adventistai/public/carbon-fields/build/classic/metaboxes.min.js
+          test -s build/adventistai/public/carbon-fields/build/gutenberg/core.min.js
+          test -s build/adventistai/public/carbon-fields/build/gutenberg/metaboxes.min.js
+          test -s build/adventistai/public/carbon-fields/core/Libraries/Sidebar_Manager/assets/css/app.css
+          test -s build/adventistai/public/carbon-fields/core/Libraries/Sidebar_Manager/assets/js/app.js
           cd build
           zip -qr adventistai.zip adventistai
+          unzip -tq adventistai.zip
 
       - name: Publish GitHub release
         if: steps.existing.outputs.released != 'true'
