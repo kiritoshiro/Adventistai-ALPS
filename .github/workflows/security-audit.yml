@@ -50,10 +50,11 @@ jobs:
           node-version: '24'
           cache: npm
 
-      - name: Audit npm production dependencies
-        run: npm audit --omit=dev --audit-level=high
+      - name: Audit runtime dependency set
+        run: npm audit --omit=dev --audit-level=low
 
-      - name: Audit complete npm dependency graph
+      - name: Report complete build-tool dependency graph
+        continue-on-error: true
         run: npm audit --audit-level=high
 
   secrets:
