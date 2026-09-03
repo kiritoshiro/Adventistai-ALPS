@@ -23,7 +23,9 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -39,11 +41,12 @@ jobs:
   suspicious-php:
     name: Suspicious PHP patterns
     runs-on: ubuntu-latest
-    continue-on-error: true
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Look for risky PHP constructs
         shell: bash
@@ -59,7 +62,7 @@ jobs:
 
           if [ -n "$matches" ]; then
             echo "$matches"
-            echo '::warning::Potentially dangerous PHP constructs found. Review the matches above.'
+            echo '::error::Potentially dangerous PHP constructs found. Review the matches above.'
             exit 1
           fi
 
