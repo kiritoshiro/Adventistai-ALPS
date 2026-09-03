@@ -5,38 +5,42 @@ use Carbon_Fields\Field;
 
 function setDefaultHeader() {
     $default = false;
-    if (!empty($_GET['post'])){
-        $id = $_GET['post'];
-        $value = get_post_meta($id,'_featured_image_hero_layout',true);
-        if ($value == 'hero_layout_1_3' || $value == 'hero_layout_3_3'){
-            update_post_meta( $id, '_featured_image_hero_layout', 'header-block-featured');
+    $post_id = isset($_GET['post']) ? absint(wp_unslash($_GET['post'])) : 0;
+
+    if ($post_id > 0) {
+        $value = get_post_meta($post_id, '_featured_image_hero_layout', true);
+        if (in_array($value, array('hero_layout_1_3', 'hero_layout_3_3'), true)) {
+            // Preserve the legacy display default without mutating post meta from a GET request.
             $default = 'header-block-featured';
         }
-    }else{
-        $uri = $_SERVER['REQUEST_URI'];
-        if (strpos($uri, 'post-new.php')){
+    } else {
+        $uri = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
+        if (strpos($uri, 'post-new.php') !== false) {
             $default = 'header-block-featured';
         }
-        if (strpos($uri, 'post_type=page')){
+        if (strpos($uri, 'post_type=page') !== false) {
             $default = 'page-header';
         }
     }
+
     return $default;
 }
 
 function setDefaultRelatedImageCrop() {
     $default = 'square';
-    if (!empty($_GET['post'])){
-        $id = $_GET['post'];
-        $grid = get_post_meta($id,'_related_grid',true);
-        $oldCircle = get_post_meta($id,'_related_image_round',true);
-        if (!empty($oldCircle)){
+    $post_id = isset($_GET['post']) ? absint(wp_unslash($_GET['post'])) : 0;
+
+    if ($post_id > 0) {
+        $grid = get_post_meta($post_id, '_related_grid', true);
+        $oldCircle = get_post_meta($post_id, '_related_image_round', true);
+        if (!empty($oldCircle)) {
             $default = 'circle';
         }
-        if (!empty($grid)){
+        if (!empty($grid)) {
             $default = 'landscape';
         }
     }
+
     return $default;
 }
 
