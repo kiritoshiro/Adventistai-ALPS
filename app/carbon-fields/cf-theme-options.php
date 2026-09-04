@@ -270,20 +270,24 @@ function crb_attach_theme_options()
 
         // Added to rewrite theme.json file with complete color palette based on selected color theme
 
-        $colors = json_decode(file_get_contents(get_template_directory().'/colors.json',false));
+        $colors = json_decode(file_get_contents(get_template_directory().'/colors.json', false));
         $color = carbon_get_theme_option('theme_color');
-        $themeJSON = get_template_directory().'/theme.json';
-        $file = fopen($themeJSON, "r+");
-        $json = json_decode(fread($file,filesize($themeJSON)));
+        $theme_json_path = get_template_directory().'/theme.json';
+        $theme_json_contents = is_readable($theme_json_path)
+            ? file_get_contents($theme_json_path)
+            : false;
+        $json = $theme_json_contents !== false && $theme_json_contents !== ''
+            ? json_decode($theme_json_contents)
+            : null;
 
         if ($json && !empty($colors)){
             if (!empty($colors->{$color})){
                 $json->settings->color->palette = $colors->{$color};
-                rewind($file);
-                ftruncate($file,0);
-                fwrite($file, json_encode($json,JSON_PRETTY_PRINT));
+                $updated_theme_json = json_encode($json, JSON_PRETTY_PRINT);
+
+                if ($updated_theme_json !== false && $updated_theme_json !== $theme_json_contents) {
+                    file_put_contents($theme_json_path, $updated_theme_json, LOCK_EX);
+                }
             }
         }
-
-        fclose($file);
 }
