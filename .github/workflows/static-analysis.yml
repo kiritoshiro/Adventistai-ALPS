@@ -8,15 +8,16 @@ on:
     - cron: '47 4 * * 2'
   workflow_dispatch:
 
-permissions:
-  actions: read
-  contents: read
-  security-events: write
+permissions: {}
 
 jobs:
   codeql:
     name: CodeQL (${{ matrix.language }})
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     strategy:
       fail-fast: false
       matrix:
@@ -42,6 +43,8 @@ jobs:
   suspicious-php:
     name: Suspicious PHP patterns
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Check out repository
