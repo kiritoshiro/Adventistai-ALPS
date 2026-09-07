@@ -8,14 +8,15 @@ on:
     - cron: '47 4 * * 2'
   workflow_dispatch:
 
-permissions:
-  contents: read
-  security-events: write
+permissions: {}
 
 jobs:
   codeql:
     name: CodeQL (${{ matrix.language }})
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -23,28 +24,41 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@6f5948dfacef28e207b48d0905cf90c03365536d # v3
         with:
           languages: ${{ matrix.language }}
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+        uses: github/codeql-action/autobuild@6f5948dfacef28e207b48d0905cf90c03365536d # v3
 
       - name: Analyze
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@6f5948dfacef28e207b48d0905cf90c03365536d # v3
+        with:
+          upload: false
+          output: results
+
+      - name: Upload CodeQL SARIF report
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: codeql-javascript-typescript-sarif
+          path: results/*.sarif
+          if-no-files-found: error
+          retention-days: 14
 
   suspicious-php:
     name: Suspicious PHP patterns
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
 
@@ -58,7 +72,7 @@ jobs:
             --exclude-dir=vendor \
             --exclude-dir=node_modules \
             --exclude-dir=.git \
-            '(eval[[:space:]]*\(|assert[[:space:]]*\(|base64_decode[[:space:]]*\(|gzinflate[[:space:]]*\(|gzuncompress[[:space:]]*\(|shell_exec[[:space:]]*\(|passthru[[:space:]]*\(|proc_open[[:space:]]*\(|popen[[:space:]]*\(|system[[:space:]]*\(|exec[[:space:]]*\()' . || true)"
+            '(^|[^[:alnum:]_])(eval|assert|base64_decode|gzinflate|gzuncompress|shell_exec|passthru|proc_open|popen|system|exec)[[:space:]]*\(' . || true)"
 
           if [ -n "$matches" ]; then
             echo "$matches"
