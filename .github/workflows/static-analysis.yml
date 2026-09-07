@@ -9,6 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
   security-events: write
 
@@ -58,7 +59,7 @@ jobs:
             --exclude-dir=vendor \
             --exclude-dir=node_modules \
             --exclude-dir=.git \
-            '(eval[[:space:]]*\(|assert[[:space:]]*\(|base64_decode[[:space:]]*\(|gzinflate[[:space:]]*\(|gzuncompress[[:space:]]*\(|shell_exec[[:space:]]*\(|passthru[[:space:]]*\(|proc_open[[:space:]]*\(|popen[[:space:]]*\(|system[[:space:]]*\(|exec[[:space:]]*\()' . || true)"
+            '(^|[^[:alnum:]_])(eval|assert|base64_decode|gzinflate|gzuncompress|shell_exec|passthru|proc_open|popen|system|exec)[[:space:]]*\(' . || true)"
 
           if [ -n "$matches" ]; then
             echo "$matches"
