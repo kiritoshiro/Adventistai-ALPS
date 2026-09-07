@@ -43,9 +43,7 @@
     "yaml": "^2.7.0"
   },
   "dependencies": {
-    "@actions/core": "^1.11.1",
     "@wordpress/browserslist-config": "^6.15.0",
-    "aws-sdk": "^2.1692.0",
     "dotenv": "^16.4.7"
   },
   "overrides": {
