@@ -40,13 +40,13 @@ jobs:
         uses: github/codeql-action/analyze@6f5948dfacef28e207b48d0905cf90c03365536d # v3
         with:
           upload: false
-          output: ../results
+          output: results
 
       - name: Upload CodeQL SARIF report
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: codeql-javascript-typescript-sarif
-          path: ../results/*.sarif
+          path: results/*.sarif
           if-no-files-found: error
           retention-days: 14
 
