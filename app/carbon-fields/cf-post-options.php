@@ -5,19 +5,19 @@ use Carbon_Fields\Field;
 
 function setDefaultHeader() {
     $default = false;
-    if (!empty($_GET['post'])){
-        $id = $_GET['post'];
-        $value = get_post_meta($id,'_featured_image_hero_layout',true);
-        if ($value == 'hero_layout_1_3' || $value == 'hero_layout_3_3'){
-            update_post_meta( $id, '_featured_image_hero_layout', 'header-block-featured');
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin context used to determine a field default.
+    $id = isset($_GET['post']) ? absint(wp_unslash($_GET['post'])) : 0;
+    if ($id) {
+        $value = get_post_meta($id, '_featured_image_hero_layout', true);
+        if ($value == 'hero_layout_1_3' || $value == 'hero_layout_3_3') {
             $default = 'header-block-featured';
         }
-    }else{
-        $uri = $_SERVER['REQUEST_URI'];
-        if (strpos($uri, 'post-new.php')){
+    } else {
+        $uri = isset($_SERVER['REQUEST_URI']) ? esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])) : '';
+        if (strpos($uri, 'post-new.php')) {
             $default = 'header-block-featured';
         }
-        if (strpos($uri, 'post_type=page')){
+        if (strpos($uri, 'post_type=page')) {
             $default = 'page-header';
         }
     }
@@ -26,14 +26,15 @@ function setDefaultHeader() {
 
 function setDefaultRelatedImageCrop() {
     $default = 'square';
-    if (!empty($_GET['post'])){
-        $id = $_GET['post'];
-        $grid = get_post_meta($id,'_related_grid',true);
-        $oldCircle = get_post_meta($id,'_related_image_round',true);
-        if (!empty($oldCircle)){
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin context used to determine a field default.
+    $id = isset($_GET['post']) ? absint(wp_unslash($_GET['post'])) : 0;
+    if ($id) {
+        $grid = get_post_meta($id, '_related_grid', true);
+        $oldCircle = get_post_meta($id, '_related_image_round', true);
+        if (!empty($oldCircle)) {
             $default = 'circle';
         }
-        if (!empty($grid)){
+        if (!empty($grid)) {
             $default = 'landscape';
         }
     }
