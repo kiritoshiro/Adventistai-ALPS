@@ -4,7 +4,7 @@
 
     $post_type = get_post_type($post->ID);
     $category = get_the_category();
-    $category_slug = $category[0]->slug;
+    $category_slug = !empty($category) ? $category[0]->slug : '';
     if ($category) {
         if (class_exists('WPSEO_Primary_Term')) {
             $wpseo_primary_term = new WPSEO_Primary_Term('category', get_the_id());
@@ -32,8 +32,8 @@
 ?>
 
 <div class="c-block-wrap u-spacing <?php if ($layout_grid == true): echo 'u-space--right--negative'; endif; ?>">
-    <div class="c-block__heading u-theme--border-color--darker"">
-        <h3 class="c-block__heading-title u-theme--color--darker"><?php echo $title; ?></h3>
+    <div class="c-block__heading u-theme--border-color--darker">
+        <h3 class="c-block__heading-title u-theme--color--darker"><?php echo esc_html($title); ?></h3>
     </div>
     <div class="c-related-posts__blocks u-spacing">
         <?php if ($related->have_posts()): ?>
@@ -78,7 +78,7 @@
             <?php endwhile; ?>
             <?php wp_reset_postdata() ?>
         <?php else: ?>
-            {{ __('There are no related stories at this time.', 'alps') }}
+            <?php esc_html_e('There are no related stories at this time.', 'alps'); ?>
         <?php endif; ?>
     </div>
 </div>
