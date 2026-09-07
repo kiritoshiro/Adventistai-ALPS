@@ -40,7 +40,9 @@ final class Adventistai_Alps_Release_Manager
             return;
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only status set by this class after the nonce-protected install action.
         $status = isset( $_GET['adventistai_release_status'] ) ? sanitize_key( wp_unslash( $_GET['adventistai_release_status'] ) ) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only version label; output is escaped below.
         $version = isset( $_GET['adventistai_release_version'] ) ? sanitize_text_field( wp_unslash( $_GET['adventistai_release_version'] ) ) : '';
 
         if ( 'success' === $status && $version ) {

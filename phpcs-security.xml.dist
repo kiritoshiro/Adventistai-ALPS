@@ -12,6 +12,8 @@
     <exclude-pattern>*/vendor/*</exclude-pattern>
     <exclude-pattern>*/node_modules/*</exclude-pattern>
     <exclude-pattern>*/resources/views/*</exclude-pattern>
+    <!-- TGM Plugin Activation is a bundled third-party drop-in library. -->
+    <exclude-pattern>*/app/plugin-activation.php</exclude-pattern>
 
     <!-- Input validation, sanitization, escaping, nonce checks and safe redirects. -->
     <rule ref="WordPress.Security"/>
