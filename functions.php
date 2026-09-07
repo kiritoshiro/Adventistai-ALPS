@@ -16,8 +16,14 @@ use Roots\Sage\Container;
 $sage_error = function ($message, $subtitle = '', $title = '') {
     $title = $title ?: __('Sage &rsaquo; Error', 'alps');
     $footer = '<a href="https://roots.io/sage/docs/">roots.io/sage/docs/</a>';
-    $message = "<h1>{$title}<br><small>{$subtitle}</small></h1><p>{$message}</p><p>{$footer}</p>";
-    wp_die($message, $title);
+    $message = sprintf(
+        '<h1>%1$s<br><small>%2$s</small></h1><p>%3$s</p><p>%4$s</p>',
+        esc_html($title),
+        esc_html($subtitle),
+        wp_kses_post($message),
+        wp_kses_post($footer)
+    );
+    wp_die(wp_kses_post($message), esc_html($title));
 };
 
 /**
@@ -44,7 +50,7 @@ array_map(function ($file) use ($sage_error) {
 */
 
 if (! file_exists($composer = __DIR__ . '/vendor/autoload.php')) {
-    wp_die(__('Error locating autoloader. Please run <code>composer install</code>.', 'sage'));
+    wp_die(wp_kses_post(__('Error locating autoloader. Please run <code>composer install</code>.', 'sage')));
 }
 
 require $composer;
@@ -89,11 +95,11 @@ try {
     \Roots\bootloader()->boot();
 } catch (Throwable $e) {
     wp_die(
-        __('You need to install Acorn to use this theme.', 'sage'),
+        esc_html__('You need to install Acorn to use this theme.', 'sage'),
         '',
         [
             'link_url' => 'https://docs.roots.io/acorn/2.x/installation/',
-            'link_text' => __('Acorn Docs: Installation', 'sage'),
+            'link_text' => esc_html__('Acorn Docs: Installation', 'sage'),
         ]
     );
 }
@@ -115,7 +121,7 @@ collect(['setup', 'filters'])
         if (! locate_template($file = "app/{$file}.php", true, true)) {
             wp_die(
                 /* translators: %s is replaced with the relative file path */
-                sprintf(__('Error locating <code>%s</code> for inclusion.', 'sage'), $file)
+                wp_kses_post(sprintf(__('Error locating <code>%s</code> for inclusion.', 'sage'), esc_html($file)))
             );
         }
     });
@@ -204,7 +210,7 @@ add_action('after_switch_theme', 'alps_setup_options');
 function my_update_notice() {
   ?>
     <div class="notice-warning notice is-dismissible">
-      <p><?php _e( 'On theme activation, go to Appearance > Settings and save the settings to display the footer default information.', 'alps' ); ?></p>
+      <p><?php esc_html_e( 'On theme activation, go to Appearance > Settings and save the settings to display the footer default information.', 'alps' ); ?></p>
     </div>
   <?php
 }
@@ -413,15 +419,17 @@ function pagination_nav() {
     echo '<nav class="pagination u-center-block u-text-align--center u-space--double--top">' . "\n";
 
     /** Previous Post Link */
-    if (get_previous_posts_link())
-        printf('%s' . "\n", get_previous_posts_link('<span class="u-icon u-icon--m u-theme--path-fill--dark u-space--half--left"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><title>Left arrow bracket</title><path d="M3.25,6.41l3.5,3.5L8.16,8.5,4.66,5l3.5-3.5L6.75.09l-3.5,3.5L1.84,5Z" fill="#9b9b9b"></path></svg>
+    if (get_previous_posts_link()) {
+        echo wp_kses_post(get_previous_posts_link('<span class="u-icon u-icon--m u-theme--path-fill--dark u-space--half--left"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><title>Left arrow bracket</title><path d="M3.25,6.41l3.5,3.5L8.16,8.5,4.66,5l3.5-3.5L6.75.09l-3.5,3.5L1.84,5Z" fill="#9b9b9b"></path></svg>
 </span>'));
+        echo "\n";
+    }
 
     /** Link to first page, plus ellipses if necessary */
     if (!in_array(1, $links)) {
-        $class = 1 == $paged ? ' class="pagination__page--current u-theme--color--base"' : '';
+        $class = 1 == $paged ? 'pagination__page--current u-theme--color--base' : '';
 
-        printf('<span%s><a class="pagination__page u-padding--quarter u-theme--color--darker u-font-weight--bold" href="%s">%s</a></span>' . "\n", $class, esc_url(get_pagenum_link(1)), '1');
+        printf('<span class="%1$s"><a class="pagination__page u-padding--quarter u-theme--color--darker u-font-weight--bold" href="%2$s">%3$d</a></span>' . "\n", esc_attr($class), esc_url(get_pagenum_link(1)), 1);
 
         if (!in_array(2, $links))
             echo '<span class="pagination__divide">…</span>';
@@ -430,8 +438,8 @@ function pagination_nav() {
     /** Link to current page, plus 2 pages in either direction if necessary */
     sort($links);
     foreach ((array) $links as $link) {
-        $class = $paged == $link ? ' class="pagination__page--current u-theme--color--base"' : '';
-        printf('<span%s><a class="pagination__page u-padding--quarter u-theme--color--darker u-font-weight--bold" href="%s">%s</a></span>' . "\n", $class, esc_url(get_pagenum_link($link)), $link);
+        $class = $paged == $link ? 'pagination__page--current u-theme--color--base' : '';
+        printf('<span class="%1$s"><a class="pagination__page u-padding--quarter u-theme--color--darker u-font-weight--bold" href="%2$s">%3$d</a></span>' . "\n", esc_attr($class), esc_url(get_pagenum_link($link)), absint($link));
     }
 
     /** Link to last page, plus ellipses if necessary */
@@ -439,14 +447,16 @@ function pagination_nav() {
         if (!in_array($max - 1, $links))
             echo '<span class="pagination__divide">…</span>' . "\n";
 
-        $class = $paged == $max ? ' class="pagination__page--current u-theme--color--base"' : '';
-        printf('<span%s><a class="pagination__page u-padding--quarter u-theme--color--darker u-font-weight--bold" href="%s">%s</a></span>' . "\n", $class, esc_url(get_pagenum_link($max)), $max);
+        $class = $paged == $max ? 'pagination__page--current u-theme--color--base' : '';
+        printf('<span class="%1$s"><a class="pagination__page u-padding--quarter u-theme--color--darker u-font-weight--bold" href="%2$s">%3$d</a></span>' . "\n", esc_attr($class), esc_url(get_pagenum_link($max)), absint($max));
     }
 
     /** Next Post Link */
-    if (get_next_posts_link())
-        printf('%s' . "\n", get_next_posts_link('<span class="u-icon u-icon--m u-theme--path-fill--dark u-space--half--right"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><title>Right arrow bracket</title><path d="M6.75,3.59,3.25.09,1.84,1.5,5.34,5,1.84,8.5,3.25,9.91l3.5-3.5L8.16,5Z" fill="#9b9b9b"></path></svg>
+    if (get_next_posts_link()) {
+        echo wp_kses_post(get_next_posts_link('<span class="u-icon u-icon--m u-theme--path-fill--dark u-space--half--right"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><title>Right arrow bracket</title><path d="M6.75,3.59,3.25.09,1.84,1.5,5.34,5,1.84,8.5,3.25,9.91l3.5-3.5L8.16,5Z" fill="#9b9b9b"></path></svg>
 </span>'));
+        echo "\n";
+    }
 
     echo '</nav>' . "\n";
 }
@@ -462,12 +472,12 @@ function wpml_language_menu_items(){
       echo '<ul class="c-secondary-nav__subnav c-subnav">';
         foreach($languages as $language) {
           echo '<li class="c-secondary-nav__subnav__list-item c-subnav__list-item u-background-color--gray--light">';
-            echo '<a href="'.icl_disp_language($language['url']).'" class="c-secondary-nav__subnav__link c-subnav__link u-color--gray--dark u-theme--link-hover--base">';
+            printf('<a href="%s" class="c-secondary-nav__subnav__link c-subnav__link u-color--gray--dark u-theme--link-hover--base">', esc_url($language['url']));
               if ($language['country_flag_url']) {
-                echo '<img src="'.$language['country_flag_url'].'" height="12" alt="'.$language['language_code'].'" width="18" class="u-space--half--right" />';
+                printf('<img src="%1$s" height="12" alt="%2$s" width="18" class="u-space--half--right" />', esc_url($language['country_flag_url']), esc_attr($language['language_code']));
               }
-              echo icl_disp_language($language['native_name']);
-              echo icl_disp_language(' (' . $language['translated_name'] . ')');
+              echo esc_html(icl_disp_language($language['native_name']));
+              echo esc_html(icl_disp_language(' (' . $language['translated_name'] . ')'));
             echo '</a>';
           echo '</li>';
         }
