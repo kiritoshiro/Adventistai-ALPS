@@ -74,7 +74,15 @@ Adventistai_Alps_GitHub_Updater::bootstrap();
 
 add_editor_style('/resources/styles/editor.css');
 
-define('ALPS_THEME_VERSION', '3.15.3.8');
+/*
+ * Legacy constants inherited from upstream ALPS, where they fed the ALPS CDN
+ * updater. ALPS_THEME_VERSION tracked the alps-wordpress-v3 package version
+ * (3.15.3.8) rather than the theme's own, and was already adrift from the
+ * theme's 3.19.5 when this fork was imported. Nothing here reads them, but a
+ * child theme or companion plugin still might, so they are kept and derived
+ * from style.css -- the single source of truth for the theme version.
+ */
+define('ALPS_THEME_VERSION', wp_get_theme(get_template())->get('Version'));
 define('ALPS_THEME_NAME', 'alps-gutenberg-blocks');
 
 // Detached from the ALPS CDN updater (local fork - updates are managed manually).
