@@ -38,14 +38,12 @@
     "luxon": "^3.5.0",
     "sass": "^1.83.1",
     "ssh2-sftp-client": "^11.0.0",
-    "webpack": "^5.92.1",
+    "webpack": "^5.110.3",
     "winston": "^3.17.0",
     "yaml": "^2.7.0"
   },
   "dependencies": {
-    "@actions/core": "^1.11.1",
     "@wordpress/browserslist-config": "^6.15.0",
-    "aws-sdk": "^2.1692.0",
     "dotenv": "^16.4.7"
   },
   "overrides": {
@@ -54,6 +52,20 @@
       "undici": "^6.13.0",
       "http-proxy-middleware": "^3.0.5",
       "cookie": "^0.7.0"
-    }
+    },
+    "glob@^10": {
+      "minimatch": "^9.0.9"
+    },
+    "js-yaml@^4": "^4.3.2",
+    "body-parser": "^1.20.6",
+    "browserslist": "^4.28.9",
+    "lodash-es": "^4.17.24",
+    "path-to-regexp": "^0.1.13",
+    "postcss": "^8.5.28",
+    "qs": "^6.16.0",
+    "serialize-javascript": "^7.1.1",
+    "toml": "^4.3.0",
+    "webpack": "^5.110.3",
+    "uuid": "^11.1.1"
   }
 }
