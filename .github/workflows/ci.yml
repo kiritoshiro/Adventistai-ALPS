@@ -73,4 +73,24 @@ jobs:
         run: npm ci
 
       - name: Build production assets
+        env:
+          # Keep the build deterministic: the weekly browserslist data refresh
+          # would otherwise change compiled CSS and break the check below.
+          BUD_BROWSERSLIST_UPDATE: 'false'
         run: npm run build
+
+      # public/ is committed and shipped as-is by release-theme.yml, which never
+      # builds. Stale assets would reach production silently, so fail here instead.
+      - name: Verify committed assets match source
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! git diff --exit-code --stat -- public/; then
+            echo "::error::public/ is out of date. Run 'npm run build' and commit the result."
+            exit 1
+          fi
+          if [ -n "$(git ls-files --others --exclude-standard -- public/)" ]; then
+            git ls-files --others --exclude-standard -- public/
+            echo "::error::Build produced untracked files in public/. Run 'npm run build' and commit the result."
+            exit 1
+          fi
