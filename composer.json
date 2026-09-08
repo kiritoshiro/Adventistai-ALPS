@@ -68,6 +68,5 @@
         "App\\Providers\\ThemeServiceProvider"
       ]
     }
-  },
-  "version": "3.15.3.8"
+  }
 }
