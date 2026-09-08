@@ -17,30 +17,13 @@
     "translate:update": "for filename in ./resources/lang/*.po; do msgmerge -U $filename ./resources/lang/sage.pot; done; rm -f ./resources/lang/*.po~",
     "translate:compile": "yarn translate:mo && yarn translate:js",
     "translate:js": "wp i18n make-json ./resources/lang --pretty-print",
-    "translate:mo": "wp i18n make-mo ./resources/lang ./resources/lang",
-    "wp:theme:build": "node devtools/runner.js theme:build",
-    "wp:theme:draft-release": "node devtools/runner.js theme:draft-release",
-    "wp:theme:manual-release": "node devtools/runner.js theme:manual-release",
-    "project:set-version": "node devtools/runner.js project:set-version",
-    "assets-compile": "node devtools/scripts/styles/compile.js"
+    "translate:mo": "wp i18n make-mo ./resources/lang ./resources/lang"
   },
   "devDependencies": {
-    "@octokit/rest": "^20.1.1",
     "@roots/bud": "^6.24.0",
     "@roots/bud-tailwindcss": "^6.24.0",
     "@roots/sage": "^6.24.0",
-    "archiver": "^7.0.1",
-    "chalk": "^4.1.2",
-    "date-fns": "^4.1.0",
-    "form-data": "^4.0.1",
-    "fs-extra": "^11.2.0",
-    "got": "11.8.6",
-    "luxon": "^3.5.0",
-    "sass": "^1.83.1",
-    "ssh2-sftp-client": "^11.0.0",
-    "webpack": "^5.110.3",
-    "winston": "^3.17.0",
-    "yaml": "^2.7.0"
+    "webpack": "^5.110.3"
   },
   "dependencies": {
     "@wordpress/browserslist-config": "^6.15.0",

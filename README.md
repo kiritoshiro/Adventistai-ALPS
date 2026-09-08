@@ -108,7 +108,6 @@ themes/your-theme-name/   # → Root of your Sage based theme
 │   ├── View/             # → View models
 │   ├── filters.php       # → Theme filters
 │   └── setup.php         # → Theme setup
-├── devtools/             # → Build, release scripts for release theme 
 ├── composer.json         # → Autoloading for `app/` files
 ├── public/               # → Built theme assets (never edit)
 ├── functions.php         # → Theme bootloader
