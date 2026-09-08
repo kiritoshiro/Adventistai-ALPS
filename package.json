@@ -26,7 +26,7 @@
     "webpack": "^5.110.3"
   },
   "dependencies": {
-    "@wordpress/browserslist-config": "^6.15.0"
+    "@wordpress/browserslist-config": "^6.54.0"
   },
   "overrides": {
     "@roots/bud-support": {
