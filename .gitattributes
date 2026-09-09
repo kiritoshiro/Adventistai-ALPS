@@ -1,0 +1,25 @@
+# Normalise line endings so a Windows checkout and a Linux CI checkout hold
+# byte-identical files.
+#
+# bud copies SVGs verbatim into content-hashed filenames, so a single CRLF
+# changes the output name: resources/images/logo.svg built from a CRLF
+# checkout emits logo.669093.svg, from LF it emits logo.2256b0.svg. That
+# mismatch produced the churn in 940c749 and fc0a709, and now fails the
+# committed-asset check in ci.yml.
+* text=auto eol=lf
+
+# Binary files must never be line-ending converted.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.webp  binary
+*.ttf   binary
+*.otf   binary
+*.eot   binary
+*.woff  binary
+*.woff2 binary
+*.pdf   binary
+*.zip   binary
+*.mo    binary
