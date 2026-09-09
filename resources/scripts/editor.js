@@ -1,7 +1,6 @@
 import {domReady} from '@roots/sage/client';
 import {registerBlockStyle, unregisterBlockStyle} from '@wordpress/blocks';
 
-import './customizer';
 import './latest-post-slider-block';
 
 /**
