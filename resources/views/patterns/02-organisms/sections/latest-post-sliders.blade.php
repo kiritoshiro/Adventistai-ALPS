@@ -43,6 +43,7 @@
         }
 
         $interval = min(30, max(2, absint($module['alps_latest_slider_interval'] ?? 5)));
+        $moduleTitle = html_entity_decode($moduleTitle, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $autoplay = !array_key_exists('alps_latest_slider_autoplay', $module)
           || in_array((string) $module['alps_latest_slider_autoplay'], ['1', 'true'], true);
         $sliderId = wp_unique_id('alps-latest-slider-');
@@ -73,7 +74,7 @@
           @foreach ($sliderPosts as $slideIndex => $sliderPost)
             @php
               $postId = $sliderPost->ID;
-              $postTitle = get_the_title($postId);
+              $postTitle = html_entity_decode(get_the_title($postId), ENT_QUOTES | ENT_HTML5, 'UTF-8');
               $postLink = get_permalink($postId);
               $postExcerpt = get_the_excerpt($sliderPost);
 
@@ -82,11 +83,12 @@
               }
 
               $postExcerpt = wp_trim_words(wp_strip_all_tags((string) $postExcerpt), 32, '…');
+              $postExcerpt = html_entity_decode($postExcerpt, ENT_QUOTES | ENT_HTML5, 'UTF-8');
               $thumbnailId = get_post_thumbnail_id($postId);
               $thumbnailAlt = $thumbnailId ? get_post_meta($thumbnailId, '_wp_attachment_image_alt', true) : '';
               $thumbnailAlt = $thumbnailAlt ?: $postTitle;
               $categories = get_the_category($postId);
-              $categoryName = !empty($categories) ? $categories[0]->name : '';
+              $categoryName = !empty($categories) ? html_entity_decode($categories[0]->name, ENT_QUOTES | ENT_HTML5, 'UTF-8') : '';
               $isActive = $slideIndex === 0;
             @endphp
 

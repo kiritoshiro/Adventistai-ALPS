@@ -2,7 +2,7 @@ import {registerBlockType} from '@wordpress/blocks';
 import {InspectorControls, useBlockProps} from '@wordpress/block-editor';
 import {useSelect} from '@wordpress/data';
 import {__} from '@wordpress/i18n';
-import {Fragment} from '@wordpress/element';
+import {Fragment, useRef} from '@wordpress/element';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
   Button,
@@ -160,6 +160,7 @@ const ModuleSettings = ({module, index, categories, records, onChange, onRemove,
 };
 
 const Edit = ({attributes, setAttributes}) => {
+  const draggedModule = useRef(null);
   const modules = (Array.isArray(attributes.modules) && attributes.modules.length
     ? attributes.modules
     : [createModule()]
@@ -198,6 +199,15 @@ const Edit = ({attributes, setAttributes}) => {
     setAttributes({modules: [...modules, createModule()]});
   };
 
+  const moveModule = (from, to) => {
+    if (!Number.isInteger(from) || from < 0 || from >= modules.length || to < 0 || to >= modules.length || from === to) {
+      return;
+    }
+    const reordered = [...modules];
+    reordered.splice(to, 0, reordered.splice(from, 1)[0]);
+    setAttributes({modules: reordered});
+  };
+
   const removeModule = (index) => {
     if (modules.length === 1) {
       return;
@@ -219,6 +229,44 @@ const Edit = ({attributes, setAttributes}) => {
             onChange={(value) => setAttributes({columns: Number(value || 1)})}
           />
         </PanelBody>
+
+        {modules.length > 1 && (
+          <PanelBody title={__('Slankiklių tvarka', 'alps')} initialOpen>
+            <p>{__('Vilkite slankiklį aukštyn arba žemyn, arba naudokite rodykles.', 'alps')}</p>
+            <ol style={{listStyle: 'none', margin: 0, padding: 0}}>
+              {modules.map((module, index) => (
+                <li
+                  key={index}
+                  onDragOver={(event) => {
+                    if (draggedModule.current !== null) event.preventDefault();
+                  }}
+                  onDrop={(event) => {
+                    if (draggedModule.current === null) return;
+                    event.preventDefault();
+                    moveModule(draggedModule.current, index);
+                    draggedModule.current = null;
+                  }}
+                  style={{display: 'flex', alignItems: 'center', borderBottom: '1px solid #ddd', padding: '4px 0'}}
+                >
+                  <span
+                    draggable
+                    onDragStart={(event) => {
+                      draggedModule.current = index;
+                      event.dataTransfer.effectAllowed = 'move';
+                      event.dataTransfer.setData('text/plain', String(index));
+                    }}
+                    onDragEnd={() => { draggedModule.current = null; }}
+                    style={{flex: 1, cursor: 'grab', padding: '8px'}}
+                  >
+                    ⠿ {stripHtml(module.title) || `${__('Slankiklis', 'alps')} ${index + 1}`}
+                  </span>
+                  <Button icon="arrow-up-alt2" label={__('Perkelti aukštyn', 'alps')} disabled={index === 0} onClick={() => moveModule(index, index - 1)} />
+                  <Button icon="arrow-down-alt2" label={__('Perkelti žemyn', 'alps')} disabled={index === modules.length - 1} onClick={() => moveModule(index, index + 1)} />
+                </li>
+              ))}
+            </ol>
+          </PanelBody>
+        )}
 
         {modules.map((module, index) => (
           <ModuleSettings
