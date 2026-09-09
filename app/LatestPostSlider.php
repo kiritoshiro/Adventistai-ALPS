@@ -7,42 +7,6 @@ namespace App;
  */
 class LatestPostSlider
 {
-    public const MODULES_FIELD = 'alps_latest_slider_modules';
-    public const COLUMNS_FIELD = 'alps_latest_slider_columns';
-
-    /**
-     * Return configured slider modules for a page.
-     *
-     * @param int|null $postId Page ID. The queried object is used when omitted.
-     * @return array<int, array<string, mixed>>
-     */
-    public static function modules(?int $postId = null): array
-    {
-        $postId = $postId ?: get_queried_object_id();
-        $modules = function_exists('carbon_get_post_meta')
-            ? carbon_get_post_meta($postId, self::MODULES_FIELD)
-            : [];
-
-        if (! is_array($modules)) {
-            return [];
-        }
-
-        return array_values(array_filter($modules, 'is_array'));
-    }
-
-    /**
-     * Return the configured number of modules per row.
-     */
-    public static function columns(?int $postId = null): int
-    {
-        $postId = $postId ?: get_queried_object_id();
-        $columns = function_exists('carbon_get_post_meta')
-            ? carbon_get_post_meta($postId, self::COLUMNS_FIELD)
-            : 1;
-
-        return min(4, max(1, absint($columns ?: 1)));
-    }
-
     /**
      * Resolve one configured module to published posts/pages.
      *

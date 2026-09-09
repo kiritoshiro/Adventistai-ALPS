@@ -1,7 +1,7 @@
 @php
   $sectionAttributes = $sectionAttributes ?? '';
-  $configuredSliderModules = $configuredSliderModules ?? \App\LatestPostSlider::modules();
-  $sliderColumns = $sliderColumns ?? \App\LatestPostSlider::columns();
+  $configuredSliderModules = $configuredSliderModules ?? [];
+  $sliderColumns = $sliderColumns ?? 1;
   $renderableSliderModules = [];
 
   foreach ($configuredSliderModules as $configuredSliderModule) {
