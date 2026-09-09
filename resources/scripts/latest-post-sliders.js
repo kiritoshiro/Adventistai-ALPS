@@ -16,6 +16,8 @@ const setupLatestPostSlider = (slider) => {
   let activeIndex = 0;
   let timer = null;
   let hovered = false;
+  let gesture = null;
+  let suppressClickUntil = 0;
 
   const setActiveSlide = (nextIndex) => {
     activeIndex = (nextIndex + slides.length) % slides.length;
@@ -45,12 +47,57 @@ const setupLatestPostSlider = (slider) => {
   const start = () => {
     stop();
 
-    if (!autoplay || reduceMotion.matches || document.hidden || hovered || slider.contains(document.activeElement)) {
+    if (!autoplay || reduceMotion.matches || document.hidden || hovered || gesture || slider.contains(document.activeElement)) {
       return;
     }
 
     timer = window.setInterval(() => setActiveSlide(activeIndex + 1), interval);
   };
+
+  const navigate = (direction) => {
+    setActiveSlide(activeIndex + direction);
+    start();
+  };
+
+  slider.querySelector('[data-alps-slider-prev]')?.addEventListener('click', () => navigate(-1));
+  slider.querySelector('[data-alps-slider-next]')?.addEventListener('click', () => navigate(1));
+
+  const viewport = slider.querySelector('[data-alps-slider-viewport]');
+  viewport?.addEventListener('touchstart', (event) => {
+    suppressClickUntil = 0;
+    gesture = event.touches.length === 1
+      ? { x: event.touches[0].clientX, y: event.touches[0].clientY, id: event.touches[0].identifier }
+      : null;
+    stop();
+  }, { passive: true });
+
+  viewport?.addEventListener('touchend', (event) => {
+    const origin = gesture;
+    gesture = null;
+    const touch = Array.from(event.changedTouches).find((item) => item.identifier === origin?.id);
+    if (origin && touch && event.touches.length === 0) {
+      const dx = touch.clientX - origin.x;
+      const dy = touch.clientY - origin.y;
+      if (Math.abs(dx) >= 50 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+        // A swipe on the linked card must not also open the post.
+        suppressClickUntil = Date.now() + 500;
+        navigate(dx < 0 ? 1 : -1);
+      }
+    }
+    start();
+  }, { passive: true });
+
+  viewport?.addEventListener('touchcancel', () => {
+    gesture = null;
+    start();
+  }, { passive: true });
+
+  viewport?.addEventListener('click', (event) => {
+    if (Date.now() < suppressClickUntil) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }, true);
 
   dots.forEach((dot, index) => {
     dot.addEventListener('click', () => {

@@ -108,12 +108,14 @@
             >
               <a class="alps-latest-slider__link" href="{{ esc_url($postLink) }}">
                 @if ($thumbnailId)
-                  {!! get_the_post_thumbnail($postId, 'horiz__16x9--m', [
-                    'class' => 'alps-latest-slider__image',
-                    'alt' => $thumbnailAlt,
-                    'loading' => $isActive ? 'eager' : 'lazy',
-                    'decoding' => 'async',
-                  ]) !!}
+                  <div class="alps-latest-slider__image-frame">
+                    {!! get_the_post_thumbnail($postId, 'full', [
+                      'class' => 'alps-latest-slider__image',
+                      'alt' => $thumbnailAlt,
+                      'loading' => $isActive ? 'eager' : 'lazy',
+                      'decoding' => 'async',
+                    ]) !!}
+                  </div>
                 @endif
 
                 <div class="alps-latest-slider__body">
@@ -156,6 +158,14 @@
                 tabindex="{{ $dotActive ? '0' : '-1' }}"
               ></button>
             @endforeach
+          </div>
+          <div class="alps-latest-slider__navigation">
+            <button type="button" class="alps-latest-slider__arrow" data-alps-slider-prev aria-label="{{ __('Ankstesnis įrašas', 'alps') }}">
+              <span aria-hidden="true">&larr;</span> {{ __('Ankstesnis', 'alps') }}
+            </button>
+            <button type="button" class="alps-latest-slider__arrow" data-alps-slider-next aria-label="{{ __('Kitas įrašas', 'alps') }}">
+              {{ __('Kitas', 'alps') }} <span aria-hidden="true">&rarr;</span>
+            </button>
           </div>
         @endif
       </article>
