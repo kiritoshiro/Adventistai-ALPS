@@ -23,7 +23,6 @@ function setDefaultHeader() {
     }
     return $default;
 }
-
 function setDefaultRelatedImageCrop() {
     $default = 'square';
     // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin context used to determine a field default.
@@ -40,7 +39,6 @@ function setDefaultRelatedImageCrop() {
     }
     return $default;
 }
-
 add_action('carbon_fields_register_fields', 'crb_page_options');
 function crb_page_options()
 {
@@ -82,7 +80,6 @@ function crb_page_options()
 			->set_width(33),
 		]);
 }
-
 add_action('carbon_fields_register_fields', 'crb_attach_header');
 function crb_attach_header()
 {
@@ -763,104 +760,4 @@ function crb_post_feed_archive()
 				]),
 		]);
 }
-
-// LATEST POST SLIDER MODULES --------------------------------------
-add_action('carbon_fields_register_fields', 'crb_latest_post_slider_modules');
-function crb_latest_post_slider_modules()
-{
-	Container
-		::make('post_meta', __('ALPS: Latest Post Slider Modules', 'alps'))
-		->where('post_type', '=', 'page')
-		->add_fields([
-			Field
-				::make('select', 'alps_latest_slider_columns', __('Modules per row', 'alps'))
-				->add_options([
-					'1' => __('1 module', 'alps'),
-					'2' => __('2 modules', 'alps'),
-					'3' => __('3 modules', 'alps'),
-					'4' => __('4 modules', 'alps'),
-				])
-				->set_default_value('1')
-				->set_help_text(__('Choose how many independent sliders appear in one row. On small screens they stack automatically.', 'alps')),
-			Field
-				::make('complex', 'alps_latest_slider_modules', __('Slider modules', 'alps'))
-				->set_help_text(__('Add up to four independently configured sliders. Each slider advances one item at a time.', 'alps'))
-				->set_min(1)
-				->set_max(4)
-				->add_fields([
-					Field
-						::make('text', 'alps_latest_slider_title', __('List name', 'alps'))
-						->set_help_text(__('Optional heading shown above this slider. A source name is used when this is empty.', 'alps')),
-					Field
-						::make('radio', 'alps_latest_slider_source', __('Content source', 'alps'))
-						->add_options([
-							'latest' => __('Latest posts', 'alps'),
-							'category' => __('Posts from a category', 'alps'),
-							'custom' => __('Selected posts or pages', 'alps'),
-						])
-						->set_default_value('latest'),
-					Field
-						::make('association', 'alps_latest_slider_category', __('Category', 'alps'))
-						->set_help_text(__('Select one category. The newest posts in that category will be shown.', 'alps'))
-						->set_types([
-							[
-								'type' => 'term',
-								'taxonomy' => 'category',
-							]
-						])
-						->set_max(1)
-						->set_conditional_logic([
-							[
-								'field' => 'alps_latest_slider_source',
-								'value' => 'category',
-							]
-						]),
-					Field
-						::make('association', 'alps_latest_slider_items', __('Posts or pages', 'alps'))
-						->set_help_text(__('Select the items to show, in the order they should appear.', 'alps'))
-						->set_types([
-							[
-								'type' => 'post',
-								'post_type' => 'post',
-							],
-							[
-								'type' => 'post',
-								'post_type' => 'page',
-							],
-						])
-						->set_max(20)
-						->set_conditional_logic([
-							[
-								'field' => 'alps_latest_slider_source',
-								'value' => 'custom',
-							]
-						]),
-					Field
-						::make('text', 'alps_latest_slider_count', __('Number of latest posts', 'alps'))
-						->set_default_value('5')
-						->set_help_text(__('Use 1–20 posts. This is used for Latest posts and Posts from a category.', 'alps'))
-						->set_width(50)
-						->set_conditional_logic([
-							'relation' => 'OR',
-							[
-								'field' => 'alps_latest_slider_source',
-								'value' => 'latest',
-							],
-							[
-								'field' => 'alps_latest_slider_source',
-								'value' => 'category',
-							],
-						]),
-					Field
-						::make('text', 'alps_latest_slider_interval', __('Seconds between slides', 'alps'))
-						->set_default_value('5')
-						->set_help_text(__('Use 2–30 seconds. The slider pauses while hovered or focused.', 'alps'))
-						->set_width(50),
-					Field
-					::make('checkbox', 'alps_latest_slider_autoplay', __('Automatically advance slides', 'alps'))
-					->set_option_value('true')
-					->set_default_value('true')
-					->set_help_text(__('Visitors can still select any slide using the indicator circles.', 'alps')),
-				])
-		]);
-}
+// End of post option fields.

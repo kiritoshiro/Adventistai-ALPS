@@ -3,6 +3,7 @@ import {registerBlockStyle, unregisterBlockStyle} from '@wordpress/blocks';
 
 import './customizer';
 import './main';
+import './latest-post-slider-block';
 
 /**
  * editor.main

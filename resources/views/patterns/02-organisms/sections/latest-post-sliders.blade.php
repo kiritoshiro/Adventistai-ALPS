@@ -1,7 +1,7 @@
 @php
-  $sliderPostId = get_queried_object_id();
-  $configuredSliderModules = \App\LatestPostSlider::modules($sliderPostId);
-  $sliderColumns = \App\LatestPostSlider::columns($sliderPostId);
+  $sectionAttributes = $sectionAttributes ?? '';
+  $configuredSliderModules = $configuredSliderModules ?? \App\LatestPostSlider::modules();
+  $sliderColumns = $sliderColumns ?? \App\LatestPostSlider::columns();
   $renderableSliderModules = [];
 
   foreach ($configuredSliderModules as $configuredSliderModule) {
@@ -17,11 +17,7 @@
 @endphp
 
 @if (!empty($renderableSliderModules))
-  <section
-    class="alps-latest-sliders u-space--double--top"
-    data-alps-latest-sliders
-    style="--alps-latest-slider-columns: {{ $sliderColumns }};"
-  >
+  <section {!! $sectionAttributes ?: 'class="alps-latest-sliders u-space--double--top" style="--alps-latest-slider-columns: ' . esc_attr($sliderColumns) . ';"' !!} data-alps-latest-sliders>
     @foreach ($renderableSliderModules as $renderableSliderModule)
       @php
         $module = $renderableSliderModule['module'];

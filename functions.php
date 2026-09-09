@@ -70,6 +70,8 @@ require_once __DIR__ . '/defaults-themes.php';
 require_once __DIR__ . '/app/AdventistaiAlpsUpdater.php';
 require_once __DIR__ . '/inc/search/bootstrap.php';
 
+add_action('init', [\App\LatestPostSliderBlock::class, 'register']);
+
 Adventistai_Alps_GitHub_Updater::bootstrap();
 
 add_editor_style('/resources/styles/editor.css');

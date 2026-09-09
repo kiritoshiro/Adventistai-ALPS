@@ -1,11 +1,11 @@
 {
   "app": {
     "js": [
-      "js/runtime.024d80.js",
+      "js/runtime.c79664.js",
       "js/app.0a0bb3.js"
     ],
     "css": [
-      "css/app.01832c.css"
+      "css/app.0a2134.css"
     ],
     "dependencies": [
       "jquery"
@@ -13,15 +13,22 @@
   },
   "editor": {
     "js": [
-      "js/runtime.024d80.js",
-      "js/editor.e8eeab.js"
+      "js/runtime.c79664.js",
+      "js/editor.914530.js"
     ],
     "css": [
-      "css/editor.697d03.css"
+      "css/editor.d6835e.css"
     ],
     "dependencies": [
       "wp-blocks",
-      "jquery"
+      "wp-block-editor",
+      "wp-data",
+      "wp-i18n",
+      "wp-element",
+      "wp-server-side-render",
+      "wp-components",
+      "jquery",
+      "react"
     ]
   }
 }

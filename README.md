@@ -40,11 +40,11 @@ The repository tracks source code and compiled frontend assets. Composer's gener
   * (~~https://alps.adventist.io/v3/?p=pages-news~~) - _deprecated_
   * (https://adventistchurch.github.io/alps/?path=/story/templates-news--no-aside) - new
 
-### Add latest post slider modules
+### Add a latest post slider block
 
-On any page, open the **ALPS: Latest Post Slider Modules** panel in the page editor. Add up to four slider modules and choose how many modules should appear in one row (one to four). Each module can show the latest posts, the latest posts from one category, or manually selected posts and pages. Give each module its own list name, slide interval, and autoplay setting.
+In the block editor, insert **Latest Post Slider** from the Widgets category. Use the block settings to choose one to four slider modules per row. Each module can show the latest posts, the latest posts from one category, or manually selected published posts and pages. Give each module its own list name, slide interval, and autoplay setting.
 
-Each slider displays one item at a time with a featured image, title, excerpt, fade cue, and indicator circles. Sliders pause while hovered or focused, and the layout stacks on small screens.
+Each slider displays one item at a time with a featured image, title, excerpt, fade cue, and indicator circles. Sliders pause while hovered or focused, and the layout stacks on small screens. Because this is a dynamic block, it can be inserted anywhere in posts or pages.
 
 ### Add widgets to sidebar
 

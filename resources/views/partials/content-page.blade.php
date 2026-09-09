@@ -20,7 +20,6 @@
         @php(the_content())
 
         {!! wp_link_pages(['echo' => 0, 'before' => '<nav class="page-nav"><p>' . __('Pages:', 'alps'), 'after' => '</p></nav>']) !!}
-        @include('patterns.02-organisms.sections.latest-post-sliders')
       </div>
     </div>
   </article>
