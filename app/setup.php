@@ -38,21 +38,32 @@ add_action('wp_enqueue_scripts', function () {
 }, 1000);
 
 /**
- * Register the theme assets with the block editor.
+ * Register the theme's editor styles.
  *
- * @return void
- */
-/**
- * Register the theme assets with the block editor.
- * Uses enqueue_block_assets (admin only) so styles are injected
- * into the iframe editor correctly.
+ * Styles go through enqueue_block_assets so WordPress injects them into the
+ * editor iframe. Scripts must not: see below.
  *
  * @return void
  */
 add_action('enqueue_block_assets', function () {
     if (is_admin()) {
-        bundle('editor')->enqueue();
+        bundle('editor')->enqueueCss();
     }
+}, 100);
+
+/**
+ * Register the theme's editor scripts.
+ *
+ * registerBlockType() has to run in the outer editor frame, where the block
+ * registry and inserter live. Since WordPress iframed the canvas in 6.3,
+ * enqueue_block_assets is the wrong hook for that, so block registration is
+ * enqueued here instead and styles are left on the hook that reaches the
+ * iframe. enqueueJs() emits the webpack runtime itself.
+ *
+ * @return void
+ */
+add_action('enqueue_block_editor_assets', function () {
+    bundle('editor')->enqueueJs();
 }, 100);
 
 /**
