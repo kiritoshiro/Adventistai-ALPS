@@ -40,6 +40,12 @@ The repository tracks source code and compiled frontend assets. Composer's gener
   * (~~https://alps.adventist.io/v3/?p=pages-news~~) - _deprecated_
   * (https://adventistchurch.github.io/alps/?path=/story/templates-news--no-aside) - new
 
+### Add latest post slider modules
+
+On any page, open the **ALPS: Latest Post Slider Modules** panel in the page editor. Add up to four slider modules and choose how many modules should appear in one row (one to four). Each module can show the latest posts, the latest posts from one category, or manually selected posts and pages. Give each module its own list name, slide interval, and autoplay setting.
+
+Each slider displays one item at a time with a featured image, title, excerpt, fade cue, and indicator circles. Sliders pause while hovered or focused, and the layout stacks on small screens.
+
 ### Add widgets to sidebar
 
 1. In your WordPress admin panel, navigate to `Appearance->Widgets`

@@ -1,5 +1,6 @@
 import {domReady} from '@roots/sage/client';
 import 'jquery';
+import {initLatestPostSliders} from './latest-post-sliders';
 
 /**
  * app.main
@@ -12,6 +13,7 @@ const main = async (err) => {
 
   // application code
   console.log("TTTT: application code !!!!");
+  initLatestPostSliders();
 };
 
 /**

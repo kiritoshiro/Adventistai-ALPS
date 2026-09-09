@@ -35,6 +35,7 @@
         @if (is_active_sidebar('section-page-bottom'))
           @php dynamic_sidebar('section-page-bottom') @endphp
         @endif
+        @include('patterns.02-organisms.sections.latest-post-sliders')
       </div>
     </div>
   </article>
