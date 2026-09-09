@@ -48,6 +48,7 @@
           || in_array((string) $module['alps_latest_slider_autoplay'], ['1', 'true'], true);
         $sliderId = wp_unique_id('alps-latest-slider-');
         $slideCount = count($sliderPosts);
+        $navigationStyle = ($module['alps_latest_slider_navigation'] ?? '') === 'buttons' ? 'buttons' : 'arrows';
       @endphp
 
       <article
@@ -139,6 +140,7 @@
         </div>
 
         @if ($slideCount > 1)
+          <div class="alps-latest-slider__controls alps-latest-slider__controls--{{ $navigationStyle }}">
           <div
             class="alps-latest-slider__dots"
             data-alps-slider-dots
@@ -161,11 +163,14 @@
           </div>
           <div class="alps-latest-slider__navigation">
             <button type="button" class="alps-latest-slider__arrow" data-alps-slider-prev aria-label="{{ __('Ankstesnis įrašas', 'alps') }}">
-              <span aria-hidden="true">&larr;</span> {{ __('Ankstesnis', 'alps') }}
+              <span aria-hidden="true">&larr;</span>
+              @if ($navigationStyle === 'buttons') {{ __('Ankstesnis', 'alps') }} @endif
             </button>
             <button type="button" class="alps-latest-slider__arrow" data-alps-slider-next aria-label="{{ __('Kitas įrašas', 'alps') }}">
-              {{ __('Kitas', 'alps') }} <span aria-hidden="true">&rarr;</span>
+              @if ($navigationStyle === 'buttons') {{ __('Kitas', 'alps') }} @endif
+              <span aria-hidden="true">&rarr;</span>
             </button>
+          </div>
           </div>
         @endif
       </article>

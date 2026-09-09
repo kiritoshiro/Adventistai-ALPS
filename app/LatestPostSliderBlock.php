@@ -132,6 +132,7 @@ class LatestPostSliderBlock
             'alps_latest_slider_count' => min(20, max(1, absint($module['count'] ?? 5))),
             'alps_latest_slider_interval' => min(30, max(2, absint($module['interval'] ?? 5))),
             'alps_latest_slider_autoplay' => ! empty($module['autoplay']),
+            'alps_latest_slider_navigation' => ($module['navigationStyle'] ?? '') === 'buttons' ? 'buttons' : 'arrows',
         ];
     }
 
@@ -151,6 +152,7 @@ class LatestPostSliderBlock
             'count' => 5,
             'interval' => 5,
             'autoplay' => true,
+            'navigationStyle' => 'arrows',
         ];
     }
 }

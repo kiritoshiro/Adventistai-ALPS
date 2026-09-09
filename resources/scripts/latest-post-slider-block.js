@@ -26,6 +26,7 @@ const createModule = () => ({
   count: 5,
   interval: 5,
   autoplay: true,
+  navigationStyle: 'arrows',
 });
 
 const normalizeModule = (module = {}) => ({
@@ -36,6 +37,7 @@ const normalizeModule = (module = {}) => ({
   count: Number(module.count || 5),
   interval: Number(module.interval || 5),
   autoplay: module.autoplay !== false,
+  navigationStyle: module.navigationStyle === 'buttons' ? 'buttons' : 'arrows',
 });
 
 const stripHtml = (value) => {
@@ -144,6 +146,16 @@ const ModuleSettings = ({module, index, categories, records, onChange, onRemove,
         label={__('Automatically advance slides', 'alps')}
         checked={module.autoplay}
         onChange={(value) => setValue('autoplay', value)}
+      />
+
+      <SelectControl
+        label={__('Navigacijos stilius', 'alps')}
+        value={module.navigationStyle}
+        options={[
+          {label: __('Rodyklės šalia taškų', 'alps'), value: 'arrows'},
+          {label: __('Dideli mygtukai po taškais', 'alps'), value: 'buttons'},
+        ]}
+        onChange={(value) => setValue('navigationStyle', value)}
       />
 
       {canRemove && (
