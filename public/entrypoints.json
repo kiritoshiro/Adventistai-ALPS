@@ -2,7 +2,7 @@
   "app": {
     "js": [
       "js/runtime.c79664.js",
-      "js/app.0a0bb3.js"
+      "js/app.cce23f.js"
     ],
     "css": [
       "css/app.0a2134.css"
@@ -14,7 +14,7 @@
   "editor": {
     "js": [
       "js/runtime.c79664.js",
-      "js/editor.b93cfd.js"
+      "js/editor.38d669.js"
     ],
     "css": [
       "css/editor.d6835e.css"
@@ -27,7 +27,6 @@
       "wp-element",
       "wp-server-side-render",
       "wp-components",
-      "jquery",
       "react"
     ]
   }

@@ -11,8 +11,6 @@ const main = async (err) => {
     console.error(err);
   }
 
-  // application code
-  console.log("TTTT: application code !!!!");
   initLatestPostSliders();
 };
 

@@ -17,13 +17,6 @@ add_action('customize_register', function (\WP_Customize_Manager $wp_customize) 
 });
 
 /**
- * Customizer JS
- */
-add_action('customize_preview_init', function () {
-    wp_enqueue_script('sage/customizer.js', asset_path('scripts/customizer.js'), ['customize-preview'], null, true);
-});
-
-/**
  * Keep post-list titles readable in the intermediate responsive range.
  *
  * WordPress does not switch its list tables to the mobile layout until 782px.
