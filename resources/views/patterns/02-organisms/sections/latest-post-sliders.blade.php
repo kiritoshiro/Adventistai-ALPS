@@ -76,15 +76,21 @@
               $postId = $sliderPost->ID;
               $postTitle = html_entity_decode(get_the_title($postId), ENT_QUOTES | ENT_HTML5, 'UTF-8');
               $postLink = get_permalink($postId);
+              $thumbnailId = get_post_thumbnail_id($postId);
               $postExcerpt = get_the_excerpt($sliderPost);
+
+              // WordPress auto-excerpts are already shortened. For text-only
+              // slides, use the content unless the author wrote an excerpt.
+              if (!$thumbnailId && !has_excerpt($postId)) {
+                $postExcerpt = strip_shortcodes(get_post_field('post_content', $postId));
+              }
 
               if (!$postExcerpt) {
                 $postExcerpt = get_post_field('post_content', $postId);
               }
 
-              $postExcerpt = wp_trim_words(wp_strip_all_tags((string) $postExcerpt), 32, '…');
+              $postExcerpt = wp_trim_words(wp_strip_all_tags((string) $postExcerpt), $thumbnailId ? 80 : 200, '…');
               $postExcerpt = html_entity_decode($postExcerpt, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-              $thumbnailId = get_post_thumbnail_id($postId);
               $thumbnailAlt = $thumbnailId ? get_post_meta($thumbnailId, '_wp_attachment_image_alt', true) : '';
               $thumbnailAlt = $thumbnailAlt ?: $postTitle;
               $categories = get_the_category($postId);
@@ -94,7 +100,7 @@
 
             <article
               id="{{ $sliderId }}-slide-{{ $slideIndex }}"
-              class="alps-latest-slider__slide{{ $isActive ? ' is-active' : '' }}"
+              class="alps-latest-slider__slide{{ !$thumbnailId ? ' alps-latest-slider__slide--no-image' : '' }}{{ $isActive ? ' is-active' : '' }}"
               data-alps-slider-slide
               aria-hidden="{{ $isActive ? 'false' : 'true' }}"
               aria-roledescription="{{ __('skaidrė', 'alps') }}"

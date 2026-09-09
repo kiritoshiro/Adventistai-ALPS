@@ -3,6 +3,7 @@
   --alps-latest-slider-columns: 1;
   display: grid;
   grid-template-columns: repeat(var(--alps-latest-slider-columns), minmax(0, 1fr));
+  align-items: stretch;
   gap: clamp(1.25rem, 2.5vw, 2.5rem);
   width: 100%;
 }
@@ -44,6 +45,7 @@
 
 .alps-latest-slider__viewport {
   display: grid;
+  flex: 1;
   overflow: hidden;
 }
 
@@ -78,6 +80,7 @@
 
 .alps-latest-slider__image {
   display: block;
+  flex-shrink: 0;
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
@@ -121,9 +124,16 @@
 
 .alps-latest-slider__excerpt-wrap {
   position: relative;
-  max-height: 7.2em;
+  align-self: stretch;
+  flex: 1;
+  min-height: 7.2em;
   margin-top: 0.75rem;
   overflow: hidden;
+}
+
+/* Text-only slides use the space otherwise occupied by the featured image. */
+.alps-latest-slider__slide--no-image .alps-latest-slider__excerpt-wrap {
+  min-height: 16rem;
 }
 
 .alps-latest-slider__excerpt-wrap::after {
@@ -138,6 +148,10 @@
 }
 
 .alps-latest-slider__excerpt {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   margin: 0;
   color: var(--alps-slider-muted);
   font-family: var(--alps-font-secondary, inherit);
