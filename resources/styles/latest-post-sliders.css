@@ -84,11 +84,13 @@
   background: #e8e8e8;
 }
 
-.alps-latest-slider__image--placeholder {
-  background:
-    linear-gradient(135deg, rgba(0, 0, 0, 0.08) 25%, transparent 25%) 0 0 / 1.25rem 1.25rem,
-    linear-gradient(315deg, rgba(0, 0, 0, 0.08) 25%, transparent 25%) 0 0 / 1.25rem 1.25rem,
-    #e8e8e8;
+.alps-latest-slider__title a {
+  color: inherit;
+}
+
+.alps-latest-slider__title a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
 }
 
 .alps-latest-slider__body {

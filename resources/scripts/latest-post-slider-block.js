@@ -19,6 +19,7 @@ const MAX_MODULES = 4;
 
 const createModule = () => ({
   title: '',
+  titleUrl: '',
   source: 'latest',
   categoryId: 0,
   items: [],
@@ -84,6 +85,13 @@ const ModuleSettings = ({module, index, categories, records, onChange, onRemove,
         help={__('Optional heading displayed above this slider.', 'alps')}
         value={module.title}
         onChange={(value) => setValue('title', value)}
+      />
+
+      <TextControl
+        label={__('Antraštės nuoroda (URL)', 'alps')}
+        help={__('Palikite tuščią, kad būtų naudojama pasirinktos kategorijos nuoroda.', 'alps')}
+        value={module.titleUrl}
+        onChange={(value) => setValue('titleUrl', value)}
       />
 
       <SelectControl

@@ -125,6 +125,7 @@ class LatestPostSliderBlock
 
         return [
             'alps_latest_slider_title' => sanitize_text_field((string) ($module['title'] ?? '')),
+            'alps_latest_slider_title_url' => esc_url_raw((string) ($module['titleUrl'] ?? ''), ['http', 'https']),
             'alps_latest_slider_source' => $source,
             'alps_latest_slider_category' => $categoryId ? [$categoryId] : [],
             'alps_latest_slider_items' => array_slice($items, 0, 20),
@@ -143,6 +144,7 @@ class LatestPostSliderBlock
     {
         return [
             'title' => '',
+            'titleUrl' => '',
             'source' => 'latest',
             'categoryId' => 0,
             'items' => [],

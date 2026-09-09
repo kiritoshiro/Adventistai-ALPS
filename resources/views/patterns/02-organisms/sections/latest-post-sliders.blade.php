@@ -24,15 +24,22 @@
         $sliderPosts = $renderableSliderModule['posts'];
         $source = sanitize_key((string) ($module['alps_latest_slider_source'] ?? 'latest'));
         $moduleTitle = trim(wp_strip_all_tags((string) ($module['alps_latest_slider_title'] ?? '')));
+        $moduleUrl = esc_url($module['alps_latest_slider_title_url'] ?? '', ['http', 'https']);
+
+        if (!$moduleUrl && $source === 'category') {
+          $categoryIds = \App\LatestPostSlider::associationIds($module['alps_latest_slider_category'] ?? []);
+          $categoryUrl = $categoryIds ? get_category_link(reset($categoryIds)) : '';
+          $moduleUrl = is_wp_error($categoryUrl) ? '' : esc_url($categoryUrl);
+        }
 
         if (!$moduleTitle && $source === 'category') {
           $categoryIds = \App\LatestPostSlider::associationIds($module['alps_latest_slider_category'] ?? []);
           $category = !empty($categoryIds) ? get_term(reset($categoryIds), 'category') : null;
-          $moduleTitle = ($category && !is_wp_error($category)) ? $category->name : __('Posts by Category', 'alps');
+          $moduleTitle = ($category && !is_wp_error($category)) ? $category->name : __('Kategorijos įrašai', 'alps');
         } elseif (!$moduleTitle && $source === 'custom') {
-          $moduleTitle = __('Selected Posts and Pages', 'alps');
+          $moduleTitle = __('Pasirinkti įrašai ir puslapiai', 'alps');
         } elseif (!$moduleTitle) {
-          $moduleTitle = __('Latest Posts', 'alps');
+          $moduleTitle = __('Naujausi įrašai', 'alps');
         }
 
         $interval = min(30, max(2, absint($module['alps_latest_slider_interval'] ?? 5)));
@@ -49,7 +56,13 @@
         data-alps-slider-autoplay="{{ $autoplay ? 'true' : 'false' }}"
       >
         <div class="alps-latest-slider__heading">
-          <h2 class="alps-latest-slider__title">{{ $moduleTitle }}</h2>
+          <h2 class="alps-latest-slider__title">
+            @if ($moduleUrl)
+              <a href="{{ $moduleUrl }}">{{ $moduleTitle }}</a>
+            @else
+              {{ $moduleTitle }}
+            @endif
+          </h2>
         </div>
 
         <div
@@ -82,8 +95,8 @@
               class="alps-latest-slider__slide{{ $isActive ? ' is-active' : '' }}"
               data-alps-slider-slide
               aria-hidden="{{ $isActive ? 'false' : 'true' }}"
-              aria-roledescription="{{ __('slide', 'alps') }}"
-              aria-label="{{ sprintf(__('%1$d of %2$d', 'alps'), $slideIndex + 1, $slideCount) }}"
+              aria-roledescription="{{ __('skaidrė', 'alps') }}"
+              aria-label="{{ sprintf(__('%1$d iš %2$d', 'alps'), $slideIndex + 1, $slideCount) }}"
             >
               <a class="alps-latest-slider__link" href="{{ esc_url($postLink) }}">
                 @if ($thumbnailId)
@@ -93,8 +106,6 @@
                     'loading' => $isActive ? 'eager' : 'lazy',
                     'decoding' => 'async',
                   ]) !!}
-                @else
-                  <span class="alps-latest-slider__image alps-latest-slider__image--placeholder" aria-hidden="true"></span>
                 @endif
 
                 <div class="alps-latest-slider__body">
@@ -108,7 +119,7 @@
                     </div>
                   @endif
                   <span class="alps-latest-slider__read-more">
-                    {{ __('Read more', 'alps') }}
+                    {{ __('Skaityti daugiau', 'alps') }}
                     <span aria-hidden="true">&rarr;</span>
                   </span>
                 </div>
@@ -122,7 +133,7 @@
             class="alps-latest-slider__dots"
             data-alps-slider-dots
             role="tablist"
-            aria-label="{{ sprintf(__('Slides for %s', 'alps'), $moduleTitle) }}"
+            aria-label="{{ sprintf(__('%s skaidrės', 'alps'), $moduleTitle) }}"
           >
             @foreach ($sliderPosts as $dotIndex => $sliderPost)
               @php($dotActive = $dotIndex === 0)
@@ -132,7 +143,7 @@
                 data-alps-slider-dot
                 role="tab"
                 aria-controls="{{ $sliderId }}-slide-{{ $dotIndex }}"
-                aria-label="{{ sprintf(__('Show slide %d', 'alps'), $dotIndex + 1) }}"
+                aria-label="{{ sprintf(__('Rodyti skaidrę %d', 'alps'), $dotIndex + 1) }}"
                 aria-selected="{{ $dotActive ? 'true' : 'false' }}"
                 tabindex="{{ $dotActive ? '0' : '-1' }}"
               ></button>
