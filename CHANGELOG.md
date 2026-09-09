@@ -3,6 +3,10 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.25.0]
+### Added
+- Convert the latest post slider into an insertable Gutenberg block for posts and pages, with independent slider sources, layout controls, custom headings, autoplay, and indicator navigation.
+
 ## [3.24.0]
 ### Added
 - Add configurable latest post slider modules for pages, with category or selected post/page sources, autoplay, indicator navigation, image cards, and responsive one-to-four-column layouts.
