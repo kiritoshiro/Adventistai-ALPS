@@ -1,0 +1,56 @@
+/* Respond to the article/block width, not the browser window width. */
+.alps-wrapped-text {
+  container: alps-wrapped-text / inline-size;
+  min-width: 0;
+}
+
+.alps-wrapped-text__flow {
+  display: flow-root;
+}
+
+.alps-wrapped-text .alps-wrapped-text__figure {
+  float: none;
+  width: min(100%, var(--alps-wrap-max, 320px));
+  max-width: 100%;
+  margin: 0 auto 1.25em;
+}
+
+.alps-wrapped-text .alps-wrapped-text__image {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.alps-wrapped-text figcaption {
+  margin-top: 0.5em;
+  text-align: center;
+  font-size: 0.875em;
+}
+
+/* Override theme word breaking only inside this reading block. */
+.alps-wrapped-text .alps-wrapped-text__flow,
+.alps-wrapped-text .alps-wrapped-text__flow :is(p, h1, h2, h3, h4, h5, h6, li, blockquote, a, figcaption) {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  hyphens: none !important;
+}
+
+.alps-wrapped-text__flow > :is(p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote) {
+  display: block;
+  clear: none;
+  max-width: none;
+}
+
+.alps-wrapped-text__flow :is(ul, ol) {
+  list-style-position: inside;
+}
+
+@container alps-wrapped-text (min-width: 40em) {
+  .alps-wrapped-text .alps-wrapped-text__figure {
+    float: left;
+    width: min(var(--alps-wrap-width, 32%), var(--alps-wrap-max, 320px));
+    margin: 0 1.5em 1em 0;
+  }
+}

@@ -2,6 +2,7 @@ import {domReady} from '@roots/sage/client';
 import {registerBlockStyle, unregisterBlockStyle} from '@wordpress/blocks';
 
 import './latest-post-slider-block';
+import './wrapped-image-text-block';
 
 /**
  * editor.main
