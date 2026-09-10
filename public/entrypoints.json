@@ -5,7 +5,7 @@
       "js/app.de2a46.js"
     ],
     "css": [
-      "css/app.b01bd5.css"
+      "css/app.f88949.css"
     ],
     "dependencies": [
       "jquery"
@@ -14,10 +14,10 @@
   "editor": {
     "js": [
       "js/runtime.c79664.js",
-      "js/editor.dd1263.js"
+      "js/editor.278942.js"
     ],
     "css": [
-      "css/editor.7305e9.css"
+      "css/editor.8b7341.css"
     ],
     "dependencies": [
       "wp-blocks",
