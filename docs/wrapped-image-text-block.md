@@ -8,6 +8,17 @@ write or paste paragraphs inside the block. Headings, lists and quotes are also
 supported. Move existing text blocks into this block using Gutenberg's List View.
 Text outside this block does not wrap around its image.
 
+You can also drop one image file from your computer onto the block. WordPress
+uploads it using your normal upload permissions and limits. Dropping an image
+from another image block in the post reuses it without deleting the source block.
+The current image remains in place if an upload fails.
+
+When editing a post or page, the standard media library now lists files used in
+that post first (including its featured image and unsaved editor changes), then
+the rest of the library by date. Search, media type and date filters still apply.
+An explicit alternative sort order is respected. This is not the same as
+"Uploaded to this post": previously uploaded files reused in the content count.
+
 The image floats left when the block itself is at least 40em wide. Text uses the
 right side and returns to the full width underneath the image and caption. Below
 40em the image centers above the text. The threshold follows the available block
