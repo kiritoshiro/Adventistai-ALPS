@@ -19,3 +19,7 @@
 /taxonomy-mec-category.php
 /header-mec.php
 /footer-mec.php
+
+# Created by .github/workflows/wordpress-quality.yml; never committed.
+/.qa-tools/
+/.compat-tools/

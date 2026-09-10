@@ -73,14 +73,26 @@ class PostMediaPriority
 
     public static function query(array $args): array
     {
-        $input = isset($_REQUEST['query']) && is_array($_REQUEST['query']) ? wp_unslash($_REQUEST['query']) : [];
-        $postId = absint($input['alps_post_id'] ?? 0);
+        // Runs inside core's wp_ajax_query_attachments, which already gates on
+        // current_user_can('upload_files'). This filter only reorders that result
+        // set, so it carries no nonce of its own; edit_post is checked below and
+        // every value taken from the request is cast before use.
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended
+        $postId = isset($_REQUEST['query']['alps_post_id'])
+            ? absint(wp_unslash($_REQUEST['query']['alps_post_id']))
+            : 0;
         if (!$postId || !current_user_can('edit_post', $postId) || ($args['orderby'] ?? 'date') !== 'date' || strtoupper($args['order'] ?? 'DESC') !== 'DESC') return $args;
         $post = get_post($postId);
         if (!$post) return $args;
-        if (isset($input['alps_media_ids']) && is_scalar($input['alps_media_ids'])) {
-            $ids = explode(',', (string) $input['alps_media_ids']);
-            $ids = self::resolveUrls($ids, (array) ($input['alps_media_urls'] ?? []));
+        $rawIds = isset($_REQUEST['query']['alps_media_ids']) && is_scalar($_REQUEST['query']['alps_media_ids'])
+            ? sanitize_text_field(wp_unslash($_REQUEST['query']['alps_media_ids']))
+            : null;
+        $rawUrls = isset($_REQUEST['query']['alps_media_urls']) && is_array($_REQUEST['query']['alps_media_urls'])
+            ? (array) map_deep(wp_unslash($_REQUEST['query']['alps_media_urls']), 'sanitize_text_field')
+            : [];
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
+        if ($rawIds !== null) {
+            $ids = self::resolveUrls(explode(',', $rawIds), $rawUrls);
         } else {
             $ids = self::contentIds($post->post_content, (int) get_post_thumbnail_id($postId));
         }
