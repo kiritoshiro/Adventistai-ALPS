@@ -233,6 +233,8 @@
 
 .alps-latest-slider__controls--arrows .alps-latest-slider__dots {
   grid-area: 1 / 2;
+  align-items: center;
+  margin: 0;
   padding: 0.5rem 0.25rem;
 }
 
@@ -245,6 +247,28 @@
   padding: 0;
   border: 0;
   font-size: 1.5rem;
+  margin: 0;
+  height: 44px;
+  line-height: 1;
+  appearance: none;
+  background: transparent;
+  box-shadow: none;
+  color: var(--alps-slider-ink);
+}
+
+.alps-latest-slider__controls--arrows .alps-latest-slider__arrow:hover,
+.alps-latest-slider__controls--arrows .alps-latest-slider__arrow:active,
+.alps-latest-slider__controls--arrows .alps-latest-slider__arrow:focus {
+  background: transparent;
+  box-shadow: none;
+  color: var(--alps-slider-ink);
+}
+
+.alps-latest-slider__arrow svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .alps-latest-slider__controls--arrows [data-alps-slider-prev] {
