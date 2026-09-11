@@ -121,6 +121,49 @@ body.admin-bar {
   }
 }
 
+/* Archive/category post rows: featured image beside the text */
+.c-post-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  align-items: flex-start;
+
+  @media (min-width: 701px) {
+    flex-direction: row;
+  }
+}
+
+.c-post-row__image {
+  flex: 0 0 auto;
+  width: 100%;
+
+  @media (min-width: 701px) {
+    width: 34%;
+    max-width: 320px;
+  }
+
+  a {
+    border: 0;
+    display: block;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+.c-post-row__body {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  /* The block brings its own top margin, which the row already spaces. */
+  & > .c-block {
+    margin-top: 0 !important;
+  }
+}
+
 /*Article*/
 .c-article__footer {
   a {

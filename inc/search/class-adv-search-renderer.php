@@ -124,14 +124,56 @@ final class Adv_Search_Renderer {
 		if ( ! empty( $options['show_matched_in'] ) ) {
 			$meta[] = 'title' === $data['matched_in'] ? __( 'Rasta pavadinime', 'alps' ) : __( 'Rasta turinyje', 'alps' );
 		}
+		$categories = 'post' === $data['type'] ? get_the_category( $data['id'] ) : array();
+		if ( $categories ) {
+			$meta[] = implode( ', ', wp_list_pluck( $categories, 'name' ) );
+		}
+
+		$classes = 'adv-search-result';
+		$classes .= $compact ? ' adv-search-result--compact' : '';
+		$thumb    = $compact ? '' : self::render_result_thumb( $data );
+		$classes .= $thumb ? ' adv-search-result--has-thumb' : '';
 
 		return sprintf(
-			'<article class="adv-search-result%1$s"><h2 class="adv-search-result__title"><a href="%2$s">%3$s</a></h2>%4$s<div class="adv-search-result__snippet">%5$s</div></article>',
-			$compact ? ' adv-search-result--compact' : '',
+			'<article class="%1$s">%2$s<div class="adv-search-result__body"><h2 class="adv-search-result__title"><a href="%3$s">%4$s</a></h2>%5$s<div class="adv-search-result__snippet">%6$s</div></div></article>',
+			esc_attr( $classes ),
+			$thumb,
 			esc_url( $data['url'] ),
 			wp_kses( $data['title_html'], self::allowed_highlight_html() ),
 			$meta ? '<p class="adv-search-result__meta">' . esc_html( implode( ' · ', $meta ) ) . '</p>' : '',
 			wp_kses( $data['snippet_html'], self::allowed_highlight_html() )
+		);
+	}
+
+	/**
+	 * Featured image for a result, shown beside the text.
+	 *
+	 * The title link that follows points at the same URL, so this one is hidden
+	 * from assistive technology rather than announced twice.
+	 */
+	private static function render_result_thumb( $data ) {
+		if ( ! has_post_thumbnail( $data['id'] ) ) {
+			return '';
+		}
+
+		$image = get_the_post_thumbnail(
+			$data['id'],
+			'medium',
+			array(
+				'alt'      => '',
+				'loading'  => 'lazy',
+				'decoding' => 'async',
+			)
+		);
+
+		if ( ! $image ) {
+			return '';
+		}
+
+		return sprintf(
+			'<div class="adv-search-result__thumb"><a href="%1$s" tabindex="-1" aria-hidden="true">%2$s</a></div>',
+			esc_url( $data['url'] ),
+			$image
 		);
 	}
 

@@ -161,7 +161,27 @@
               }
             @endphp
 
-            @if (has_post_thumbnail($id))
+            @php
+              // The block below renders its own image whenever $thumb_id is set,
+              // so only fall back to the featured image when it does not. In the
+              // list layout that image sits beside the text rather than above it.
+              $hasStandaloneImage = !$thumb_id && has_post_thumbnail($id);
+              $isImageRow = $hasStandaloneImage && $postsLayoutType != POST_LAYOUT_GRID;
+            @endphp
+
+            @if ($isImageRow)
+              <div class="c-post-row">
+                <div class="c-post-row__image sermon-featured-image">
+                  <a href="{{ get_permalink($id) }}">
+                    {!! get_the_post_thumbnail($id, 'medium_large', [
+                      'class' => 'u-image--shadow',
+                      'loading' => 'lazy',
+                      'decoding' => 'async',
+                    ]) !!}
+                  </a>
+                </div>
+                <div class="c-post-row__body">
+            @elseif ($hasStandaloneImage)
               <div class="sermon-featured-image">
                 <a href="{{ get_permalink($id) }}">
                   {!! get_the_post_thumbnail($id, 'large', ['class' => 'u-image--shadow']) !!}
@@ -176,6 +196,11 @@
               @include('patterns.01-molecules.blocks.content-block')
             @endif
             @if ($postsLayoutType == POST_LAYOUT_GRID)</div>@endif
+
+            @if ($isImageRow)
+                </div>
+              </div>
+            @endif
 
           @endwhile
           @if ($postsLayoutType == POST_LAYOUT_GRID)</div>@endif
