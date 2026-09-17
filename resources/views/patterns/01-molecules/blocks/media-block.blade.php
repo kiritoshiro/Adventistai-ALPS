@@ -76,23 +76,11 @@
         @endif
         @if (!empty($excerpt))
           <p class="c-media-block__description c-block__description">
-            @php
-              if (str_word_count($excerpt) > $excerpt_length) {
-                echo strip_shortcodes(wp_trim_words($excerpt, $excerpt_length));
-              } else {
-                echo strip_shortcodes(strip_tags($excerpt));
-              }
-            @endphp
+            {{ \App\ContentHelpers::trimWordCount((string) $excerpt, (int) $excerpt_length) }}
           </p>
         @elseif (!empty($body))
-          <p class="c-media-block__description c-block__description">this is
-            @php
-              if (str_word_count($body) > $excerpt_length) {
-                echo strip_shortcodes(wp_trim_words($body, $excerpt_length));
-              } else {
-                echo strip_shortcodes($body);
-              }
-            @endphp
+          <p class="c-media-block__description c-block__description">
+            {{ \App\ContentHelpers::trimWordCount((string) $body, (int) $excerpt_length) }}
           </p>
         @endif
       </div>

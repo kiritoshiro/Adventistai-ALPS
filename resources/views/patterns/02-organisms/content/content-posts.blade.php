@@ -207,8 +207,22 @@
         </div>
 
       @php wp_reset_query() @endphp
+      @php
+        $load_more_category = '';
+        if (is_category()) {
+          $queried_category = get_queried_object();
+          $load_more_category = $queried_category instanceof \WP_Term ? $queried_category->slug : '';
+        }
+      @endphp
       @if (shortcode_exists('ajax_load_more'))
-        {!! do_shortcode('[ajax_load_more container_type="div" css_classes="u-spacing--double" post_type="post" category="'. get_the_category()[0]->slug .'" scroll="false" transition_container="false" button_label="Rodyti daugiau" posts_per_page="10" offset="10"]') !!}
+        @php
+          $load_more = '[ajax_load_more container_type="div" css_classes="u-spacing--double" post_type="post"';
+          if ($load_more_category !== '') {
+            $load_more .= ' category="' . esc_attr($load_more_category) . '"';
+          }
+          $load_more .= ' scroll="false" transition_container="false" button_label="Rodyti daugiau" posts_per_page="10" offset="10"]';
+        @endphp
+        {!! do_shortcode($load_more) !!}
       @else
         @php pagination_nav() @endphp
       @endif

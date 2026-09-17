@@ -52,23 +52,11 @@
         <?php endif; ?>
         <?php if (!empty($excerpt)): ?>
           <p class="c-media-block__description c-block__description">
-            <?php
-              if (strlen($excerpt) > $excerpt_length) {
-                  echo strip_shortcodes(wp_trim_words($body, $excerpt_length));
-              } else {
-                  echo strip_shortcodes(strip_tags($excerpt));
-              }
-            ?>
+            <?php echo esc_html(\App\ContentHelpers::trimWordCount((string) $excerpt, (int) $excerpt_length)); ?>
           </p>
         <?php elseif (!empty($body)): ?>
           <p class="c-media-block__description c-block__description">
-            <?php
-              if (strlen($body) > $excerpt_length) {
-                  echo strip_shortcodes(wp_trim_words($body, $excerpt_length));
-              } else {
-                  echo strip_shortcodes(strip_tags($body));
-              }
-            ?>
+            <?php echo esc_html(\App\ContentHelpers::trimWordCount((string) $body, (int) $excerpt_length)); ?>
           </p>
         <?php endif; ?>
       </div>

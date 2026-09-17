@@ -94,8 +94,7 @@
               $postExcerpt = html_entity_decode($postExcerpt, ENT_QUOTES | ENT_HTML5, 'UTF-8');
               $thumbnailAlt = $thumbnailId ? get_post_meta($thumbnailId, '_wp_attachment_image_alt', true) : '';
               $thumbnailAlt = $thumbnailAlt ?: $postTitle;
-              $categories = get_the_category($postId);
-              $categoryName = !empty($categories) ? html_entity_decode($categories[0]->name, ENT_QUOTES | ENT_HTML5, 'UTF-8') : '';
+              $categoryName = html_entity_decode(\App\ContentHelpers::categoryName((int) $postId), ENT_QUOTES | ENT_HTML5, 'UTF-8');
               $isActive = $slideIndex === 0;
             @endphp
 

@@ -5,7 +5,7 @@
 <?php endif; ?>
 <div class="c-block c-block__text <?php if (isset($thumb_id)): ?><?php echo 'has-image'; ?><?php endif; ?> u-theme--border-color--darker u-border--left <?php if (isset($block_class)): ?><?php echo $block_class; ?><?php endif; ?>">
   <?php if (isset($thumb_id)): ?>
-    <img class="c-block__image" src="<?php echo wp_get_attachment_image_src($thumb_id, "featured__hero--m")[0]; ?>" />
+    <?php echo wp_get_attachment_image($thumb_id, 'featured__hero--m', false, ['class' => 'c-block__image', 'loading' => 'lazy', 'decoding' => 'async']); ?>
   <?php endif; ?>
   <<?php echo $h_tag ?> class="u-theme--color--darker <?php if (isset($block_title_class)): ?><?php echo $block_title_class; ?><?php endif; ?>">
     <?php if (isset($link)): ?>
@@ -18,23 +18,11 @@
   </<?php echo $h_tag ?>>
   <?php if (!empty($excerpt)): ?>
     <p class="c-block__body text">
-      <?php
-        if (str_word_count($excerpt) > $excerpt_length) {
-          echo strip_shortcodes(wp_trim_words($body, $excerpt_length));
-        } else {
-          echo strip_shortcodes(strip_tags($excerpt, '<img>'));
-        }
-      ?>
+      <?php echo esc_html(\App\ContentHelpers::trimWordCount((string) $excerpt, (int) $excerpt_length)); ?>
     </p>
   <?php elseif (!empty($body)): ?>
     <p class="c-block__body text">
-      <?php
-        if (str_word_count($body) > $excerpt_length) {
-          echo strip_shortcodes(wp_trim_words($body, $excerpt_length));
-        } else {
-          echo strip_shortcodes(strip_tags($body));
-        }
-      ?>
+      <?php echo esc_html(\App\ContentHelpers::trimWordCount((string) $body, (int) $excerpt_length)); ?>
     </p>
   <?php endif; ?>
   <?php if (isset($category) || isset($date)): ?>

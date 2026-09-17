@@ -3,30 +3,16 @@
   $isVisibleImage = !get_alps_option('is_related_stories_image_hidden');
 
   $post_type = get_post_type($post->ID);
-  $category = get_the_category();
-  $category_slug = $category[0]->slug;
-  if ($category) {
-    if (class_exists('WPSEO_Primary_Term')) {
-      $wpseo_primary_term = new WPSEO_Primary_Term('category', get_the_id());
-      $wpseo_primary_term = $wpseo_primary_term->get_primary_term();
-      $term = get_term($wpseo_primary_term);
-      if (is_wp_error($term)) {
-        $category = $category[0]->name;
-      } else {
-        $category = $term->name;
-      }
-    }
-    else {
-      $category = $category[0]->name;
-    }
-  }
+  $category_term = \App\ContentHelpers::primaryCategory((int) $post->ID);
+  $category = $category_term ? $category_term->name : '';
+  $category_slug = $category_term ? $category_term->slug : '';
   $args = array(
     'post_type' => $post_type,
     'category_name' => $category_slug,
     'posts_per_page' => 2,
     'post__not_in' => array($post->ID)
   );
-  $related = new WP_Query($args);
+  $related = new WP_Query($category_slug !== '' ? $args : ['post__in' => [0]]);
 @endphp
 <div class="c-related-posts u-spacing">
   <div class="c-block__heading u-theme--border-color--darker">

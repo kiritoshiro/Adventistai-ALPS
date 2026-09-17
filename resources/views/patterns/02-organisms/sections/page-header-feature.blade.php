@@ -45,23 +45,7 @@
     $excerpt_length = 35;
   }
 
-  $category = get_the_category($id);
-  if ($category) {
-    if (class_exists('WPSEO_Primary_Term')) {
-      $wpseo_primary_term = new WPSEO_Primary_Term('category', get_the_id());
-      $wpseo_primary_term = $wpseo_primary_term->get_primary_term();
-      $term = get_term($wpseo_primary_term);
-      if (is_wp_error($term)) {
-        $category = $category[0]->name;
-      }
-      else {
-        $category = $term->name;
-      }
-    }
-    else {
-      $category = $category[0]->name;
-    }
-  }
+  $category = \App\ContentHelpers::categoryName((int) $id);
 
   if (($thumb_id && $header_background_image) || ($thumb_id && !$header_background_image && !$hide_featured_image)) {
     $picture = true;

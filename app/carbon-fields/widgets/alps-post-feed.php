@@ -33,24 +33,7 @@
           $title = get_the_title($id);
           $link = get_permalink($id);
 
-          $category = get_the_category();
-          if (get_the_category()) {
-            if (class_exists('WPSEO_Primary_Term')) {
-              $wpseo_primary_term = new WPSEO_Primary_Term('category', get_the_id());
-              $wpseo_primary_term = $wpseo_primary_term->get_primary_term();
-              $term = get_term($wpseo_primary_term);
-
-              if (is_wp_error($term)) {
-                $category = $category[0]->name;
-              }
-              else {
-                $category = $term->name;
-              }
-            }
-            else {
-              $category = $category[0]->name;
-            }
-          }
+          $category = \App\ContentHelpers::categoryName((int) get_the_ID());
 
           if ($featured == true) {
             $date = get_the_date('F j, Y');
@@ -179,23 +162,11 @@
             </h3>
             <?php if (!empty($excerpt)): ?>
               <p class="c-block__body text">
-                <?php
-                  if (str_word_count($excerpt) > $excerpt_length) {
-                    echo esc_html(strip_shortcodes(wp_trim_words($body, $excerpt_length)));
-                  } else {
-                    echo wp_kses_post(strip_shortcodes(strip_tags($excerpt, '<img>')));
-                  }
-                ?>
+                <?php echo esc_html(\App\ContentHelpers::trimWordCount((string) $excerpt, (int) $excerpt_length)); ?>
               </p>
             <?php elseif (!empty($body)): ?>
               <p class="c-block__body text">
-                <?php
-                  if (str_word_count($body) > $excerpt_length) {
-                    echo esc_html(strip_shortcodes(wp_trim_words($body, $excerpt_length)));
-                  } else {
-                    echo esc_html(strip_shortcodes(strip_tags($body)));
-                  }
-                ?>
+                <?php echo esc_html(\App\ContentHelpers::trimWordCount((string) $body, (int) $excerpt_length)); ?>
               </p>
             <?php endif; ?>
             <?php if (isset($category) || isset($date)): ?>
