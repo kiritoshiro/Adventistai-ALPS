@@ -3,6 +3,14 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.28.1]
+### Added
+- Generate lightweight SEO defaults for titles, descriptions, canonical URLs, social metadata, and structured breadcrumbs without requiring per-post SEO fields.
+- Add safe reusable content helpers for multilingual excerpts, category resolution, and responsive content images.
+### Fixed
+- Prevent empty category links and unsafe text output in post feeds, related stories, and latest-post sliders.
+- Improve breadcrumb fallbacks and remove stray visible text from media blocks.
+
 ## [3.25.5]
 ### Added
 - Slider category headings link to category archives, with an optional custom URL.
