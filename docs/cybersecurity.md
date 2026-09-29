@@ -47,3 +47,8 @@ Never ship `.github/security` or its tooling in application packages.
 Public conversion is a separate decision. Review full history, release assets,
 credentials, personal data, licensing and fork restrictions before changing
 visibility. No visibility changes are part of this rollout.
+
+
+## Reviewed source findings — 2026-09-29
+
+Search renderer outputs pass through wp_kses_post, while its helpers escape URLs, text, attributes and highlighted markup. The generic echoed-request rule still flags these expressions. The request-derived callable was replaced by explicit switch dispatch. Narrow inline suppressions apply only to the named rule at these reviewed expressions. Owner: repository maintainer. Review by 2026-12-29 or on code changes.

@@ -89,7 +89,12 @@ final class Adv_Search_Admin {
 					<?php settings_fields( 'adv_search_settings' ); ?>
 					<?php self::hidden_current_options( $options ); ?>
 					<table class="form-table" role="presentation">
-						<?php call_user_func( array( __CLASS__, $current . '_tab' ), $options ); ?>
+						<?php switch ( $current ) {
+							case 'matching': self::matching_tab( $options ); break;
+							case 'ranking': self::ranking_tab( $options ); break;
+							case 'display': self::display_tab( $options ); break;
+							default: self::general_tab( $options );
+						} ?>
 					</table>
 					<?php submit_button(); ?>
 				</form>

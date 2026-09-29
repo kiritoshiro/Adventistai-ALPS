@@ -58,9 +58,9 @@ final class Adv_Search_Renderer {
 				<div class="adv-search-page__tools">
 					<?php if ( ! empty( $options['show_filters'] ) ) : ?>
 						<nav class="adv-search-filters" aria-label="<?php esc_attr_e( 'Rezultatų tipas', 'alps' ); ?>">
-							<?php echo self::filter_link( __( 'Visi', 'alps' ), '', $type, $query, $result['per_page'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-							<?php echo self::filter_link( __( 'Straipsniai', 'alps' ), 'post', $type, $query, $result['per_page'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-							<?php echo self::filter_link( __( 'Puslapiai', 'alps' ), 'page', $type, $query, $result['per_page'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+							<?php /* nosemgrep: php.lang.security.injection.echoed-request.echoed-request */ echo wp_kses_post( self::filter_link( __( 'Visi', 'alps' ), '', $type, $query, $result['per_page'] ) ); ?>
+							<?php /* nosemgrep: php.lang.security.injection.echoed-request.echoed-request */ echo wp_kses_post( self::filter_link( __( 'Straipsniai', 'alps' ), 'post', $type, $query, $result['per_page'] ) ); ?>
+							<?php /* nosemgrep: php.lang.security.injection.echoed-request.echoed-request */ echo wp_kses_post( self::filter_link( __( 'Puslapiai', 'alps' ), 'page', $type, $query, $result['per_page'] ) ); ?>
 						</nav>
 					<?php endif; ?>
 					<form class="adv-search-per-page" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
@@ -79,7 +79,7 @@ final class Adv_Search_Renderer {
 				<div class="adv-search-results" data-adv-results>
 					<?php if ( $result['items'] ) : ?>
 						<?php foreach ( $result['items'] as $item ) : ?>
-							<?php echo self::render_result( $item, $result['terms'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+							<?php /* nosemgrep: php.lang.security.injection.echoed-request.echoed-request */ echo wp_kses_post( self::render_result( $item, $result['terms'] ) ); ?>
 						<?php endforeach; ?>
 					<?php else : ?>
 						<div class="adv-search-empty">
@@ -90,7 +90,7 @@ final class Adv_Search_Renderer {
 					<?php endif; ?>
 				</div>
 
-				<?php echo self::pagination( $result, $type ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<?php /* nosemgrep: php.lang.security.injection.echoed-request.echoed-request */ echo wp_kses_post( self::pagination( $result, $type ) ); ?>
 			</div>
 		</section>
 		<?php
