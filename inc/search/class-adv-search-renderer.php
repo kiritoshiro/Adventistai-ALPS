@@ -79,7 +79,7 @@ final class Adv_Search_Renderer {
 				<div class="adv-search-results" data-adv-results>
 					<?php if ( $result['items'] ) : ?>
 						<?php foreach ( $result['items'] as $item ) : ?>
-							<?php /* nosemgrep: php.lang.security.injection.echoed-request.echoed-request */ echo wp_kses_post( self::render_result( $item, $result['terms'] ) ); ?>
+							<?php /* nosemgrep: php.lang.security.injection.echoed-request.echoed-request */ echo self::render_result( $item, $result['terms'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_result() escapes each part; wp_kses_post() would strip the thumbnail's tabindex/srcset. ?>
 						<?php endforeach; ?>
 					<?php else : ?>
 						<div class="adv-search-empty">
