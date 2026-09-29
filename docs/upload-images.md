@@ -1,6 +1,6 @@
 # Upload image policy
 
-New JPEG, PNG and AVIF attachments use a full image capped at 1920 × 1920 and one `alps-small` image capped at 768 × 768. Aspect ratio is preserved, with no upscaling or hard crop. Small sources may need only one display file. WordPress keeps its recovery original separately; this is not a strict two-files-on-disk policy.
+New JPEG, PNG and AVIF attachments use a full image capped at 1920 × 1920 and one `alps-small` image capped at 768 × 768. Aspect ratio is preserved, with no upscaling or hard crop. Small sources may need only one display file. A successfully replaced source is retained for seven days, then removed by the existing twice-daily alps_cron task. WP-Cron depends on traffic, so cleanup may run later. The live display image is never expired. Sources whose replacement or smaller image is missing/unreadable are retained and retried the next day. Recovery to the uploaded original is unavailable after cleanup; subsequent edits/regeneration use the retained display image.
 
 JPEG/PNG convert to AVIF through WordPress core when the image editor supports it. Require WordPress 6.5+ and an AVIF-capable GD/Imagick installation for AVIF output. Unsupported hosts retain the source format. GIF/WebP are excluded to avoid flattening animations. SVG and documents are unaffected. Legacy uploads and their regeneration retain their previous policy. Newly marked attachments retain the two-size policy on regeneration.
 
@@ -8,7 +8,7 @@ Existing template size names resolve to the small/full files for new attachments
 
 ## Verification before release
 
-Run `php tests/images/run.php` and `php tests/search/run.php`. On staging upload a large JPEG with EXIF rotation, transparent PNG, small JPEG, portrait photo and AVIF. Verify orientation, transparency, attachment URLs/MIME, srcset, actual dimensions and at most one `sizes` metadata entry (`alps-small`). Confirm original recovery, deletion and regeneration work. Repeat on a host without AVIF support. Upload GIF/WebP and regenerate a pre-existing attachment to confirm exclusion. Check uploaded bytes and actual AVIF output, not just extensions.
+Run `php tests/images/run.php`, `php tests/images/retention.php` and `php tests/search/run.php`. On staging upload a large JPEG with EXIF rotation, transparent PNG, small JPEG, portrait photo and AVIF. Verify orientation, transparency, attachment URLs/MIME, srcset, actual dimensions and at most one `sizes` metadata entry (`alps-small`). Confirm original recovery, deletion and regeneration work. Repeat on a host without AVIF support. Upload GIF/WebP and regenerate a pre-existing attachment to confirm exclusion. Check uploaded bytes and actual AVIF output, not just extensions.
 
 ## Existing duplicate cleanup (separate operation)
 
@@ -18,4 +18,4 @@ Run `php tests/images/run.php` and `php tests/search/run.php`. On staging upload
 4. Audit and update featured-image IDs, Gutenberg content, galleries, Carbon Fields, options, serialized metadata, CSS/background URLs and language variants using WordPress-aware APIs. Do not raw-replace serialized database strings.
 5. Verify pages and external URL references before deletion. Remove redundant attachments with WordPress APIs only after review; retain redirects where published URLs change. Delete obsolete generated files only after checking references and attachment metadata. Do not run blanket thumbnail deletion or regeneration on production.
 
-No existing media is scanned, replaced or deleted by this feature.
+Retention applies only to managed attachments whose original metadata is saved after this feature is enabled. It does not bulk-enroll older originals. Editing backups and sources used as another attachment remain protected. A source that is itself the live display image (for example, a small AVIF or an unsupported conversion) is kept. Verify the alps_cron event is running on staging and confirm that original_image metadata is removed only after successful source deletion. Direct links to temporary original URLs expire too; use attachment display URLs. No duplicate attachments or legacy media are deleted by this feature.

@@ -52,7 +52,9 @@ jobs:
             -print0 | xargs -0 -n1 php -l
 
       - name: Run upload-image regression checks
-        run: php tests/images/run.php
+        run: |
+          php tests/images/run.php
+          php tests/images/retention.php
 
       - name: Run search regression checks
         run: php tests/search/run.php
