@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       actions: read
+      security-events: write
       contents: read
     strategy:
       fail-fast: false
@@ -39,7 +40,7 @@ jobs:
       - name: Analyze
         uses: github/codeql-action/analyze@6f5948dfacef28e207b48d0905cf90c03365536d # v3.37.9
         with:
-          upload: false
+          upload: true
           output: results
 
       - name: Upload CodeQL SARIF report

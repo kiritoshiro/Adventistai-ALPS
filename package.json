@@ -32,7 +32,8 @@
       "axios": "^1.9.0",
       "undici": "^6.13.0",
       "http-proxy-middleware": "^3.0.5",
-      "cookie": "^0.7.0"
+      "cookie": "^0.7.0",
+      "webpack-dev-middleware": "^7.4.6"
     },
     "glob@^10": {
       "minimatch": "^9.0.9"
