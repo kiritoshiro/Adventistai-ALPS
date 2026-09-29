@@ -1,0 +1,13 @@
+{
+  "category": "WordPress theme",
+  "source_paths": [
+    "app",
+    "functions.php",
+    "resources/scripts",
+    "inc"
+  ],
+  "semgrep_rules": [
+    "p/php",
+    "p/javascript"
+  ]
+}
