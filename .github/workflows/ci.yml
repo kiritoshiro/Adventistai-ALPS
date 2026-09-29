@@ -33,6 +33,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: none
+          extensions: mbstring
           tools: composer:v2
 
       - name: Validate Composer files
@@ -49,6 +50,12 @@ jobs:
             -not -path './vendor/*' \
             -not -path './node_modules/*' \
             -print0 | xargs -0 -n1 php -l
+
+      - name: Run upload-image regression checks
+        run: php tests/images/run.php
+
+      - name: Run search regression checks
+        run: php tests/search/run.php
 
       - name: Check installed PHP platform requirements
         run: composer check-platform-reqs
