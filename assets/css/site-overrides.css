@@ -622,3 +622,86 @@ html { scrollbar-gutter: stable; }
   margin-left: auto !important;
   margin-right: auto !important;
 }
+
+/* -------------------------------------------------------------------------
+   Images shown whole (App\ImageDelivery).
+   Converted images are a <picture> with an AVIF source and one JPEG <img>.
+   - natural: the image keeps its own shape, fills the column up to its own
+     pixel width and is capped in height; a capped image is shown whole.
+   - slot: card grids keep one shape. "cover" is used only when the image's
+     shape is close to the slot's (a small trim); otherwise "contain" shows the
+     whole image on a quiet backdrop.
+   The ALPS stylesheet loads later and sets `.c-page-header img { height:100%;
+   object-fit:cover }`, hence the !important flags.
+   ------------------------------------------------------------------------- */
+picture.alps-image {
+  display: block;
+  max-width: 100%;
+}
+picture.alps-image > img {
+  display: block;
+  max-width: 100%;
+}
+picture.alps-image--natural,
+.c-page-header picture.alps-image--natural {
+  height: auto !important;
+}
+picture.alps-image--natural > img,
+.c-page-header picture.alps-image--natural > img {
+  width: 100% !important;
+  max-width: min(100%, var(--alps-image-w, 100%)) !important;
+  height: auto !important;
+  max-height: var(--alps-image-max, none);
+  margin-inline: auto;
+  object-fit: contain !important;
+}
+picture.alps-image--slot {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--alps-image-ratio, 16 / 9);
+  overflow: hidden;
+  background: var(--alps-image-backdrop, rgba(0, 0, 0, 0.05));
+}
+picture.alps-image--slot > img,
+.c-page-header picture.alps-image--slot > img {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  object-fit: cover !important;
+}
+picture.alps-image--contain > img,
+.c-page-header picture.alps-image--contain > img {
+  object-fit: contain !important;
+}
+.u-round picture.alps-image--slot {
+  border-radius: 50%;
+}
+
+/* Page headers with a background image take the image's own shape instead of
+   a thin band (landscape), or show a square/portrait image whole on the
+   header colour. Content taller than that shape still makes the header grow. */
+.c-page-header.alps-fit-header {
+  aspect-ratio: var(--alps-header-ratio, 16 / 9);
+  max-height: 85vh;
+  background-position: center center;
+}
+@media (max-width: 700px) {
+  /* On phones the title makes the header taller than the image's shape;
+     show the whole width at the top instead of cutting off the sides. */
+  .c-page-header.alps-fit-header--cover {
+    background-size: 100% auto !important;
+    background-position: center top;
+    background-repeat: no-repeat;
+  }
+}
+.c-page-header.alps-fit-header--contain {
+  aspect-ratio: auto;
+  min-height: min(70vh, 40rem);
+  background-size: contain !important;
+  background-repeat: no-repeat;
+}
+.c-page-header__longer.alps-fit-header.has-background {
+  padding-top: 7.5rem;
+}

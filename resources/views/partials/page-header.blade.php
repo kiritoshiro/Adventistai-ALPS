@@ -61,26 +61,19 @@
     if (is_page_template('views/template-posts.blade.php')) {
       $page_header_content_class = '';
     }
+    // Size the header to the image instead of cutting it to a thin band (App\ImageDelivery).
+    $alps_header_fit = \App\ImageDelivery::headerFit((int) $header_background_image);
+    $page_header_style = '';
+    if ($alps_header_fit) {
+      $page_header_class .= ' alps-fit-header alps-fit-header--' . $alps_header_fit['mode'];
+      $page_header_style = '--alps-header-ratio:' . $alps_header_fit['ratio'];
+    }
   @endphp
-  <style type="text/css">
-    .o-background-image {
-      background-image: url(<?php echo wp_get_attachment_image_url($header_background_image, 'featured__hero--m'); ?>);
-    }
-    @media (min-width: 900px) {
-      .o-background-image {
-        background-image: url(<?php echo wp_get_attachment_image_url($header_background_image, 'featured__hero--l'); ?>);
-      }
-    }
-    @media (min-width: 1100px) {
-      .o-background-image {
-        background-image: url(<?php echo wp_get_attachment_image_url($header_background_image, 'featured__hero--xl'); ?>);
-      }
-    }
-  </style>
+  <style type="text/css">{!! \App\ImageDelivery::backgroundCss('.o-background-image', (int) $header_background_image) !!}</style>
 @endif
 
 @if (empty($remove_header))
-  <header class="c-page-header c-page-header__long u-theme--background-color--dark  u-space--zero--top {{ $page_header_class }}">
+  <header class="c-page-header c-page-header__long u-theme--background-color--dark  u-space--zero--top {{ $page_header_class }}"@if (!empty($page_header_style)) style="{{ $page_header_style }}"@endif>
     <div class="c-page-header__long--inner l-grid l-grid--7-col {{ $page_header_inner_class }}">
       <div class="c-page-header__content c-page-header__long__content l-grid-wrap l-grid-wrap--5-of-7 u-border--left {{ $page_header_content_class }}">
         @if ($long_header_kicker)

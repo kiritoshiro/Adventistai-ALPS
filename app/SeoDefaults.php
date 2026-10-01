@@ -186,7 +186,10 @@ final class SeoDefaults
             return $image;
         }
 
-        $src = wp_get_attachment_image_src($attachmentId, 'full');
+        // Prefer the JPEG fallback: not every social network reads AVIF.
+        $src = class_exists(ImageDelivery::class)
+            ? ImageDelivery::socialImage($attachmentId)
+            : wp_get_attachment_image_src($attachmentId, 'full');
         if (!$src) {
             return $image;
         }
