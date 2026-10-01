@@ -7,10 +7,31 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
+  cybersecurity:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/cybersecurity.yml
+  dependency-audit:
+    permissions:
+      contents: read
+      pull-requests: read
+    uses: ./.github/workflows/security-audit.yml
+  wordpress-security:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/wordpress-quality.yml
+  repository-security:
+    permissions:
+      contents: read
+      actions: read
+    uses: ./.github/workflows/repository-security.yml
   release:
+    permissions:
+      contents: write
+    needs: [cybersecurity, dependency-audit, wordpress-security, repository-security]
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
