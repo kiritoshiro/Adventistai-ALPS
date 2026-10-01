@@ -6,6 +6,7 @@ on:
   pull_request:
   schedule:
     - cron: '23 4 * * 1'
+  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -13,7 +14,7 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: security-audit-${{ github.ref }}
+  group: security-audit-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
