@@ -21,6 +21,7 @@
       $mediaBlockCategory = $headerCategory;
       $mediaBlockImageCaption = $headerImageCaption;
       $mediaBlockImages = $headerImages;
+      $mediaBlockImageId = $headerImageId ?? 0;
       $mediaBlockKicker = $headerKicker;
     }
 @endphp

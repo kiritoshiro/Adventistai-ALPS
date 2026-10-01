@@ -33,28 +33,20 @@
     $headerClasses[] = 'has-background';
     $headerInnerClasses[] = 'u-gradient--bottom';
     $headerContentClasses[] = 'u-border-left--white--at-large';
+    // Size the header to the image instead of cutting it to a thin band (App\ImageDelivery).
+    $alps_header_fit = \App\ImageDelivery::headerFit((int) $headerBackgroundImage);
+    if ($alps_header_fit) {
+      $headerClasses[] = 'alps-fit-header';
+      $headerClasses[] = 'alps-fit-header--' . $alps_header_fit['mode'];
+    }
   }
 @endphp
 
 @if (@isset($headerBackgroundImage))
-  <style type="text/css">
-    .o-background-image {
-      background-image: url({{ wp_get_attachment_image_url($headerBackgroundImage, 'featured__hero--m') }});
-    }
-    @media (min-width: 900px) {
-      .o-background-image {
-        background-image: url({{ wp_get_attachment_image_url($headerBackgroundImage, 'featured__hero--l') }});
-      }
-    }
-    @media (min-width: 1100px) {
-      .o-background-image {
-        background-image: url({{ wp_get_attachment_image_url($headerBackgroundImage, 'featured__hero--xl') }});
-      }
-    }
-  </style>
+  <style type="text/css">{!! \App\ImageDelivery::backgroundCss('.o-background-image', (int) $headerBackgroundImage) !!}</style>
 @endif
 
-<header class="{{ join(' ', $headerClasses) }}">
+<header class="{{ join(' ', $headerClasses) }}"@if (!empty($alps_header_fit)) style="--alps-header-ratio:{{ $alps_header_fit['ratio'] }}"@endif>
   <div class="{{ join(' ', $headerInnerClasses) }}">
     <div class="{{ join(' ', $headerContentClasses) }}">
       @if (@isset($headerKicker))

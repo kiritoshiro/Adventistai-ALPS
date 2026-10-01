@@ -17,6 +17,15 @@
   <div class="c-block__image l-grid-item u-padding--zero--sides">
     <div class="c-block__image-outer-wrap">
       <div class="c-block__image-wrap">
+        @php
+          // The whole image at its own shape, as AVIF + JPEG (see App\ImageDelivery).
+          $alps_block_image = !empty($mediaBlockImageId)
+            ? \App\ImageDelivery::blockImage($mediaBlockImageId, '', ['header' => true, 'sizes' => '(min-width: 701px) 60vw, 100vw'])
+            : '';
+        @endphp
+        @if ($alps_block_image)
+          {!! $alps_block_image !!}
+        @else
         <picture class="picture">
           <!--[if IE 9]><video style="display: none;"><![endif]-->
           @foreach ($mediaBlockImages as $image)
@@ -27,6 +36,7 @@
           <!--[if IE 9]></video><![endif]-->
           <img itemprop="image" srcset="{{ $mediaBlockImages['s'][0] }}" alt="{{ $mediaBlockImageCaption }}">
         </picture>
+        @endif
         @if ($mediaBlockImageCaption)
         <div class="c-block__caption u-padding--top u-padding--bottom u-color--white-transparent u-padding--sides">
           {{ $mediaBlockImageCaption }}

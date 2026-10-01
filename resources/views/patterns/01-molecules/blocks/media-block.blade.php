@@ -8,9 +8,21 @@
 @endif
 <div class="c-media-block c-block @if (isset($block_class)){{ $block_class }}@endif">
   @if (isset($image) or isset($picture))
+    @php
+      // AVIF + JPEG, shown whole (see App\ImageDelivery); '' keeps the old markup.
+      $alps_block_image = (!isset($background_image) && isset($thumb_id))
+        ? \App\ImageDelivery::blockImage($thumb_id, $thumb_size ?? '', [
+            'header' => !empty($title_h1),
+            'round' => str_contains(($block_img_wrap_class ?? '') . ' ' . ($picture_class ?? ''), 'u-round'),
+            'alt' => $alt ?? null,
+          ])
+        : '';
+    @endphp
     <div class="c-media-block__image c-block__image @if (isset($block_img_class)){{ $block_img_class }}@endif @if (isset($block_type))c-block__icon c-block__icon--{{ $block_type }}@endif @if (isset($background_image)){{ 'u-background--cover c-media-block__background-image c-background-image--' . $thumb_id }}@endif">
       <div class="c-block__image-wrap @if (isset($block_img_wrap_class)){{ $block_img_wrap_class }}@endif">
-        @if (isset($background_image))
+        @if (isset($background_image) && isset($thumb_id) && \App\ImageDelivery::outputs((int) $thumb_id))
+          <style type="text/css">{!! \App\ImageDelivery::backgroundCss('.c-background-image--' . (int) $thumb_id, (int) $thumb_id) !!}</style>
+        @elseif (isset($background_image))
           <style type="text/css">
             .c-background-image--{{ $thumb_id }} {
               background-image: url({{ $image_s }});
@@ -35,6 +47,8 @@
               }
             @endif
           </style>
+        @elseif ($alps_block_image)
+          {!! $alps_block_image !!}
         @else
           @if (isset($picture))
             <picture class="picture @if (isset($picture_class)){{ $picture_class }}@endif">

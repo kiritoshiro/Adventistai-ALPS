@@ -25,6 +25,10 @@ $old = ['thumbnail' => ['width' => 150]];
 foreach ([3, 4, 99] as $id) { check(Images::sizes($old, [], $id) === $old, 'excluded upload sizes'); }
 check(array_keys(Images::sizes($old, [], 1)) === ['alps-small'], 'one derivative plus full');
 check(Images::sizes($old, [], 5)['alps-small']['crop'] === false, 'AVIF aspect ratio');
+// WordPress 6.x+ saves sub-sizes without a file name.
+check(Images::format([], null, 'image/jpeg') === ['image/jpeg' => 'image/avif'], 'small size converts without a file name');
+Images::smallDone(['sizes' => ['alps-small' => ['file' => 'x.avif']]], 5);
+check(Images::format([], null, 'image/jpeg') === [], 'no conversion once the small size is saved');
 check(Images::downsize(false, 1, 'featured__hero--xl')[0] === 'full', 'legacy large alias');
 check(Images::downsize(false, 1, 'horiz__4x3--s')[0] === 'alps-small', 'legacy small alias');
 check(Images::downsize(false, 1, 'medium')[0] === 'alps-small', 'editor alias');
@@ -32,7 +36,7 @@ check(Images::downsize(false, 1, 'alps-small') === false, 'no alias recursion');
 check(Images::downsize(false, 99, 'medium') === false, 'legacy attachment untouched');
 check(Images::downsize(false, 1, [300, 200]) === false, 'array dimensions preserved');
 check(Images::downsize(['plugin'], 1, 'medium') === ['plugin'], 'other plugin result preserved');
-echo "Image policy: 18 checks passed.\n";
+echo "Image policy: 20 checks passed.\n";
 
 function is_wp_error($value) { return $value instanceof Exception; }
 function wp_get_image_editor($file) { global $editor; return $editor; }
@@ -68,4 +72,11 @@ $editor = new TestEditor();
 $support = false;
 $small = ['file' => '1.jpg', 'width' => 400, 'height' => 300];
 check(Images::finish($small, 1) === $small, 'small fallback stays original');
-echo "Finalization: 9 checks passed.\n";
+// WordPress already saved a converted copy that is small enough: it becomes the display image.
+$support = true;
+$GLOBALS['file_mime'] = 'image/avif';
+$GLOBALS['updated_post'] = null;
+$copy = ['file' => '1.avif', 'width' => 500, 'height' => 300, 'original_image' => 'source.jpg'];
+check(Images::finish($copy, 1) === $copy && $GLOBALS['updated_post']['post_mime_type'] === 'image/avif', 'small converted copy reused, not re-encoded');
+echo "Finalization: 10 checks passed.\n";
+function wp_get_image_mime($file) { return $GLOBALS['file_mime'] ?? 'image/jpeg'; }

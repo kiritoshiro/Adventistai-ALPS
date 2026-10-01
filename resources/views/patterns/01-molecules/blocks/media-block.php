@@ -10,7 +10,17 @@
   <?php if (isset($image) || isset($picture)): ?>
     <div class="c-media-block__image c-block__image <?php if (isset($block_img_class)): ?><?php echo $block_img_class ?><?php endif; ?> <?php if (isset($block_type)): ?>c-block__icon c-block__icon--<?php echo $block_type ?><?php endif; ?>">
       <div class="c-block__image-wrap <?php if (isset($block_img_wrap_class)): ?><?php echo $block_img_wrap_class ?><?php endif; ?>">
-        <?php if (isset($picture)): ?>
+        <?php
+        // AVIF + JPEG, shown whole (see App\ImageDelivery); '' keeps the old markup.
+        $alps_block_image = isset($thumb_id) ? \App\ImageDelivery::blockImage($thumb_id, $thumb_size ?? '', [
+            'header' => !empty($title_h1),
+            'round' => str_contains(($block_img_wrap_class ?? '') . ' ' . ($picture_class ?? ''), 'u-round'),
+            'alt' => $alt ?? null,
+        ]) : '';
+        ?>
+        <?php if ($alps_block_image): ?>
+          <a href="<?php echo esc_url($link ?? '') ?>"><?php echo $alps_block_image; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built from esc_url()/esc_attr() values in App\ImageDelivery::picture(). ?></a>
+        <?php elseif (isset($picture)): ?>
           <picture class="picture">
             <!--[if IE 9]><video style="display: none;"><![endif]-->
             <?php if (isset($image_break_xl)): ?>

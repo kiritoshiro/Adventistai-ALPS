@@ -154,6 +154,7 @@ class TemplateHelpers {
             'headerCategory'  => $headerCategory,
             'headerImageCaption' => $headerImageCaption,
             'headerImages' => $headerImages,
+            'headerImageId' => $headerImages ? (int) $thumbId : 0,
             'headerKicker' => $headerKicker
         ];
     }
