@@ -60,14 +60,17 @@
     return days > 0 ? `${days} d. ${clock}` : clock;
   };
 
+  // render() runs every second for 40 city options; build the formatter once.
+  const timeFormatter = new Intl.DateTimeFormat('lt-LT', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: data.timezone || 'Europe/Vilnius',
+  });
+
   const formatTime = (event) => {
     if (!event) return '—';
-    return new Intl.DateTimeFormat('lt-LT', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-      timeZone: data.timezone || 'Europe/Vilnius',
-    }).format(new Date(Number(event.timestamp) * 1000));
+    return timeFormatter.format(new Date(Number(event.timestamp) * 1000));
   };
 
   const cityState = (cityKey, nowMs) => {
@@ -172,7 +175,8 @@
       if (endMetaNode) endMetaNode.textContent = `· Sabata (šabas) baigiasi ${formatTime(state.end)}`;
     }
 
-    renderOptions(nowMs);
+    // The city lists live inside the timer, so skip them while it is hidden.
+    if (state.mode !== 'hidden') renderOptions(nowMs);
   };
 
   if (selectorButton) {

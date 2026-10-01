@@ -8,7 +8,8 @@
     $theme_color_class = 'u-theme--ming';
   }
 
-  if (is_singular()) {
+  // Only threaded replies on an open comment form need the reply script.
+  if (is_singular() && comments_open() && get_option('thread_comments')) {
       wp_enqueue_script('comment-reply');
   }
 

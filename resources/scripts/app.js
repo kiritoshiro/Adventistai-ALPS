@@ -1,5 +1,4 @@
 import {domReady} from '@roots/sage/client';
-import 'jquery';
 import {initLatestPostSliders} from './latest-post-sliders';
 
 /**
