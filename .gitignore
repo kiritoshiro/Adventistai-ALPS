@@ -23,3 +23,9 @@
 # Created by .github/workflows/wordpress-quality.yml; never committed.
 /.qa-tools/
 /.compat-tools/
+
+# Full Lighthouse results stay local; CI uploads a sanitized summary.
+/.lighthouseci/
+/lighthouse-report/
+/lighthouse-summary.json
+/lighthouse-summary.md
