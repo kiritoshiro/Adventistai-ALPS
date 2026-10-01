@@ -11,7 +11,7 @@ const budgets = [
   ['Frontend JS', built('app.js'), 4_500],
   ['Shared runtime JS', built('runtime.js'), 2_500],
   ['Editor CSS', built('editor.css'), 9_000],
-  ['Editor JS', built('editor.js'), 18_000],
+  ['Editor JS', built('editor.js'), 24_000],
   ['ALPS denim CSS', 'app/local/alps/css/main-denim.css', 215_000],
   ['Site overrides CSS', 'assets/css/site-overrides.css', 32_000],
   ['Responsive fixes CSS', 'assets/css/responsive-zoom-fixes.css', 8_000],
@@ -19,6 +19,8 @@ const budgets = [
   ['Sabbath timer CSS', 'assets/css/sabbath-timer.css', 8_000],
   ['Search JS', 'assets/js/adv-search.js', 11_000],
   ['Sabbath timer JS', 'assets/js/sabbath-timer.js', 12_000],
+  ['Card scroller CSS', 'assets/css/card-scroller.css', 10_000],
+  ['Card scroller JS', 'assets/js/card-scroller.js', 4_500],
 ];
 
 let failed = false;

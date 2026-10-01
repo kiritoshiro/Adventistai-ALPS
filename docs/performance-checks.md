@@ -1,6 +1,6 @@
 # Performance checks
 
-The theme CI build checks that the committed `public/` files match the source and now checks the byte sizes of selected shipped CSS and JS files with `node scripts/check-asset-budgets.mjs`. The initial limits are above the files on `main` at `4b66abd`. These are raw file sizes: they guard source growth and do not claim to represent transferred bytes or the whole page. The large ALPS denim stylesheet is included because it is loaded on the live homepage.
+The theme CI build checks that the committed `public/` files match the source and now checks the byte sizes of selected shipped CSS and JS files with `node scripts/check-asset-budgets.mjs`. The initial limits are above the files on `main` at `82c425b`. These are raw file sizes: they guard source growth and do not claim to represent transferred bytes or the whole page. The large ALPS denim stylesheet is included because it is loaded on the live homepage. The conditional card scroller CSS/JS added in #58 are also covered.
 
 Run locally after `npm run build`:
 
