@@ -19,23 +19,93 @@ add_action('wp_enqueue_scripts', function () {
 
 /**
  * Final responsive zoom fixes.
- * Loaded after the main bundle and site-overrides.css so the responsive
+ * Printed straight after site-overrides.css (as an embedded style) so the responsive
  * corrections remain authoritative without modifying the accumulated override
- * stylesheet itself.
+ * stylesheet itself. Embedded because the file is small and a separate
+ * stylesheet would be one more render-blocking request.
  */
 add_action('wp_enqueue_scripts', function () {
-    $relative = '/assets/css/responsive-zoom-fixes.css';
-    $file = get_template_directory() . $relative;
+    $file = get_template_directory() . '/assets/css/responsive-zoom-fixes.css';
 
-    if (is_readable($file)) {
-        wp_enqueue_style(
-            'adventistai-responsive-zoom-fixes',
-            get_template_directory_uri() . $relative,
-            ['adventistai-overrides'],
-            (string) filemtime($file)
-        );
+    if (wp_style_is('adventistai-overrides') && is_readable($file)) {
+        wp_add_inline_style('adventistai-overrides', (string) file_get_contents($file));
     }
 }, 1000);
+
+/**
+ * ALPS pattern-library stylesheet.
+ *
+ * It used to be printed straight from head.blade.php after wp_head(), so it
+ * came after every enqueued stylesheet. Enqueuing it last keeps that cascade
+ * position while letting WordPress manage, version and preload it. The Sabbath
+ * timer is front-page only and small, so its rules are embedded instead
+ * of costing another render-blocking request.
+ */
+add_action('wp_enqueue_scripts', function () {
+    $alps = Core\ALPSVersions::get();
+    $color = get_alps_option('theme_color');
+    $url = $alps['styles']['main'];
+    if ($color && isset($alps['styles']['themes'][$color])) {
+        $url = $alps['styles']['themes'][$color];
+    }
+
+    wp_enqueue_style('alps-main', $url, [], theme_asset_version($url));
+
+    $timer = get_template_directory() . '/assets/css/sabbath-timer.css';
+    if (is_front_page() && is_readable($timer)) {
+        wp_add_inline_style('alps-main', (string) file_get_contents($timer));
+    }
+}, 9999);
+
+/**
+ * Preload the fonts used above the fold before any stylesheet is requested.
+ * Regular and Bold Noto Sans cover the navigation and headings (550-700
+ * weights resolve to the Bold face); Source Serif covers the hero text.
+ */
+add_action('wp_head', function () {
+    $fonts = [
+        '/assets/fonts/noto-sans/NotoSans-Regular.woff2',
+        '/assets/fonts/noto-sans/NotoSans-Bold.woff2',
+        '/assets/fonts/source-serif/SourceSerif4-Variable.woff2',
+    ];
+
+    foreach ($fonts as $font) {
+        printf(
+            '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
+            esc_url(get_template_directory_uri() . $font)
+        );
+    }
+}, 2);
+
+/**
+ * WordPress's emoji polyfill only matters for browsers without native emoji,
+ * which no supported browser lacks. Drop its detection script and styles.
+ */
+add_action('init', function () {
+    remove_action('wp_head', 'print_emoji_detection_script', 7);
+    remove_action('wp_enqueue_scripts', 'wp_enqueue_emoji_styles');
+    remove_action('wp_print_styles', 'print_emoji_styles');
+    remove_action('embed_head', 'print_emoji_detection_script');
+    remove_action('enqueue_embed_scripts', 'wp_enqueue_emoji_styles');
+    remove_filter('the_content_feed', 'wp_staticize_emoji');
+    remove_filter('comment_text_rss', 'wp_staticize_emoji');
+    remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
+});
+
+/**
+ * File modification time for a URL inside this theme, used as the asset
+ * version so caches can be long-lived. Returns null for other URLs.
+ */
+function theme_asset_version(string $url): ?string
+{
+    $base = get_template_directory_uri();
+    if (strpos($url, $base) !== 0) {
+        return null;
+    }
+
+    $file = get_template_directory() . str_replace(['..', "\0"], '', substr($url, strlen($base)));
+    return is_readable($file) ? (string) filemtime($file) : null;
+}
 
 /**
  * Register the theme's editor styles.

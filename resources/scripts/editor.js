@@ -1,6 +1,7 @@
 import {domReady} from '@roots/sage/client';
 import {registerBlockStyle, unregisterBlockStyle} from '@wordpress/blocks';
 
+import './card-scroller-block';
 import './latest-post-slider-block';
 import './wrapped-image-text-block';
 

@@ -76,6 +76,7 @@ require_once __DIR__ . '/inc/search/bootstrap.php';
 
 add_action('init', [\App\LatestPostSliderBlock::class, 'register']);
 add_action('init', [\App\WrappedImageTextBlock::class, 'register']);
+add_action('init', [\App\CardScrollerBlock::class, 'register']);
 \App\PostMediaPriority::register();
 
 Adventistai_Alps_GitHub_Updater::bootstrap();
