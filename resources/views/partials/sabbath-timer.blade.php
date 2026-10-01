@@ -98,3 +98,11 @@
 
   <script type="application/json" data-sabbath-data>{!! wp_json_encode($sabbathTimerData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
 </div>
+@php
+  // Embedded straight after the markup: a deferred file would reveal the
+  // timer after the content below had already been laid out, shifting it.
+  $sabbathTimerScript = get_template_directory() . '/assets/js/sabbath-timer.js';
+@endphp
+@if (is_readable($sabbathTimerScript))
+  <script>{!! file_get_contents($sabbathTimerScript) !!}</script>
+@endif

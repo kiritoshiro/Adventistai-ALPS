@@ -172,20 +172,20 @@ final class SabbathTimer
         return $degrees < 0.0 ? $degrees + 360.0 : $degrees;
     }
 
+    /**
+     * Only the fields sabbath-timer.js reads. The payload is inlined into the
+     * front page for 20 cities and seven weeks, so every extra field costs
+     * kilobytes of HTML on each visit.
+     */
     private static function event(string $type, DateTimeImmutable $sunset): array
     {
         $event = [
             'type' => $type,
             'timestamp' => $sunset->getTimestamp(),
-            'iso' => $sunset->format(DATE_ATOM),
-            'date' => $sunset->format('Y-m-d'),
-            'time' => $sunset->format('H:i'),
         ];
 
         if ($type === 'start') {
-            $reveal = $sunset->setTime(self::FRIDAY_REVEAL_HOUR, 0, 0);
-            $event['revealTimestamp'] = $reveal->getTimestamp();
-            $event['revealIso'] = $reveal->format(DATE_ATOM);
+            $event['revealTimestamp'] = $sunset->setTime(self::FRIDAY_REVEAL_HOUR, 0, 0)->getTimestamp();
         }
 
         return $event;

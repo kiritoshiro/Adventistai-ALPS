@@ -1,0 +1,355 @@
+/*
+ * alps/card-scroller block (app/CardScrollerBlock.php).
+ * Layout variants: --cover (book covers) and --logo (partner logos).
+ */
+.alps-card-scroller {
+  --card-width: 190px;
+  --card-padding: 10px 10px 13px;
+  --media-height: 266px;
+  --gap: 14px;
+  --edge-fade: #fff;
+
+  width: 95%;
+  max-width: 1200px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.alps-card-scroller--logo {
+  --card-width: 180px;
+  --card-padding: 12px 12px 13px;
+  --media-height: 100px;
+}
+
+.alps-card-scroller__heading {
+  margin: 10px 0 14px;
+  text-align: center;
+}
+
+.alps-card-scroller__heading a {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+.alps-card-scroller__frame {
+  position: relative;
+  padding: 12px 4px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.alps-card-scroller__track {
+  display: flex;
+  gap: var(--gap);
+  margin: 0;
+  padding: 5px 4px 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  cursor: grab;
+}
+
+.alps-card-scroller__track::-webkit-scrollbar {
+  display: none;
+}
+
+.alps-card-scroller__track.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.alps-card-scroller__track.is-dragging .alps-card-scroller__card {
+  pointer-events: none;
+}
+
+.alps-card-scroller__item {
+  flex: 0 0 var(--card-width);
+  display: flex;
+  margin: 0;
+}
+
+.alps-card-scroller .alps-card-scroller__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--card-padding);
+  color: inherit !important;
+  text-decoration: none !important;
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 12px;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.alps-card-scroller .alps-card-scroller__card:hover,
+.alps-card-scroller .alps-card-scroller__card:focus-visible {
+  border-color: #ddd;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.09), 0 2px 5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-4px);
+}
+
+.alps-card-scroller__media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: var(--media-height);
+  margin-bottom: 11px;
+}
+
+.alps-card-scroller .alps-card-scroller__image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: var(--media-height);
+  object-fit: contain;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  -webkit-user-drag: none;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.alps-card-scroller__card:hover .alps-card-scroller__image {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.17);
+  transform: scale(1.025);
+}
+
+.alps-card-scroller--logo .alps-card-scroller__media {
+  margin-bottom: 10px;
+}
+
+.alps-card-scroller--logo .alps-card-scroller__image {
+  max-height: 88px;
+  padding: 2px;
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: none;
+}
+
+.alps-card-scroller--logo .alps-card-scroller__card:hover .alps-card-scroller__image {
+  box-shadow: none;
+  transform: scale(1.035);
+}
+
+.alps-card-scroller__title {
+  width: 100%;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.3;
+  color: #252525;
+  text-align: center;
+}
+
+.alps-card-scroller--logo .alps-card-scroller__title {
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.alps-card-scroller__description {
+  width: 100%;
+  margin-top: 4px;
+  font-size: 12.5px;
+  line-height: 1.3;
+  color: #6b6b6b;
+  text-align: center;
+}
+
+.alps-card-scroller .alps-card-scroller__card--more {
+  justify-content: center;
+  min-height: 164px;
+  padding: 20px;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.3;
+  color: #fff !important;
+  background: #1775c8;
+  border: 0;
+}
+
+.alps-card-scroller .alps-card-scroller__card--more:hover,
+.alps-card-scroller .alps-card-scroller__card--more:focus-visible {
+  background: #1267b2;
+  box-shadow: 0 8px 20px rgba(0, 80, 160, 0.18);
+}
+
+.alps-card-scroller__more-arrow {
+  display: block;
+  margin-top: 5px;
+  font-size: 23px;
+  line-height: 1;
+}
+
+/* Edge controls: overlay the row, so showing or hiding them never shifts it. */
+.alps-card-scroller__arrow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  width: 82px;
+  margin: 0;
+  padding: 0 8px;
+  color: #fff;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.alps-card-scroller__arrow[hidden] {
+  display: none;
+}
+
+.alps-card-scroller__arrow--prev {
+  left: 0;
+  justify-content: flex-start;
+  background: linear-gradient(to right, var(--edge-fade) 0%, rgba(255, 255, 255, 0.94) 25%, rgba(255, 255, 255, 0.6) 60%, rgba(255, 255, 255, 0) 100%);
+}
+
+.alps-card-scroller__arrow--next {
+  right: 0;
+  justify-content: flex-end;
+  background: linear-gradient(to left, var(--edge-fade) 0%, rgba(255, 255, 255, 0.94) 25%, rgba(255, 255, 255, 0.6) 60%, rgba(255, 255, 255, 0) 100%);
+}
+
+.alps-card-scroller__arrow span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  font-family: Arial, sans-serif;
+  font-size: 25px;
+  line-height: 1;
+  background: rgba(30, 30, 30, 0.88);
+  border-radius: 50%;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.16);
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.alps-card-scroller__arrow:hover span,
+.alps-card-scroller__arrow:focus-visible span {
+  background: #111;
+  transform: scale(1.07);
+}
+
+.alps-card-scroller__arrow:focus-visible {
+  outline: none;
+}
+
+.alps-card-scroller__arrow:focus-visible span {
+  outline: 2px solid #1775c8;
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .alps-card-scroller {
+    --card-width: 165px;
+    --card-padding: 8px 8px 11px;
+    --media-height: 225px;
+    --gap: 10px;
+
+    width: 100%;
+  }
+
+  .alps-card-scroller--logo {
+    --card-width: 150px;
+    --card-padding: 10px;
+    --media-height: 88px;
+  }
+
+  .alps-card-scroller--logo .alps-card-scroller__image {
+    max-height: 78px;
+  }
+
+  .alps-card-scroller--logo .alps-card-scroller__title {
+    font-size: 14px;
+  }
+
+  .alps-card-scroller__frame {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .alps-card-scroller__track {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .alps-card-scroller__title {
+    font-size: 13.5px;
+  }
+
+  .alps-card-scroller__description {
+    font-size: 12px;
+  }
+
+  .alps-card-scroller__arrow {
+    width: 56px;
+    padding: 0 4px;
+  }
+
+  .alps-card-scroller__arrow span {
+    width: 34px;
+    height: 34px;
+    font-size: 21px;
+  }
+
+  .alps-card-scroller .alps-card-scroller__card--more {
+    min-height: 151px;
+  }
+}
+
+/* Block editor only. */
+.alps-card-scroller.is-editing {
+  --card-width: 220px;
+}
+
+.alps-card-scroller.is-editing .alps-card-scroller__track {
+  align-items: flex-start;
+  cursor: auto;
+}
+
+.alps-card-scroller.is-editing .alps-card-scroller__card {
+  gap: 8px;
+  align-items: stretch;
+  transform: none;
+}
+
+.alps-card-scroller.is-editing .alps-card-scroller__media {
+  margin-bottom: 0;
+}
+
+.alps-card-scroller__placeholder {
+  font-size: 13px;
+  color: #6b6b6b;
+}
+
+.alps-card-scroller__editor-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.alps-card-scroller.is-editing .alps-card-scroller__item:last-child {
+  align-items: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alps-card-scroller__card,
+  .alps-card-scroller__image,
+  .alps-card-scroller__arrow span {
+    transition: none;
+  }
+
+  .alps-card-scroller .alps-card-scroller__card:hover,
+  .alps-card-scroller__card:hover .alps-card-scroller__image {
+    transform: none;
+  }
+}

@@ -59,6 +59,11 @@ jobs:
       - name: Run search regression checks
         run: php tests/search/run.php
 
+      - name: Run block and Sabbath timer checks
+        run: |
+          php tests/blocks/card-scroller.php
+          php tests/sabbath/run.php
+
       - name: Check installed PHP platform requirements
         run: composer check-platform-reqs
 
