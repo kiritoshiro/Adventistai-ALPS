@@ -24,6 +24,8 @@
 /.qa-tools/
 /.compat-tools/
 
-# Local Lighthouse results; CI uploads them as artifacts.
+# Full Lighthouse results stay local; CI uploads a sanitized summary.
 /.lighthouseci/
 /lighthouse-report/
+/lighthouse-summary.json
+/lighthouse-summary.md

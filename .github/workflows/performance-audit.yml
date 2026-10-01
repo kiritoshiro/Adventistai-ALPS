@@ -43,20 +43,15 @@ jobs:
       - name: Audit deployed homepage (three mobile runs)
         run: npm exec --yes --package=@lhci/cli@0.15.1 -- lhci collect --url=https://adventistai.lt/ --numberOfRuns=3
 
-      - name: Save HTML and JSON reports locally
-        if: always()
-        run: |
-          if [ -d .lighthouseci ]; then
-            npm exec --yes --package=@lhci/cli@0.15.1 -- lhci upload --target=filesystem --outputDir=./lighthouse-report
-          fi
+      - name: Summarize audit without page content or request URLs
+        run: node scripts/summarize-lighthouse.mjs
 
-      - name: Upload audit reports
-        if: always()
+      - name: Upload sanitized summary
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
-          name: live-homepage-lighthouse
+          name: live-homepage-lighthouse-summary
           path: |
-            lighthouse-report/
-            .lighthouseci/
-          if-no-files-found: warn
+            lighthouse-summary.json
+            lighthouse-summary.md
+          if-no-files-found: error
           retention-days: 14
