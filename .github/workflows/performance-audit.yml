@@ -1,0 +1,57 @@
+name: Live homepage performance audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-homepage-performance
+  cancel-in-progress: true
+
+jobs:
+  lighthouse:
+    name: Lighthouse mobile report
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+
+      - name: Verify homepage response
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 --retry-delay 2 \
+            --output homepage.html https://adventistai.lt/
+          if ! grep -Eiq '<title>[^<]*Adventist' homepage.html; then
+            echo '::error::Homepage identity check failed; the audit may see a challenge or error page.'
+            exit 1
+          fi
+          rm homepage.html
+
+      - name: Audit deployed homepage (three mobile runs)
+        run: npm exec --yes --package=@lhci/cli@0.15.1 -- lhci collect --url=https://adventistai.lt/ --numberOfRuns=3
+
+      - name: Summarize audit without page content or request URLs
+        run: node scripts/summarize-lighthouse.mjs
+
+      - name: Upload sanitized summary
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: live-homepage-lighthouse-summary
+          path: |
+            lighthouse-summary.json
+            lighthouse-summary.md
+          if-no-files-found: error
+          retention-days: 14
