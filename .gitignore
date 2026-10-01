@@ -23,3 +23,7 @@
 # Created by .github/workflows/wordpress-quality.yml; never committed.
 /.qa-tools/
 /.compat-tools/
+
+# Local Lighthouse results; CI uploads them as artifacts.
+/.lighthouseci/
+/lighthouse-report/
