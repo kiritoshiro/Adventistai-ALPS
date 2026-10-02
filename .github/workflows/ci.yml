@@ -64,6 +64,9 @@ jobs:
           php tests/blocks/card-scroller.php
           php tests/sabbath/run.php
 
+      - name: Run account access checks
+        run: php tests/access/run.php
+
       - name: Check installed PHP platform requirements
         run: composer check-platform-reqs
 
