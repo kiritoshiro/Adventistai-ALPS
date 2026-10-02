@@ -49,6 +49,25 @@ credentials, personal data, licensing and fork restrictions before changing
 visibility. No visibility changes are part of this rollout.
 
 
+## Account access (`app/AccountAccess.php`)
+
+Accounts that cannot `edit_posts` (subscribers and similar roles) are kept out
+of wp-admin:
+
+- any wp-admin page, including the profile, redirects them to the home page;
+- the admin bar is hidden, and after login they land on the home page (a
+  requested front-end page is kept);
+- `admin-ajax.php` and `admin-post.php` stay reachable, but only for actions
+  that also have a `nopriv` handler, i.e. actions any visitor can already run.
+  This shields them from plugin handlers that check a nonce or nothing at all
+  instead of a capability (the calendar plugin had several).
+
+Contributors and higher keep wp-admin. Filters:
+`adventistai_restrict_admin_access` (return false for a user to exempt them)
+and `adventistai_restricted_account_actions` (extra AJAX/admin-post actions
+these accounts may call; default `heartbeat`). Password reset through
+`wp-login.php` is unaffected; such accounts can no longer edit their profile.
+
 ## Reviewed source findings — 2026-09-29
 
 Search renderer outputs pass through wp_kses_post, while its helpers escape URLs, text, attributes and highlighted markup. The generic echoed-request rule still flags these expressions. The request-derived callable was replaced by explicit switch dispatch. Narrow inline suppressions apply only to the named rule at these reviewed expressions. Owner: repository maintainer. Review by 2026-12-29 or on code changes.
