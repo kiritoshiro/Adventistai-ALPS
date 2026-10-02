@@ -100,6 +100,14 @@ jobs:
           cp -R vendor/htmlburger/carbon-fields/build public/carbon-fields/
           cp -R vendor/htmlburger/carbon-fields/core/Libraries/Sidebar_Manager/assets \
             public/carbon-fields/core/Libraries/Sidebar_Manager/
+          # Carbon Fields loads the readable builds only under SCRIPT_DEBUG, and
+          # app/carbon-fields/_init.php falls back to the .min files then. Drop
+          # each readable build (about 15 MB) that has a minified twin.
+          find public/carbon-fields/build -type f \( -name '*.js' -o -name '*.css' \) ! -name '*.min.*' -print0 |
+            while IFS= read -r -d '' file; do
+              min="${file%.*}.min.${file##*.}"
+              if [ -s "$min" ]; then rm "$file"; fi
+            done
 
       - name: Check PHP syntax
         if: steps.existing.outputs.released != 'true'
@@ -117,6 +125,14 @@ jobs:
             --exclude='.github/' \
             --exclude='/build/' \
             --exclude='/vendor/htmlburger/carbon-fields/build/' \
+            --exclude='/vendor/roots/acorn/tests/' \
+            --exclude='/tests/' \
+            --exclude='/docs/' \
+            --exclude='/scripts/' \
+            --exclude='/package-lock.json' \
+            --exclude='/composer.lock' \
+            --exclude='/jsconfig.json' \
+            --exclude='/phpcs-security.xml.dist' \
             --exclude='/webnus/modern-events-calendar/' \
             --exclude='/webnus/modern-events-calendar-lite/' \
             --exclude='/single-mec-events.php' \
@@ -135,6 +151,11 @@ jobs:
           test -s build/adventistai/public/carbon-fields/build/gutenberg/metaboxes.min.js
           test -s build/adventistai/public/carbon-fields/core/Libraries/Sidebar_Manager/assets/css/app.css
           test -s build/adventistai/public/carbon-fields/core/Libraries/Sidebar_Manager/assets/js/app.js
+          test -s build/adventistai/vendor/roots/acorn/src/Roots/helpers.php
+          test -s build/adventistai/colors.json
+          test ! -e build/adventistai/public/carbon-fields/build/classic/vendor.js
+          test ! -e build/adventistai/vendor/roots/acorn/tests
+          test ! -e build/adventistai/tests
           cd build
           zip -qr adventistai.zip adventistai
           unzip -tq adventistai.zip
