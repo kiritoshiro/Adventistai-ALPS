@@ -235,18 +235,13 @@ function my_update_notice() {
 
 
 /**
- * Allow SVG's through WP media uploader
+ * Required/recommended plugin notices (TGM Plugin Activation). Only wp-admin
+ * uses them, so visitor requests do not load the library. SVG uploads are
+ * left to the required SVG Support plugin, which can sanitize them.
  */
-function cc_mime_types($mimes) {
-  $mimes['svg'] = 'image/svg+xml';
-  return $mimes;
+if (is_admin()) {
+    require_once __DIR__.'/app/plugin-activation.php';
 }
-add_filter('upload_mimes', 'cc_mime_types');
-
-/**
- * Provides automatic updates for the WordPress theme and plugins (http://wp-updates.com/)
- */
-require_once __DIR__.'/app/plugin-activation.php';
 
 
 /**
@@ -481,31 +476,7 @@ function pagination_nav() {
 
 add_theme_support('sage');
 
-function wpml_language_menu_items(){
-  $languages = icl_get_languages('skip_missing=0');
-  if (!empty($languages)) {
-    echo '<li class="c-secondary-nav__list-item has-subnav">';
-      echo '<a href="" class="c-secondary-nav__link u-font--secondary-nav u-color--gray u-theme--link-hover--base"><span class="u-icon u-icon--xs u-path-fill--gray"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><title>Language</title><path d="M10,4V2H6V0H4V2H0V4H5.9A9.16,9.16,0,0,1,4.51,5.56a8.84,8.84,0,0,1-1-1.08L1.9,5.74a12,12,0,0,0,1,1A26.55,26.55,0,0,1,.55,8.11l.9,1.78a22.2,22.2,0,0,0,3-1.8,23.58,23.58,0,0,0,3.06,1.8l.9-1.78A22.43,22.43,0,0,1,6.11,6.78,10.49,10.49,0,0,0,8.22,4Z" fill="#777"/></svg></span>Languages</a>';
-      echo '<span class="c-subnav__arrow o-arrow--down u-path-fill--gray"></span>';
-      echo '<ul class="c-secondary-nav__subnav c-subnav">';
-        foreach($languages as $language) {
-          echo '<li class="c-secondary-nav__subnav__list-item c-subnav__list-item u-background-color--gray--light">';
-            printf('<a href="%s" class="c-secondary-nav__subnav__link c-subnav__link u-color--gray--dark u-theme--link-hover--base">', esc_url($language['url']));
-              if ($language['country_flag_url']) {
-                printf('<img src="%1$s" height="12" alt="%2$s" width="18" class="u-space--half--right" />', esc_url($language['country_flag_url']), esc_attr($language['language_code']));
-              }
-              echo esc_html(icl_disp_language($language['native_name']));
-              echo esc_html(icl_disp_language(' (' . $language['translated_name'] . ')'));
-            echo '</a>';
-          echo '</li>';
-        }
-      echo '</ul>';
-    echo '</li>';
-  }
-}
-
 require_once('app/autoloader.php');
-(new \App\Core\ALPSVersions())->init();
 (new \App\CronScheduler())->init();
 (new \App\Integrations\CustomSidebars())->init();
 
