@@ -33,6 +33,8 @@ Images are shown whole:
 - **Card grids and lists** keep one shape per slot (16:9, 4:3, 3:4 or square) so rows stay even. An image whose shape is close to the slot's (within 25%) fills it with a small trim. A very different shape, such as a portrait in a 16:9 card or a panorama, is shown whole on a light backdrop.
 - **Round thumbnails** remain a filled circle, a deliberate crop.
 
+When WP Cleanup applies a manually chosen size gap to selected attachments, it records small_gap_px in the shared image record. ALPS honors that per-attachment value on thumbnail regeneration and while expiring a retained upload original. The setting does not affect future uploads.
+
 Existing template size names resolve to the small and full files for new attachments only. Other plugins that generate files independently of core can bypass this policy. Core client-side media processing and media offload plugins need integration testing before deployment. Converted images are served from the site's own uploads URL, not through Jetpack's image CDN (i0.wp.com).
 
 ## Verification before release
