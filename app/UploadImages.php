@@ -122,8 +122,15 @@ final class UploadImages
         if ($file) {
             self::$files[$file] = true;
         }
-        self::$makingSmall = true;
         $small = self::policy()['small_max'];
+        $outputs = get_post_meta($id, self::OUTPUTS, true);
+        $gap = is_array($outputs) ? max(0, min(8192, (int) ($outputs['small_gap_px'] ?? 0))) : 0;
+        $longest = max((int) ($metadata['width'] ?? 0), (int) ($metadata['height'] ?? 0));
+        if ($gap && $longest > 0 && $longest <= $small + $gap) {
+            self::$makingSmall = false;
+            return [];
+        }
+        self::$makingSmall = true;
         return ['alps-small' => ['width' => $small, 'height' => $small, 'crop' => false]];
     }
 
@@ -240,6 +247,8 @@ final class UploadImages
             'avif_small_width' => $smallIsAvif ? (int) $small['width'] : 0,
             'avif_small_height' => $smallIsAvif ? (int) $small['height'] : 0,
             'avif_error' => '',
+            // A WP Cleanup selection stays single-size if WordPress regenerates thumbnails.
+            'small_gap_px' => $smallIsAvif ? 0 : max(0, min(8192, (int) ($previous['small_gap_px'] ?? 0))),
             'policy' => $policy,
             'by' => 'alps-theme',
         ]);

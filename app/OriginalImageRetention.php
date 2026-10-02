@@ -91,7 +91,13 @@ final class OriginalImageRetention
                 return false;
             }
         }
-        if (max($metadata['width'] ?? 0, $metadata['height'] ?? 0) > 768 && empty($metadata['sizes']['alps-small'])) {
+        $outputs = get_post_meta($id, '_wpcu_image_outputs', true);
+        $gap = is_array($outputs) ? max(0, min(8192, (int) ($outputs['small_gap_px'] ?? 0))) : 0;
+        $smallLimit = is_array($outputs) && isset($outputs['policy']['small_max'])
+            ? (int) $outputs['policy']['small_max'] : 768;
+        $longest = max((int) ($metadata['width'] ?? 0), (int) ($metadata['height'] ?? 0));
+        if ($longest > $smallLimit && empty($metadata['sizes']['alps-small'])
+            && (!$gap || $longest > $smallLimit + $gap)) {
             return false;
         }
         foreach ($metadata['sizes'] ?? [] as $size) {
