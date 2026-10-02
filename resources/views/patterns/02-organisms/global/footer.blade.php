@@ -32,7 +32,6 @@
     $footer_address_phone = get_alps_option('footer_phone');
   }
 
-  $alpsVersion = \App\Core\ALPSVersions::get();
 @endphp
 @if (is_active_sidebar('footer-region'))
   <div class="c-footer-widgets u-spacing">
@@ -78,5 +77,3 @@
     </div> <!-- /.c-footer__legal -->
   </div> <!-- /.c-footer--inner -->
 </footer> <!-- /.c-footer -->
-
-<script src="{{ $alpsVersion['scripts']['main'] }}{{ alps_asset_version($alpsVersion['scripts']['main']) }}" type="text/javascript" async></script>

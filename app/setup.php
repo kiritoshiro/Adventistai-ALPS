@@ -33,7 +33,7 @@ add_action('wp_enqueue_scripts', function () {
 }, 1000);
 
 /**
- * ALPS pattern-library stylesheet.
+ * ALPS pattern-library stylesheet and script.
  *
  * It used to be printed straight from head.blade.php after wp_head(), so it
  * came after every enqueued stylesheet. Enqueuing it last keeps that cascade
@@ -50,6 +50,14 @@ add_action('wp_enqueue_scripts', function () {
     }
 
     wp_enqueue_style('alps-main', $url, [], theme_asset_version($url));
+
+    // The pattern-library script reads the global jQuery as soon as it runs,
+    // so declare it as a dependency instead of relying on a plugin to load it.
+    $script = $alps['scripts']['main'];
+    wp_enqueue_script('alps-main', $script, ['jquery'], theme_asset_version($script), [
+        'in_footer' => true,
+        'strategy' => 'async',
+    ]);
 
     $timer = get_template_directory() . '/assets/css/sabbath-timer.css';
     if (is_front_page() && is_readable($timer)) {

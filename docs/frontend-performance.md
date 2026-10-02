@@ -33,6 +33,10 @@ Repeat for the italic file. Keep the existing Latin/Latin Extended-A subset, whi
 
 `sabbath-timer.js` is embedded straight after the timer markup, so the timer is shown or hidden before the content below it is laid out. As a deferred file, it revealed the timer late and shifted the page. The embedded JSON payload carries only the fields the script reads: about 16 KB instead of 41 KB.
 
+## ALPS script
+
+`app/local/alps/js/script.min.js` (menus, drawer and other pattern-library behaviour) is enqueued in `app/setup.php` as `alps-main`, in the footer, async, with `jquery` as a dependency. It reads the global `jQuery` as soon as it runs. It used to be a raw `<script>` tag in the footer template, which threw "jQuery is not defined" on sites where no plugin happened to load jQuery.
+
 ## Server caching (not in the theme)
 
 Theme and plugin asset URLs change with every version (`?ver=` or content hashes), so they can be cached for a year. Set this at Cloudflare (Cache Rule → Browser TTL) or on the origin:
