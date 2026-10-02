@@ -86,6 +86,9 @@ final class AccountAccess
     private static function publicAction(string $prefix): bool
     {
         // Match the name exactly as admin-ajax.php and admin-post.php dispatch it.
+        // Sanitizing could let a crafted name match a public action while core
+        // dispatches a different, private one.
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Compared with registered hook names only; never output or stored. Each handler verifies its own nonce.
         $action = isset($_REQUEST['action']) && is_string($_REQUEST['action']) ? wp_unslash($_REQUEST['action']) : '';
         if ($action === '') {
             return true;
