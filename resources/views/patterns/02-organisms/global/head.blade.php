@@ -1,6 +1,11 @@
 @php
   $theme_color = get_alps_option('theme_color');
   $alpsVersion = \App\Core\ALPSVersions::get();
+  // Colour favicon when one exists for the chosen colour, else the default one.
+  $favicon = '/assets/images/favicon' . ($theme_color ? '--' . sanitize_key($theme_color) : '') . '.png';
+  if (! is_readable(get_template_directory() . $favicon)) {
+    $favicon = '/assets/images/favicon.png';
+  }
 @endphp
 <head>
   <meta charset="<?php bloginfo('charset'); ?>">
@@ -23,7 +28,7 @@
     }
   @endphp
 
-  <link rel="shortcut icon" href="<?php bloginfo('template_directory'); ?>/assets/images/favicon<?php if ($theme_color): echo '--' . $theme_color; endif; ?>.png">
+  <link rel="shortcut icon" href="{{ esc_url(get_template_directory_uri() . $favicon) }}">
   {{-- The ALPS stylesheet, font preloads and Sabbath timer styles are enqueued from app/setup.php. --}}
   <script src="{{ $alpsVersion['scripts']['head'] }}{{ alps_asset_version($alpsVersion['scripts']['head']) }}" type="text/javascript" async></script>
 </head>

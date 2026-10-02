@@ -74,8 +74,3 @@ function cf_admin_js($hook)
 
 add_action('admin_enqueue_scripts', 'cf_admin_js');
 
-// HELPER FUNCTION
-function is_multidimensional(array $array)
-{
-    return count($array) !== count($array, COUNT_RECURSIVE);
-}
