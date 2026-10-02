@@ -15,6 +15,36 @@ function crb_load()
     require_once('cf-widget.php');
 }
 
+// RELEASE ZIPS SHIP ONLY THE MINIFIED CF BUILDS. WHEN SCRIPT_DEBUG ASKS FOR
+// A READABLE BUILD THAT IS NOT THERE, SERVE ITS MINIFIED TWIN INSTEAD.
+function crb_minified_asset_fallback($src)
+{
+    if (! defined('SCRIPT_DEBUG') || ! SCRIPT_DEBUG || ! is_string($src)) {
+        return $src;
+    }
+
+    $base = get_template_directory_uri() . '/public/carbon-fields/build/';
+    if (strpos($src, $base) !== 0) {
+        return $src;
+    }
+
+    $path = strtok(substr($src, strlen($base)), '?#');
+    if (! preg_match('#^(classic|gutenberg)/([a-z-]+)\.(js|css)$#', (string) $path, $m)) {
+        return $src;
+    }
+
+    $dir = get_template_directory() . '/public/carbon-fields/build/';
+    $min = "{$m[1]}/{$m[2]}.min.{$m[3]}";
+    if (is_readable($dir . $path) || ! is_readable($dir . $min)) {
+        return $src;
+    }
+
+    return $base . $min . substr($src, strlen($base) + strlen($path));
+}
+
+add_filter('script_loader_src', 'crb_minified_asset_fallback');
+add_filter('style_loader_src', 'crb_minified_asset_fallback');
+
 add_filter('use_widgets_block_editor', '__return_false');
 add_filter('gutenberg_use_widgets_block_editor', '__return_false');
 
