@@ -1,21 +1,13 @@
 name: Security Audit
 
+# Reusable: runs only through security-gate.yml, which owns the triggers,
+# schedule and concurrency.
 on:
-  push:
-    branches: [main]
-  pull_request:
-  schedule:
-    - cron: '23 4 * * 1'
   workflow_call:
-  workflow_dispatch:
 
 permissions:
   contents: read
   pull-requests: read
-
-concurrency:
-  group: security-audit-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   composer:
@@ -55,8 +47,10 @@ jobs:
       - name: Audit npm production dependencies
         run: npm audit --omit=dev --audit-level=high
 
+      # Fails on every high/critical advisory except narrow, dated exceptions in
+      # .github/security/npm-audit-exceptions.json (build tooling only).
       - name: Audit complete npm dependency graph
-        run: npm audit --audit-level=high
+        run: python3 .github/security/npm_audit.py
 
   secrets:
     name: Secret leak scan

@@ -1,12 +1,9 @@
 name: Static Analysis
 
+# Reusable: runs only through security-gate.yml, which owns the triggers,
+# schedule and concurrency.
 on:
-  push:
-    branches: [main]
-  pull_request:
-  schedule:
-    - cron: '47 4 * * 2'
-  workflow_dispatch:
+  workflow_call:
 
 permissions: {}
 

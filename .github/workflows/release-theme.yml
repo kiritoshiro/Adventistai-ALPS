@@ -10,28 +10,18 @@ permissions:
   contents: read
 
 jobs:
-  cybersecurity:
-    permissions:
-      contents: read
-    uses: ./.github/workflows/cybersecurity.yml
-  dependency-audit:
+  # The whole security gate must pass on this commit before a release is built.
+  security-gate:
     permissions:
       contents: read
       pull-requests: read
-    uses: ./.github/workflows/security-audit.yml
-  wordpress-security:
-    permissions:
-      contents: read
-    uses: ./.github/workflows/wordpress-quality.yml
-  repository-security:
-    permissions:
-      contents: read
       actions: read
-    uses: ./.github/workflows/repository-security.yml
+      security-events: write
+    uses: ./.github/workflows/security-gate.yml
   release:
     permissions:
       contents: write
-    needs: [cybersecurity, dependency-audit, wordpress-security, repository-security]
+    needs: security-gate
     runs-on: ubuntu-latest
     steps:
       - name: Check out source

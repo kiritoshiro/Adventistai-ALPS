@@ -71,3 +71,19 @@ these accounts may call; default `heartbeat`). Password reset through
 ## Reviewed source findings — 2026-09-29
 
 Search renderer outputs pass through wp_kses_post, while its helpers escape URLs, text, attributes and highlighted markup. The generic echoed-request rule still flags these expressions. The request-derived callable was replaced by explicit switch dispatch. Narrow inline suppressions apply only to the named rule at these reviewed expressions. Owner: repository maintainer. Review by 2026-12-29 or on code changes.
+
+## Security gate
+
+`.github/workflows/security-gate.yml` is the only workflow that triggers the
+security scans: on pull requests and pushes to the default branch, weekly, and
+manually. The scan workflows (the baseline and, where present, CodeQL and the
+older security workflow) are reusable and run only through it. The gate also adds
+dependency audits for shipped lockfiles and, on pull requests where the repository has the dependency graph enabled, dependency review.
+Its final job, **All security checks passed**, fails unless every check succeeded;
+a cancelled or unexpectedly skipped check counts as a failure.
+
+Release workflows call the same gate on the release commit, so a package is built
+only when every check passes on exactly that commit. Branch protection on public
+repositories requires **All security checks passed** (plus the code-scanning
+**CodeQL** check where CodeQL runs). Private repositories on GitHub Free cannot
+enforce required checks, so review the gate result before merging there.

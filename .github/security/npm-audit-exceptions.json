@@ -1,0 +1,10 @@
+[
+  {
+    "id": "GHSA-vfj7-8cjw-p6xm",
+    "package": "braces",
+    "reason": "Stack-exhaustion DoS from deeply nested glob patterns; no patched braces release exists (<=3.0.3 affected). Reached only through the Bud/Tailwind build toolchain (micromatch, chokidar, fast-glob), never shipped to the site, and an attacker would need to control glob patterns in our own build config. Accepted by the maintainer on 2026-10-04.",
+    "owner": "kiritoshiro",
+    "added": "2026-10-04",
+    "expires": "2026-12-31"
+  }
+]
