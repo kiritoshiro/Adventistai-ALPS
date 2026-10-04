@@ -1,19 +1,11 @@
 name: Repository Security
 
+# Reusable: runs only through security-gate.yml, which owns the triggers,
+# schedule and concurrency.
 on:
-  push:
-    branches: [main]
-  pull_request:
-  schedule:
-    - cron: '41 5 * * 4'
   workflow_call:
-  workflow_dispatch:
 
 permissions: {}
-
-concurrency:
-  group: repository-security-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   trivy:

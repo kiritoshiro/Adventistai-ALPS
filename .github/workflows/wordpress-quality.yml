@@ -1,20 +1,12 @@
 name: WordPress Quality & Security
 
+# Reusable: runs only through security-gate.yml, which owns the triggers,
+# schedule and concurrency.
 on:
-  push:
-    branches: [main]
-  pull_request:
-  schedule:
-    - cron: '17 5 * * 3'
   workflow_call:
-  workflow_dispatch:
 
 permissions:
   contents: read
-
-concurrency:
-  group: wordpress-quality-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   wordpress-security:
