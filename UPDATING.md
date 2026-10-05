@@ -1,4 +1,4 @@
-# Theme updates from private GitHub
+# Theme updates from GitHub
 
 This repository builds an installable `adventistai.zip` whenever a new version is pushed to `main`. The ZIP includes Composer dependencies and keeps the installed WordPress theme directory named `adventistai`.
 
@@ -8,9 +8,11 @@ This repository builds an installable `adventistai.zip` whenever a new version i
 2. In WordPress, open **Appearance > Themes > Add New > Upload Theme**.
 3. Upload the ZIP and choose **Replace current with uploaded** when WordPress detects the existing theme.
 
-## Enable automatic update notices
+## Automatic update notices
 
-Create a fine-grained GitHub personal access token that can read the private `kiritoshiro/Adventistai-ALPS` repository. Give it read-only access to **Contents** and add it above the `/* That's all, stop editing! */` line in `wp-config.php`:
+The repository is public, so update notices and installs work without any configuration.
+
+A token is optional. A fine-grained GitHub personal access token with read-only access to **Contents** of `kiritoshiro/Adventistai-ALPS` raises the GitHub API rate limit, and is required again only if the repository becomes private. Add it above the `/* That's all, stop editing! */` line in `wp-config.php`:
 
 ```php
 define( 'ADVENTISTAI_ALPS_GITHUB_TOKEN', 'github_pat_REPLACE_WITH_YOUR_TOKEN' );

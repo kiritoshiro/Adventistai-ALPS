@@ -23,7 +23,7 @@ final class Adventistai_Alps_Release_Manager
 
     public static function render_release_selector()
     {
-        if ( ! current_user_can( 'update_themes' ) || ! self::token() ) {
+        if ( ! current_user_can( 'update_themes' ) ) {
             return;
         }
 
@@ -89,7 +89,7 @@ final class Adventistai_Alps_Release_Manager
         check_admin_referer( 'adventistai_alps_install_release' );
 
         $version = isset( $_POST['version'] ) ? sanitize_text_field( wp_unslash( $_POST['version'] ) ) : '';
-        if ( ! $version || ! self::token() ) {
+        if ( ! $version ) {
             self::redirect( 'error', $version );
         }
 
@@ -166,11 +166,7 @@ final class Adventistai_Alps_Release_Manager
             'https://api.github.com/repos/' . self::REPOSITORY . '/releases?per_page=15',
             [
                 'timeout' => 15,
-                'headers' => [
-                    'Authorization'        => 'Bearer ' . self::token(),
-                    'Accept'               => 'application/vnd.github+json',
-                    'X-GitHub-Api-Version' => '2022-11-28',
-                ],
+                'headers' => self::api_headers(),
             ]
         );
 
@@ -214,6 +210,27 @@ final class Adventistai_Alps_Release_Manager
 
         set_site_transient( self::CACHE_KEY, $releases, self::CACHE_TTL );
         return $releases;
+    }
+
+    /**
+     * GitHub API headers. The repository is public, so the token is optional;
+     * it only raises the API rate limit (or restores access if it goes private).
+     *
+     * @return array<string, string>
+     */
+    private static function api_headers()
+    {
+        $headers = [
+            'Accept'               => 'application/vnd.github+json',
+            'X-GitHub-Api-Version' => '2022-11-28',
+        ];
+
+        $token = self::token();
+        if ( $token ) {
+            $headers['Authorization'] = 'Bearer ' . $token;
+        }
+
+        return $headers;
     }
 
     private static function token()
