@@ -1,9 +1,11 @@
 <?php
 
 /**
- * Private GitHub release updater for the Adventistai ALPS theme.
+ * GitHub release updater for the Adventistai ALPS theme.
  *
- * Add a fine-grained, read-only GitHub token to wp-config.php:
+ * The repository is public, so no token is needed. A fine-grained, read-only
+ * GitHub token in wp-config.php is optional; it raises the GitHub API rate
+ * limit, and is required again only if the repository becomes private:
  * define( 'ADVENTISTAI_ALPS_GITHUB_TOKEN', 'github_pat_...' );
  */
 
@@ -25,7 +27,6 @@ final class Adventistai_Alps_GitHub_Updater
     {
         add_filter( 'pre_set_site_transient_update_themes', [ __CLASS__, 'check_for_update' ] );
         add_filter( 'http_request_args', [ __CLASS__, 'authenticate_github_asset_request' ], 10, 2 );
-        add_action( 'admin_notices', [ __CLASS__, 'token_notice' ] );
         add_action( 'upgrader_process_complete', [ __CLASS__, 'clear_cache_after_update' ], 10, 2 );
 
         // Always fetch the latest GitHub release when an administrator explicitly
@@ -44,7 +45,7 @@ final class Adventistai_Alps_GitHub_Updater
      */
     public static function refresh_on_update_screen()
     {
-        if ( ! current_user_can( 'update_themes' ) || ! self::token() ) {
+        if ( ! current_user_can( 'update_themes' ) ) {
             return;
         }
 
@@ -85,7 +86,7 @@ final class Adventistai_Alps_GitHub_Updater
      */
     public static function check_for_update( $transient )
     {
-        if ( ! is_object( $transient ) || empty( $transient->checked ) || ! self::token() ) {
+        if ( ! is_object( $transient ) || empty( $transient->checked ) ) {
             return $transient;
         }
 
@@ -132,7 +133,12 @@ final class Adventistai_Alps_GitHub_Updater
     }
 
     /**
-     * Authenticate only the private release-asset endpoint used as the package URL.
+     * Prepare requests to this theme's release-asset endpoint, the package URL.
+     *
+     * The endpoint only returns the ZIP (via a redirect) when asked for
+     * application/octet-stream; otherwise it returns JSON metadata, so the
+     * Accept header is needed with or without a token. The optional token is
+     * added for this endpoint only.
      *
      * @param array<string, mixed> $args HTTP request arguments.
      * @param string               $url  Request URL.
@@ -143,25 +149,39 @@ final class Adventistai_Alps_GitHub_Updater
         $path_prefix = '/repos/' . self::REPOSITORY . '/releases/assets/';
         $host        = wp_parse_url( $url, PHP_URL_HOST );
         $path        = wp_parse_url( $url, PHP_URL_PATH );
-        $token       = self::token();
 
-        if ( $token && 'api.github.com' === $host && is_string( $path ) && 0 === strpos( $path, $path_prefix ) ) {
-            $args['headers']                  = isset( $args['headers'] ) && is_array( $args['headers'] ) ? $args['headers'] : [];
-            $args['headers']['Authorization'] = 'Bearer ' . $token;
-            $args['headers']['Accept']        = 'application/octet-stream';
+        if ( 'api.github.com' === $host && is_string( $path ) && 0 === strpos( $path, $path_prefix ) ) {
+            $args['headers'] = isset( $args['headers'] ) && is_array( $args['headers'] ) ? $args['headers'] : [];
+            $args['headers']['Accept']               = 'application/octet-stream';
             $args['headers']['X-GitHub-Api-Version'] = '2022-11-28';
+
+            $token = self::token();
+            if ( $token ) {
+                $args['headers']['Authorization'] = 'Bearer ' . $token;
+            }
         }
 
         return $args;
     }
 
-    public static function token_notice()
+    /**
+     * Headers for GitHub API requests; the token is optional.
+     *
+     * @return array<string, string>
+     */
+    public static function api_headers()
     {
-        if ( ! current_user_can( 'update_themes' ) || self::token() ) {
-            return;
+        $headers = [
+            'Accept'               => 'application/vnd.github+json',
+            'X-GitHub-Api-Version' => '2022-11-28',
+        ];
+
+        $token = self::token();
+        if ( $token ) {
+            $headers['Authorization'] = 'Bearer ' . $token;
         }
 
-        echo '<div class="notice notice-warning"><p><strong>Adventistai ALPS tema:</strong> privatūs GitHub atnaujinimai nebus tikrinami, kol <code>wp-config.php</code> faile nenustatytas <code>ADVENTISTAI_ALPS_GITHUB_TOKEN</code>.</p></div>';
+        return $headers;
     }
 
     /**
@@ -197,11 +217,7 @@ final class Adventistai_Alps_GitHub_Updater
             'https://api.github.com/repos/' . self::REPOSITORY . '/releases/latest',
             [
                 'timeout' => 15,
-                'headers' => [
-                    'Authorization'        => 'Bearer ' . self::token(),
-                    'Accept'               => 'application/vnd.github+json',
-                    'X-GitHub-Api-Version' => '2022-11-28',
-                ],
+                'headers' => self::api_headers(),
             ]
         );
 
