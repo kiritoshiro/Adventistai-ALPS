@@ -1,0 +1,50 @@
+name: WordPress checks
+
+# Reusable: runs only through security-gate.yml, which owns the triggers and
+# makes "All security checks passed" depend on these jobs.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  playground:
+    name: Playground smoke test (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.1', '8.4']
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up PHP with Composer
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer:v2
+      - name: Build the package
+        shell: bash
+        run: |
+          set -euo pipefail
+          composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+          mkdir -p public/carbon-fields/core/Libraries/Sidebar_Manager
+          cp -R vendor/htmlburger/carbon-fields/build public/carbon-fields/
+          cp -R vendor/htmlburger/carbon-fields/core/Libraries/Sidebar_Manager/assets public/carbon-fields/core/Libraries/Sidebar_Manager/
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      # Boots WordPress in WordPress Playground (PHP compiled to WebAssembly, no
+      # database server), activates this code, then loads the front end and
+      # every wp-admin menu page. See .github/playground/smoke.py.
+      - name: Boot WordPress Playground and load every page
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: python3 .github/playground/smoke.py --php "$PHP_VERSION"
