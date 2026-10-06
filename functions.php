@@ -295,12 +295,16 @@ function adventist_register_required_plugins() {
       ),
   );
 
-  if ( get_bloginfo( 'version' ) >= '5.0.0' ) {
+  if ( version_compare( get_bloginfo( 'version' ), '5.0.0', '>=' ) ) {
     // ADD IF WP IS V5 OR GREATER
+    // Our fork (latest-posts block only), not upstream's kernl.us package. Once
+    // installed, the plugin updates itself from the fork's GitHub releases;
+    // 'version' makes TGMPA offer an update to sites still on upstream 2.x.
     array_push( $plugins,  array(
       'name'               => 'ALPS Gutenberg Blocks',
       'slug'               => 'alps-gutenberg-blocks',
-      'source'             => 'https://kernl.us/api/v1/updates/5c13a3859e9cea4aa2fd8fbd/download',
+      'source'             => 'https://github.com/kiritoshiro/adventistai-alps-gutenberg-blocks/releases/download/v3.0.0/alps-gutenberg-blocks-v3.0.0.zip',
+      'version'            => '3.0.0',
       'required'           => true,
       'force_activation'   => true,
       'force_deactivation' => false,
