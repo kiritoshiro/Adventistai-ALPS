@@ -44,9 +44,9 @@
     }
   },
   "require": {
-    "php": "^8.1",
+    "php": "^8.3",
     "htmlburger/carbon-fields": "^3.6.11",
-    "roots/acorn": "^3.0"
+    "roots/acorn": "^6.3"
   },
   "suggest": {
     "log1x/sage-directives": "A collection of useful Blade directives for WordPress and Sage (^1.0).",
@@ -57,7 +57,7 @@
     "preferred-install": "dist",
     "sort-packages": true,
     "platform": {
-      "php": "8.1.0"
+      "php": "8.3.0"
     }
   },
   "minimum-stability": "dev",

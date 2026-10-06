@@ -3,6 +3,15 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.30.0]
+### Changed
+- Upgrade Roots Acorn from 3.3 (Laravel 9, end of life since February 2024) to 6.3 (Laravel 13), and boot it with `Application::configure()->boot()` instead of the deprecated `bootloader()`.
+- Require PHP 8.3 or later (Acorn 6 needs it). Production runs PHP 8.4.
+- Require our ALPS Gutenberg Blocks fork (3.0.0) through TGMPA instead of upstream's package.
+- Make the GitHub token for theme updates and the release selector optional.
+### Upgrade notes
+- Clear Acorn's compiled view cache after updating (`wp acorn optimize:clear`, or delete `wp-content/cache/acorn`).
+
 ## [3.28.1]
 ### Added
 - Generate lightweight SEO defaults for titles, descriptions, canonical URLs, social metadata, and structured breadcrumbs without requiring per-post SEO fields.
