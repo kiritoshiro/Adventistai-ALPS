@@ -96,6 +96,7 @@
               $thumbnailAlt = $thumbnailAlt ?: $postTitle;
               $categoryName = html_entity_decode(\App\ContentHelpers::categoryName((int) $postId), ENT_QUOTES | ENT_HTML5, 'UTF-8');
               $isActive = $slideIndex === 0;
+              $loadEager = $isActive && $thumbnailId && \App\LatestPostSlider::claimEagerImage();
             @endphp
 
             <article
@@ -112,7 +113,7 @@
                     {!! get_the_post_thumbnail($postId, 'full', [
                       'class' => 'alps-latest-slider__image',
                       'alt' => $thumbnailAlt,
-                      'loading' => $isActive ? 'eager' : 'lazy',
+                      'loading' => $loadEager ? 'eager' : 'lazy',
                       'decoding' => 'async',
                     ]) !!}
                   </div>

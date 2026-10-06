@@ -4,6 +4,10 @@
       "step": "writeFile",
       "path": "/wordpress/wp-content/mu-plugins/playground-web-request.php",
       "data": "<?php\n// Test site only. Playground's PHP reports the \"cli\" SAPI, so Acorn would\n// treat every web request as a console run and print its command list\n// instead of the site. Tell it these are web requests, as on a real server,\n// and give Symfony Console the array $_SERVER['argv'] it expects.\nputenv( 'APP_RUNNING_IN_CONSOLE=false' );\n$_ENV['APP_RUNNING_IN_CONSOLE']    = 'false';\n$_SERVER['APP_RUNNING_IN_CONSOLE'] = 'false';\nif ( isset( $_SERVER['argv'] ) && ! is_array( $_SERVER['argv'] ) ) {\n\t$_SERVER['argv'] = array();\n}\n"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php\n// A 640x940 image attached the way older uploads are: a JPEG with WordPress's\n// own sizes, so the hand-written <img> in the fixture can be matched to it.\nrequire '/wordpress/wp-load.php';\nrequire_once ABSPATH . 'wp-admin/includes/image.php';\nremove_all_actions('add_attachment');\nremove_all_filters('wp_generate_attachment_metadata');\nremove_all_filters('intermediate_image_sizes_advanced');\nremove_all_filters('image_editor_output_format');\n$file = WP_CONTENT_DIR . '/uploads/alps-ci-cover.jpg';\nwp_mkdir_p(dirname($file));\n$image = imagecreatetruecolor(640, 940);\nimagefill($image, 0, 0, imagecolorallocate($image, 40, 90, 140));\nimagejpeg($image, $file, 80);\n$id = wp_insert_attachment(['post_mime_type' => 'image/jpeg', 'post_title' => 'CI cover', 'post_status' => 'inherit'], $file);\nif (!$id || is_wp_error($id)) { throw new Exception('attachment was not created'); }\n$meta = wp_generate_attachment_metadata($id, $file);\nif (empty($meta['sizes'])) { throw new Exception('no image sizes were generated'); }\nwp_update_attachment_metadata($id, $meta);\n"
     }
   ],
   "mounts": [
@@ -16,8 +20,10 @@
     "/wordpress/wp-content/themes/adventistai/"
   ],
   "theme": "adventistai",
-  "fixture": "<!-- wp:paragraph --><p>Playground smoke test paragraph.</p><!-- /wp:paragraph -->",
+  "fixture": "<!-- wp:paragraph --><p>Playground smoke test paragraph.</p><!-- /wp:paragraph --><!-- wp:html --><div class=\"ci-hand-written\"><img src=\"/wp-content/uploads/alps-ci-cover.jpg\" alt=\"CI cover\"></div><!-- /wp:html -->",
   "expect": [
-    "Playground smoke test paragraph."
+    "Playground smoke test paragraph.",
+    "width=\"640\" height=\"940\" src=\"/wp-content/uploads/alps-ci-cover.jpg\"",
+    "alps-ci-cover-"
   ]
 }
