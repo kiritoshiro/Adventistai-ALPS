@@ -111,13 +111,14 @@ define('ALPS_THEME_NAME', 'alps-gutenberg-blocks');
 */
 
 try {
-    \Roots\bootloader()->boot();
+    // Providers come from extra.acorn.providers in composer.json.
+    \Roots\Acorn\Application::configure()->boot();
 } catch (Throwable $e) {
     wp_die(
         esc_html__('You need to install Acorn to use this theme.', 'sage'),
         '',
         [
-            'link_url' => 'https://docs.roots.io/acorn/2.x/installation/',
+            'link_url' => 'https://roots.io/acorn/docs/installation/',
             'link_text' => esc_html__('Acorn Docs: Installation', 'sage'),
         ]
     );

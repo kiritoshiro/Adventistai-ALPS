@@ -48,7 +48,7 @@ jobs:
         run: .qa-tools/vendor/bin/phpcs -p app functions.php index.php --extensions=php --standard=WordPress-Extra
 
   php-compatibility:
-    name: PHP 8.1–8.4 compatibility
+    name: PHP 8.3–8.4 compatibility
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -78,7 +78,7 @@ jobs:
             'dealerdirect/phpcodesniffer-composer-installer:^1.1'
 
       - name: Check PHP compatibility
-        run: .compat-tools/vendor/bin/phpcs -p app functions.php index.php --extensions=php --standard=PHPCompatibilityWP --runtime-set testVersion 8.1-8.4
+        run: .compat-tools/vendor/bin/phpcs -p app functions.php index.php --extensions=php --standard=PHPCompatibilityWP --runtime-set testVersion 8.3-8.4
 
   phpstan:
     name: PHP static analysis
