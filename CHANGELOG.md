@@ -3,6 +3,12 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.30.1]
+### Fixed
+- Hand-written images in page content (for example the front page's book and logo snippets) get their attachment's width, height, srcset and sizes, so WordPress lazy-loads them instead of downloading every one at full size when the page opens.
+- Only the page's first latest-post slider loads its first image eagerly; the others load lazily.
+- Card scroller (Kortelių slankiklis): in the editor the cards wrap, so the "Pridėti kortelę" button stays reachable with many cards. Cards without a link are shown as plain cards instead of being dropped, so the block no longer renders empty. The block has an inserter preview.
+
 ## [3.30.0]
 ### Changed
 - Upgrade Roots Acorn from 3.3 (Laravel 9, end of life since February 2024) to 6.3 (Laravel 13), and boot it with `Application::configure()->boot()` instead of the deprecated `bootloader()`.
