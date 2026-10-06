@@ -1,0 +1,23 @@
+{
+  "setup": [
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/mu-plugins/playground-web-request.php",
+      "data": "<?php\n// Test site only. Playground's PHP reports the \"cli\" SAPI, so Acorn would\n// treat every web request as a console run and print its command list\n// instead of the site. Tell it these are web requests, as on a real server,\n// and give Symfony Console the array $_SERVER['argv'] it expects.\nputenv( 'APP_RUNNING_IN_CONSOLE=false' );\n$_ENV['APP_RUNNING_IN_CONSOLE']    = 'false';\n$_SERVER['APP_RUNNING_IN_CONSOLE'] = 'false';\nif ( isset( $_SERVER['argv'] ) && ! is_array( $_SERVER['argv'] ) ) {\n\t$_SERVER['argv'] = array();\n}\n"
+    }
+  ],
+  "mounts": [
+    {
+      "host": ".",
+      "vfs": "/wordpress/wp-content/themes/adventistai"
+    }
+  ],
+  "watch": [
+    "/wordpress/wp-content/themes/adventistai/"
+  ],
+  "theme": "adventistai",
+  "fixture": "<!-- wp:paragraph --><p>Playground smoke test paragraph.</p><!-- /wp:paragraph -->",
+  "expect": [
+    "Playground smoke test paragraph."
+  ]
+}

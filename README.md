@@ -37,8 +37,7 @@ The repository tracks source code and compiled frontend assets. Composer's gener
 4. Select Template from the dropdown
 * **Default Template**: Default template for all pages
 * **Posts Template**: Landing page of posts in the category *news* 
-  * (~~https://alps.adventist.io/v3/?p=pages-news~~) - _deprecated_
-  * (https://adventistchurch.github.io/alps/?path=/story/templates-news--no-aside) - new
+  * Upstream reference: the ALPS "News" page template. The ALPS pattern library (`alps.adventist.io`, now `alps-storybook.adventi.st`) answered 403 when checked on 2026-10-06, so the old links were removed.
 
 ### Add a latest post slider block
 
@@ -88,8 +87,6 @@ Sage is a WordPress starter theme with a modern development workflow.
 * [Blade](https://laravel.com/docs/5.5/blade) as a templating engine
 * [Controller](https://github.com/soberwp/controller) for passing data to Blade templates
 * CSS framework (optional): [Bootstrap 4](https://getbootstrap.com/), [Bulma](https://bulma.io/), [Foundation](https://foundation.zurb.com/), [Tachyons](http://tachyons.io/)
-
-See a working example at [roots-example-project.com](https://roots-example-project.com/).
 
 ### Requirements
 
