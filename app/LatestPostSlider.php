@@ -7,6 +7,22 @@ namespace App;
  */
 class LatestPostSlider
 {
+    private static bool $eagerImageClaimed = false;
+
+    /**
+     * True only for the first slide image rendered on the page. Every slider
+     * shows its first slide, but only the page's first slider can be near the
+     * top; the others load their images lazily like the rest of the page.
+     */
+    public static function claimEagerImage(): bool
+    {
+        if (self::$eagerImageClaimed) {
+            return false;
+        }
+        self::$eagerImageClaimed = true;
+        return true;
+    }
+
     /**
      * Resolve one configured module to published posts/pages.
      *
