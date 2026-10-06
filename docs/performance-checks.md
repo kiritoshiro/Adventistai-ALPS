@@ -10,7 +10,21 @@ node scripts/check-asset-budgets.mjs
 
 If a file grows past its limit, inspect why and measure the page before adjusting the documented limit. This check does not need a running WordPress site; it checks the candidate commit's own files.
 
-The `Live homepage performance audit` workflow is available through **Actions → Run workflow** and runs weekly. It visits only the fixed public homepage: normally one identity-check GET and three browser navigations, each with the page's asset and third-party requests. It does not crawl, log in, submit forms, write to WordPress, or use production credentials. As with an ordinary visitor, page JavaScript may produce analytics requests or trigger WordPress cron. Keep authenticated URLs and private content out of this public workflow. It audits the deployed `https://adventistai.lt/` homepage three times with Lighthouse's mobile defaults and retains a sanitized metric summary as a GitHub artifact for 14 days. It does not test whether the current PR or latest release is deployed. It reports diagnostics without a score gate until comparable baselines and variance have been reviewed. A challenge/error page is rejected by a basic homepage-title check.
+The `Live homepage performance audit` workflow is available through **Actions → Run workflow** and runs weekly. It audits the deployed `https://adventistai.lt/` homepage three times with Lighthouse's mobile defaults. It retains a sanitized metric summary as a GitHub artifact for 14 days.
+
+Lighthouse runs on Google's servers through the [PageSpeed Insights API](https://developers.google.com/speed/docs/insights/v5/get-started), not on the GitHub runner. The site's Cloudflare bot protection answers GitHub-hosted runners with HTTP 403, so a runner-based audit only ever saw the block (first scheduled run, 2026-10-05). Do not allowlist GitHub's shared runner IP ranges to work around this.
+
+The API's keyless quota is shared and often exhausted (HTTP 429), so the workflow needs a `PAGESPEED_API_KEY` repository secret. Without the secret, the job skips with a notice instead of failing. To set it up:
+
+1. In Google Cloud, enable the PageSpeed Insights API for a project.
+2. Create an API key restricted to that API.
+3. Add the key under **Settings → Secrets and variables → Actions → New repository secret**.
+
+The key is sent in the `X-Goog-Api-Key` header, never in a URL or log.
+
+`scripts/pagespeed-audit.mjs` rejects a run that is redirected away from the homepage, answers with an error status (for example a challenge page), or reports a Lighthouse runtime error. The audit visits only the fixed public homepage, as an anonymous mobile visitor. It does not crawl, log in, submit forms, write to WordPress, or use production credentials. As with an ordinary visitor, page JavaScript may produce analytics requests or trigger WordPress cron.
+
+The audit does not test whether the current PR or latest release is deployed. It reports diagnostics without a score gate until comparable baselines and variance have been reviewed.
 
 To reproduce the live audit locally with Chrome/Chromium installed:
 
