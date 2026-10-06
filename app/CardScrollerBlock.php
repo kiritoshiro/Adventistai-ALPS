@@ -106,7 +106,9 @@ class CardScrollerBlock
     }
 
     /**
-     * Keep only well-formed cards with a destination and something to show.
+     * Keep cards that have something to show. A card without a (safe) link is
+     * still shown, as a plain card: dropping it made a half-filled block render
+     * nothing at all, so it looked broken in the editor's preview.
      *
      * @param mixed $items
      * @return array<int, array<string, mixed>>
@@ -129,7 +131,7 @@ class CardScrollerBlock
                 'newTab' => !empty($item['newTab']),
             ];
 
-            if ($card['url'] === '' || ($card['title'] === '' && !$card['imageId'] && $card['imageUrl'] === '')) {
+            if ($card['title'] === '' && !$card['imageId'] && $card['imageUrl'] === '') {
                 continue;
             }
 
@@ -204,12 +206,16 @@ class CardScrollerBlock
             );
         }
 
+        $inner = ($image ? '<span class="alps-card-scroller__media">' . $image . '</span>' : '')
+            . ($item['title'] !== '' ? '<span class="alps-card-scroller__title">' . esc_html($item['title']) . '</span>' : '')
+            . ($item['description'] !== '' ? '<span class="alps-card-scroller__description">' . esc_html($item['description']) . '</span>' : '');
+
+        if ($item['url'] === '') {
+            return '<div class="alps-card-scroller__card">' . $inner . '</div>';
+        }
+
         $target = $item['newTab'] ? ' target="_blank" rel="noopener"' : '';
 
-        return '<a class="alps-card-scroller__card" href="' . esc_url($item['url']) . '"' . $target . '>'
-            . ($image ? '<span class="alps-card-scroller__media">' . $image . '</span>' : '')
-            . ($item['title'] !== '' ? '<span class="alps-card-scroller__title">' . esc_html($item['title']) . '</span>' : '')
-            . ($item['description'] !== '' ? '<span class="alps-card-scroller__description">' . esc_html($item['description']) . '</span>' : '')
-            . '</a>';
+        return '<a class="alps-card-scroller__card" href="' . esc_url($item['url']) . '"' . $target . '>' . $inner . '</a>';
     }
 }
