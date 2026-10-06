@@ -18,35 +18,49 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      # The site's Cloudflare bot protection answers GitHub-hosted runners with
+      # HTTP 403, so Lighthouse runs on Google's servers through PageSpeed
+      # Insights. Its keyless quota is shared and often exhausted (HTTP 429),
+      # so the audit needs a PAGESPEED_API_KEY repository secret.
+      - name: Check PageSpeed Insights key
+        id: key
+        env:
+          PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}
+        run: |
+          if [ -n "$PAGESPEED_API_KEY" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            message='Skipped: add a PAGESPEED_API_KEY repository secret (PageSpeed Insights API key) to run this audit. See docs/performance-checks.md.'
+            echo "::notice::$message"
+            echo "$message" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Check out repository
+        if: steps.key.outputs.configured == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
 
       - name: Set up Node.js
+        if: steps.key.outputs.configured == 'true'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: '24'
-
-      - name: Verify homepage response
-        shell: bash
-        run: |
-          set -euo pipefail
-          curl --fail --silent --show-error --location --retry 2 --retry-delay 2 \
-            --output homepage.html https://adventistai.lt/
-          if ! grep -Eiq '<title>[^<]*Adventist' homepage.html; then
-            echo '::error::Homepage identity check failed; the audit may see a challenge or error page.'
-            exit 1
-          fi
-          rm homepage.html
+          package-manager-cache: false
 
       - name: Audit deployed homepage (three mobile runs)
-        run: npm exec --yes --package=@lhci/cli@0.15.1 -- lhci collect --url=https://adventistai.lt/ --numberOfRuns=3
+        if: steps.key.outputs.configured == 'true'
+        env:
+          PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}
+        run: node scripts/pagespeed-audit.mjs
 
       - name: Summarize audit without page content or request URLs
+        if: steps.key.outputs.configured == 'true'
         run: node scripts/summarize-lighthouse.mjs
 
       - name: Upload sanitized summary
+        if: steps.key.outputs.configured == 'true'
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: live-homepage-lighthouse-summary

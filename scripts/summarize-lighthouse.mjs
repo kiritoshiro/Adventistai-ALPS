@@ -35,7 +35,8 @@ const opportunities = new Map();
 
 const runs = reportFiles.map((file) => {
   const report = JSON.parse(readFileSync(resolve(reportsDir, file), 'utf8'));
-  if (report.finalUrl !== 'https://adventistai.lt/') {
+  // Lighthouse 10+ reports mainDocumentUrl/finalDisplayedUrl; older versions finalUrl.
+  if ((report.mainDocumentUrl ?? report.finalDisplayedUrl ?? report.finalUrl) !== 'https://adventistai.lt/') {
     throw new Error('Lighthouse audited an unexpected page');
   }
 
@@ -75,7 +76,7 @@ const summary = {
 const markdown = [
   '# Live homepage Lighthouse summary',
   '',
-  'Three anonymous mobile lab runs. This measures the currently deployed site, not an undeployed pull request.',
+  'Three anonymous mobile lab runs (Lighthouse via PageSpeed Insights). This measures the currently deployed site, not an undeployed pull request.',
   '',
   '| Run | Performance | Accessibility | Best practices | SEO | LCP (ms) | CLS | TBT (ms) | Transfer (bytes) |',
   '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
