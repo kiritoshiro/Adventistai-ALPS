@@ -6,42 +6,42 @@
             "palette": [
                 {
                     "slug": "darker",
-                    "color": "#04132b",
+                    "color": "#361300",
                     "name": "Darker"
                 },
                 {
                     "slug": "dark",
-                    "color": "#04132b",
+                    "color": "#6f2727",
                     "name": "Dark"
                 },
                 {
                     "slug": "primary",
-                    "color": "#2f557f",
+                    "color": "#cd4900",
                     "name": "Primary"
                 },
                 {
                     "slug": "light",
-                    "color": "#2e6de7",
+                    "color": "#ffa06c",
                     "name": "Light"
                 },
                 {
                     "slug": "lighter",
-                    "color": "#84adfc",
+                    "color": "#fabf9f",
                     "name": "Lighter"
                 },
                 {
                     "slug": "dark-gray",
-                    "color": "#7e7f80",
+                    "color": "#807f7e",
                     "name": "Dark Gray"
                 },
                 {
                     "slug": "gray",
-                    "color": "#bdbebf",
+                    "color": "#bfbebd",
                     "name": "Gray"
                 },
                 {
                     "slug": "light-gray",
-                    "color": "#f2f4f5",
+                    "color": "#f5f3f2",
                     "name": "Light Gray"
                 }
             ],
