@@ -3,6 +3,12 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.30.4]
+### Changed
+- Latest-post sliders have fewer lines: no rule under the heading, no underline border on the heading link or above the dots, no focus box after a mouse click; the frame is lighter.
+- A slider shown one per row puts its image beside the text (40% of the width) once it is at least 560px wide, instead of a full-width image above the text.
+- Card scroller: the "Daugiau" card is neutral grey, fading in from the row; the end-of-row arrow matches the other arrows; the cards keep their light frame (site-overrides.css had replaced it with a blue underline).
+
 ## [3.30.3]
 ### Added
 - Card scroller: at the end of the row, the next arrow becomes a blue "go to" arrow (→) that opens the Daugiau link, or the heading's link when that is empty. A Daugiau link works without a label too (no extra card).
