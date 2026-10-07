@@ -114,5 +114,8 @@ jobs:
             exit 1
           fi
 
+      - name: Check the minified site overrides are up to date
+        run: node scripts/minify-site-overrides.mjs --check
+
       - name: Check theme asset budgets
         run: node scripts/check-asset-budgets.mjs

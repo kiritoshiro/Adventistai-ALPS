@@ -3,6 +3,13 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.30.7]
+### Changed
+- `site-overrides.css` is loaded as the minified `site-overrides.min.css` (13 KB instead of 32 KB, 2.9 KB instead of 9 KB compressed), built with lightningcss by `scripts/minify-site-overrides.mjs`; CI fails when it is out of date. Under `SCRIPT_DEBUG`, or when the copy is missing, the readable file is used.
+
+### Fixed
+- Footer links ("Privatumo politika", "Slapukų nustatymai", …) are at least 24 px high, so they are no longer too small and too close together for touch (WCAG 2.5.8, flagged by PageSpeed).
+
 ## [3.30.6]
 ### Added
 - Theme cache: Acorn's compiled templates (`wp-content/cache/acorn/framework/views`) are cleared automatically the first time a new theme version runs, so an update no longer needs a manual cache clear. For a manual clear there is **Clear theme cache** in the admin bar and in Appearance → ALPS Theme Settings → Cache (administrators). Acorn's package/service manifests are left alone: deleting `services.php` stopped the theme from booting in a test.

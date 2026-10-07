@@ -547,7 +547,12 @@ function alps_asset_version( $asset_url ) {
  * relative to the ALPS stylesheet does not matter.
  */
 add_action( 'wp_enqueue_scripts', function () {
-    $rel  = '/assets/css/site-overrides.css';
+    // The minified copy (scripts/minify-site-overrides.mjs, kept in step by CI),
+    // or the readable file under SCRIPT_DEBUG or when the copy is missing.
+    $rel  = '/assets/css/site-overrides.min.css';
+    if ( ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) || ! is_readable( get_template_directory() . $rel ) ) {
+        $rel = '/assets/css/site-overrides.css';
+    }
     $file = get_template_directory() . $rel;
     if ( is_readable( $file ) ) {
         wp_enqueue_style(
