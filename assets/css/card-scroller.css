@@ -85,11 +85,7 @@
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
-/*
- * site-overrides.css gives every link in .text a 1px bottom border and removes
- * the other sides with !important, which turned the card frame into a single
- * blue line. Restore the frame with heavier selectors.
- */
+/* site-overrides.css forces a bottom-border underline on .text links (!important); keep the card frame. */
 .alps-card-scroller .alps-card-scroller__track .alps-card-scroller__item a.alps-card-scroller__card {
   border: 1px solid #ececec !important;
   box-shadow: 0 2px 7px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03) !important;
@@ -186,7 +182,7 @@ a.alps-card-scroller__card:hover .alps-card-scroller__image {
   text-align: center;
 }
 
-/* The last "Daugiau" card: neutral, fading in from the row rather than a coloured block. */
+/* Daugiau card: neutral, fading in from the row. */
 .alps-card-scroller .alps-card-scroller__card--more {
   justify-content: center;
   min-height: 164px;
@@ -214,13 +210,7 @@ a.alps-card-scroller__card:hover .alps-card-scroller__image {
   line-height: 1;
 }
 
-/*
- * Edge controls: overlay the row, so showing or hiding them never shifts it.
- * The ALPS colour stylesheets style every button (".u-theme--denim button"
- * and its :hover/:focus: a coloured background and rounded corners), which
- * showed as a blue pill behind the arrow. Two classes plus !important on the
- * background and corners keep only a light white fade and the round arrow.
- */
+/* Edge arrows overlay the row. Two classes and !important beat the ALPS button style (.u-theme--denim button). */
 .alps-card-scroller .alps-card-scroller__arrow {
   position: absolute;
   top: 0;
@@ -289,7 +279,7 @@ a.alps-card-scroller__card:hover .alps-card-scroller__image {
   outline: none;
 }
 
-/* The end-of-row link to the "more" page: same place and look, a "go to" arrow (→). */
+/* End-of-row link to the "more" page. */
 .alps-card-scroller a.alps-card-scroller__arrow--more {
   color: #fff !important;
   text-decoration: none !important;
@@ -363,11 +353,7 @@ a.alps-card-scroller__card:hover .alps-card-scroller__image {
   --card-width: 220px;
 }
 
-/*
- * The editor has no arrows or drag scrolling, and the row's scrollbar is
- * hidden, so a long row pushed the last cards and "Pridėti kortelę" out of
- * reach. While editing, cards wrap onto new rows instead.
- */
+/* The editor has no arrows or drag scrolling: wrap the cards so all stay reachable. */
 .alps-card-scroller.is-editing .alps-card-scroller__frame {
   overflow: visible;
 }
