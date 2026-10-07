@@ -18,8 +18,10 @@
   overflow: hidden;
   color: var(--alps-slider-ink);
   background: var(--alps-slider-surface);
-  border: 1px solid rgba(34, 34, 34, 0.16);
-  box-shadow: 0 0.5rem 1.5rem rgba(34, 34, 34, 0.08);
+  border: 1px solid rgba(34, 34, 34, 0.1);
+  box-shadow: 0 0.35rem 1.25rem rgba(34, 34, 34, 0.06);
+  /* Lets a single-column slider lay its slides out side by side when wide. */
+  container: alps-slider / inline-size;
 }
 
 .u-theme--dark .alps-latest-slider,
@@ -31,8 +33,22 @@
 }
 
 .alps-latest-slider__heading {
-  padding: 1rem 1.25rem;
-  border-bottom: 2px solid currentColor;
+  padding: 1rem 1.25rem 0.25rem;
+}
+
+/*
+ * The ALPS stylesheets underline links with a border; inside the slider the
+ * heading link and each slide link (the line above the dots) only add lines.
+ */
+.alps-latest-slider .alps-latest-slider__title a,
+.alps-latest-slider .alps-latest-slider__link {
+  border-bottom: 0;
+  text-decoration: none;
+}
+
+.alps-latest-slider .alps-latest-slider__title a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
 .alps-latest-slider__title {
@@ -264,6 +280,12 @@
   color: var(--alps-slider-ink);
 }
 
+/* A mouse click left a focus box around the arrow; keyboard focus keeps its outline. */
+.alps-latest-slider .alps-latest-slider__arrow:focus:not(:focus-visible),
+.alps-latest-slider .alps-latest-slider__dot:focus:not(:focus-visible) {
+  outline: 0;
+}
+
 .alps-latest-slider__arrow svg {
   display: block;
   width: 20px;
@@ -304,6 +326,29 @@
 
 .alps-latest-slider__dot.is-active {
   transform: scale(1.18);
+}
+
+/*
+ * One slider per row: a full-width image dwarfed the text. When the slider is
+ * wide enough, the image sits beside the text at about 40% of the width.
+ */
+@container alps-slider (min-width: 560px) {
+  .alps-latest-sliders[style*="slider-columns: 1"] .alps-latest-slider__link {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .alps-latest-sliders[style*="slider-columns: 1"] .alps-latest-slider__image-frame {
+    width: 40%;
+    margin: 1.25rem 0 1.25rem 1.25rem;
+    aspect-ratio: 4 / 3;
+  }
+
+  .alps-latest-sliders[style*="slider-columns: 1"] .alps-latest-slider__body {
+    min-width: 0;
+    min-height: 0;
+    align-self: stretch;
+  }
 }
 
 @media (max-width: 1100px) {
