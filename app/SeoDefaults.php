@@ -5,14 +5,67 @@ namespace App;
 /**
  * Lightweight metadata fallback for sites that do not run a full SEO plugin.
  * A supported SEO provider remains the owner of these tags when active.
+ *
+ * One exception: Yoast leaves out AVIF images, so a post with an AVIF featured
+ * image would get no og:image at all. The JPEG fallback is handed to Yoast then.
  */
 final class SeoDefaults
 {
+    /** Image types Facebook and other networks read in og:image. */
+    private const SOCIAL_TYPES = [
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'png' => 'image/png',
+        'gif' => 'image/gif',
+        'webp' => 'image/webp',
+    ];
+
     private static ?array $metadata = null;
 
     public static function register(): void
     {
         add_action('wp_head', [self::class, 'render'], 1);
+        add_filter('wpseo_add_opengraph_additional_images', [self::class, 'addYoastImage']);
+    }
+
+    /**
+     * Runs after Yoast has looked at the post's own image. When Yoast found
+     * nothing it could use, add the JPEG of the Yoast social image or else of
+     * the featured image. A usable image chosen in Yoast is left alone.
+     *
+     * @param mixed $images Yoast\WP\SEO\Values\Open_Graph\Images
+     * @return mixed
+     */
+    public static function addYoastImage($images)
+    {
+        if (!is_object($images) || !method_exists($images, 'has_images') || $images->has_images()) {
+            return $images;
+        }
+        if (is_admin() || !is_singular() || !apply_filters('adventistai_seo_fallback_enabled', true)) {
+            return $images;
+        }
+
+        $postId = (int) get_queried_object_id();
+        $attachmentId = (int) get_post_meta($postId, '_yoast_wpseo_opengraph-image-id', true)
+            ?: (int) get_post_thumbnail_id($postId);
+        $image = $attachmentId ? self::attachmentImage($attachmentId) : null;
+        if (!$image) {
+            return $images;
+        }
+
+        $path = (string) parse_url($image['url'], PHP_URL_PATH);
+        $type = self::SOCIAL_TYPES[strtolower(pathinfo($path, PATHINFO_EXTENSION))] ?? '';
+        if ($type === '') {
+            return $images;
+        }
+
+        $images->add_image([
+            'url' => $image['url'],
+            'width' => $image['width'],
+            'height' => $image['height'],
+            'type' => $type,
+        ]);
+        return $images;
     }
 
     public static function render(): void
@@ -186,18 +239,29 @@ final class SeoDefaults
             return $image;
         }
 
-        // Prefer the JPEG fallback: not every social network reads AVIF.
-        $src = class_exists(ImageDelivery::class)
-            ? ImageDelivery::socialImage($attachmentId)
-            : wp_get_attachment_image_src($attachmentId, 'full');
+        $src = self::attachmentImage($attachmentId);
         if (!$src) {
             return $image;
         }
 
-        $image['url'] = (string) $src[0];
-        $image['width'] = (string) $src[1];
-        $image['height'] = (string) $src[2];
+        $image['url'] = $src['url'];
+        $image['width'] = (string) $src['width'];
+        $image['height'] = (string) $src['height'];
         $image['alt'] = (string) get_post_meta($attachmentId, '_wp_attachment_image_alt', true);
         return $image;
+    }
+
+    /** @return array{url:string, width:int, height:int}|null */
+    private static function attachmentImage(int $attachmentId): ?array
+    {
+        // Prefer the JPEG fallback: not every social network reads AVIF.
+        $src = class_exists(ImageDelivery::class)
+            ? ImageDelivery::socialImage($attachmentId)
+            : wp_get_attachment_image_src($attachmentId, 'full');
+        if (!$src || empty($src[0])) {
+            return null;
+        }
+
+        return ['url' => (string) $src[0], 'width' => (int) $src[1], 'height' => (int) $src[2]];
     }
 }
