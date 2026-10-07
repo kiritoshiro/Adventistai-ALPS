@@ -37,7 +37,7 @@ array_map(function ($file) use ($sage_error) {
     if (!locate_template($file, true, true)) {
         $sage_error(sprintf(__('Error locating <code>%s</code> for inclusion.', 'alps'), $file), 'File not found');
     }
-}, ['helpers', 'setup', 'fields', 'filters', 'admin', 'template-helpers', 'ContentHelpers', 'Breadcrumbs', 'SeoDefaults', 'UploadImages', 'ImageDelivery', 'ContentImages', 'OriginalImageRetention', 'AccountAccess']);
+}, ['helpers', 'setup', 'fields', 'filters', 'admin', 'template-helpers', 'ContentHelpers', 'Breadcrumbs', 'SeoDefaults', 'UploadImages', 'ImageDelivery', 'ContentImages', 'OriginalImageRetention', 'AccountAccess', 'ThemeCache', 'InlineStyles']);
 
 \App\SeoDefaults::register();
 \App\UploadImages::register();
@@ -45,6 +45,8 @@ array_map(function ($file) use ($sage_error) {
 \App\ContentImages::register();
 \App\OriginalImageRetention::register();
 \App\AccountAccess::register();
+\App\ThemeCache::register();
+\App\InlineStyles::register();
 /*
 |--------------------------------------------------------------------------
 | Register The Auto Loader
