@@ -73,7 +73,8 @@ class CardScrollerBlock
             $cards .= '<div class="alps-card-scroller__item" role="listitem">' . self::card($item, $ids, $layout) . '</div>';
         }
 
-        if ($moreLabel && $moreUrl) {
+        $moreCard = $moreLabel && $moreUrl;
+        if ($moreCard) {
             $cards .= sprintf(
                 '<div class="alps-card-scroller__item" role="listitem"><a class="alps-card-scroller__card alps-card-scroller__card--more" href="%s">%s<span class="alps-card-scroller__more-arrow" aria-hidden="true">›</span></a></div>',
                 $moreUrl,
@@ -95,6 +96,20 @@ class CardScrollerBlock
         ]);
         $label = $heading !== '' ? $heading : __('Kortelės', 'alps');
 
+        // At the end of the row the next arrow becomes a link to the "more"
+        // page (the Daugiau link, else the heading's link), so there is always
+        // a next step. Not needed when the row already ends with a Daugiau card.
+        $moreHref = $moreCard ? '' : ($moreUrl ?: $headingUrl);
+        $moreLink = '';
+        if ($moreHref) {
+            $moreLink = '<a class="alps-card-scroller__arrow alps-card-scroller__arrow--next alps-card-scroller__arrow--more" href="' . $moreHref . '"'
+                . ' aria-label="' . esc_attr(sprintf(
+                    /* translators: %s: the row's heading */
+                    __('Daugiau: %s', 'alps'),
+                    $label
+                )) . '" data-card-scroller-more hidden><span aria-hidden="true">→</span></a>';
+        }
+
         // Arrows start hidden: without JavaScript the row still scrolls natively,
         // and the script reveals them without moving any content.
         return '<div ' . $wrapper . '>' . $headingHtml
@@ -102,6 +117,7 @@ class CardScrollerBlock
             . '<div class="alps-card-scroller__track" role="list" aria-label="' . esc_attr($label) . '" data-card-scroller-track>' . $cards . '</div>'
             . '<button type="button" class="alps-card-scroller__arrow alps-card-scroller__arrow--prev" aria-label="' . esc_attr__('Slinkti į kairę', 'alps') . '" data-card-scroller-prev hidden><span aria-hidden="true">‹</span></button>'
             . '<button type="button" class="alps-card-scroller__arrow alps-card-scroller__arrow--next" aria-label="' . esc_attr__('Slinkti į dešinę', 'alps') . '" data-card-scroller-next hidden><span aria-hidden="true">›</span></button>'
+            . $moreLink
             . '</div></div>';
     }
 

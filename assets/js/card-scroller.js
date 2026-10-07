@@ -14,6 +14,8 @@
     const frame = track.parentElement;
     const prev = frame.querySelector('[data-card-scroller-prev]');
     const next = frame.querySelector('[data-card-scroller-next]');
+    // Optional link to the "more" page, shown in place of the next arrow at the end.
+    const more = frame.querySelector('[data-card-scroller-more]');
     const items = track.children;
     if (!prev || !next || !items.length) return;
 
@@ -27,7 +29,12 @@
     prev.addEventListener('click', () => scrollByPage(-1));
     next.addEventListener('click', () => scrollByPage(1));
 
-    // An arrow is shown while the card at its end is not fully in view.
+    // An arrow is shown while the card at its end is not fully in view. At
+    // the end, the "more" link (if any) takes the next arrow's place.
+    const atEnd = (end) => {
+      next.hidden = end;
+      if (more) more.hidden = !end;
+    };
     if ('IntersectionObserver' in window) {
       const first = items[0];
       const last = items[items.length - 1];
@@ -35,13 +42,16 @@
         entries.forEach((entry) => {
           const atEdge = entry.intersectionRatio >= 0.98;
           if (entry.target === first) prev.hidden = atEdge;
-          if (entry.target === last) next.hidden = atEdge;
+          if (entry.target === last) atEnd(atEdge);
         });
       }, {root: track, threshold: [0, 0.98, 1]});
 
       observer.observe(first);
       if (last !== first) observer.observe(last);
-      else prev.hidden = next.hidden = true;
+      else {
+        prev.hidden = true;
+        atEnd(true);
+      }
     }
 
     // Mouse drag only; other pointers keep native scrolling and momentum.
