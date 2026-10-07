@@ -14,7 +14,12 @@ use function Roots\bundle;
  * @return void
  */
 add_action('wp_enqueue_scripts', function () {
-    bundle('app')->enqueue();
+    // Keep Acorn's webpack runtime before the bundle while allowing HTML parsing
+    // to finish before the slider code runs. Editor assets keep their own loader.
+    bundle('app')->enqueueCss()->enqueueJs([
+        'in_footer' => true,
+        'strategy' => 'defer',
+    ]);
 }, 100);
 
 /**
