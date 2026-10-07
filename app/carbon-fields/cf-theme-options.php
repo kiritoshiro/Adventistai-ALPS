@@ -266,6 +266,11 @@ function crb_attach_theme_options()
                     'circle' => __('Circle', 'alps'),
                 ])
                 ->set_width(33),
+        ])
+        ->add_tab(__('CACHE', 'alps'), [
+            Field
+                ::make('html', 'crb_theme_cache')
+                ->set_html([\App\ThemeCache::class, 'settingsHtml']),
         ]);
 
         // Added to rewrite theme.json file with complete color palette based on selected color theme

@@ -3,6 +3,14 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.30.6]
+### Added
+- Theme cache: Acorn's compiled templates (`wp-content/cache/acorn/framework/views`) are cleared automatically the first time a new theme version runs, so an update no longer needs a manual cache clear. For a manual clear there is **Clear theme cache** in the admin bar and in Appearance → ALPS Theme Settings → Cache (administrators). Acorn's package/service manifests are left alone: deleting `services.php` stopped the theme from booting in a test.
+
+### Changed
+- Small stylesheets (12 KB or less, local, for all media) are printed inside the page instead of linked, up to 90 KB per page, using WordPress' own inlining. In this theme every plugin and block stylesheet ends up in `<head>`, so each was a separate request blocking the first paint (about a dozen on the front page). The theme's main stylesheets and the calendar's stay linked and cacheable.
+- The front-end app bundle loads with `defer` (PR #79).
+
 ## [3.30.5]
 ### Fixed
 - Facebook and other link previews show the post image again when Yoast SEO is active. Yoast skips AVIF images, so posts with an AVIF featured image had no `og:image`; the theme now gives Yoast the JPEG fallback (of the Yoast social image, or else the featured image) when Yoast found no usable image. An image Yoast can use is left alone.
