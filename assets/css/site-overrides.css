@@ -705,3 +705,16 @@ picture.alps-image--contain > img,
 .c-page-header__longer.alps-fit-header.has-background {
   padding-top: 7.5rem;
 }
+
+/* ==========================================================================
+   Footer secondary links: 24 px touch targets
+   The links were 16 px high, about 23 px apart, and PageSpeed reported them as
+   too small and too close together (WCAG 2.5.8 asks for 24 x 24 px). The
+   padding adds the height without changing the text size.
+   ========================================================================== */
+.c-footer .c-footer__secondary-nav__link {
+  min-height: 24px !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+  align-items: center;
+}

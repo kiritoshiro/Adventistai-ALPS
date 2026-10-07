@@ -14,6 +14,7 @@ const budgets = [
   ['Editor JS', built('editor.js'), 24_000],
   ['ALPS denim CSS', 'app/local/alps/css/main-denim.css', 215_000],
   ['Site overrides CSS', 'assets/css/site-overrides.css', 32_000],
+  ['Site overrides CSS (minified, loaded)', 'assets/css/site-overrides.min.css', 15_000],
   ['Responsive fixes CSS', 'assets/css/responsive-zoom-fixes.css', 8_000],
   ['Search CSS', 'assets/css/adv-search.css', 7_500],
   ['Sabbath timer CSS', 'assets/css/sabbath-timer.css', 8_000],
