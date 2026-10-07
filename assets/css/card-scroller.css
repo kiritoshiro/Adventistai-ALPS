@@ -186,38 +186,54 @@ a.alps-card-scroller__card:hover .alps-card-scroller__image {
   line-height: 1;
 }
 
-/* Edge controls: overlay the row, so showing or hiding them never shifts it. */
-.alps-card-scroller__arrow {
+/*
+ * Edge controls: overlay the row, so showing or hiding them never shifts it.
+ * The ALPS colour stylesheets style every button (".u-theme--denim button"
+ * and its :hover/:focus: a coloured background and rounded corners), which
+ * showed as a blue pill behind the arrow. Two classes plus !important on the
+ * background and corners keep only a light white fade and the round arrow.
+ */
+.alps-card-scroller .alps-card-scroller__arrow {
   position: absolute;
   top: 0;
   bottom: 0;
   z-index: 2;
   display: flex;
   align-items: center;
-  width: 82px;
+  width: 64px;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
   margin: 0;
-  padding: 0 8px;
+  padding: 0 6px;
+  font-size: inherit;
+  line-height: 1;
   color: #fff;
+  text-transform: none;
   cursor: pointer;
-  background: transparent;
+  background-color: transparent !important;
   border: 0;
+  border-radius: 0 !important;
+  box-shadow: none;
+  -webkit-appearance: none;
+  appearance: none;
   -webkit-tap-highlight-color: transparent;
 }
 
-.alps-card-scroller__arrow[hidden] {
+.alps-card-scroller .alps-card-scroller__arrow[hidden] {
   display: none;
 }
 
-.alps-card-scroller__arrow--prev {
+.alps-card-scroller .alps-card-scroller__arrow--prev {
   left: 0;
   justify-content: flex-start;
-  background: linear-gradient(to right, var(--edge-fade) 0%, rgba(255, 255, 255, 0.94) 25%, rgba(255, 255, 255, 0.6) 60%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(to right, var(--edge-fade) 0%, rgba(255, 255, 255, 0.7) 45%, rgba(255, 255, 255, 0) 100%) !important;
 }
 
-.alps-card-scroller__arrow--next {
+.alps-card-scroller .alps-card-scroller__arrow--next {
   right: 0;
   justify-content: flex-end;
-  background: linear-gradient(to left, var(--edge-fade) 0%, rgba(255, 255, 255, 0.94) 25%, rgba(255, 255, 255, 0.6) 60%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(to left, var(--edge-fade) 0%, rgba(255, 255, 255, 0.7) 45%, rgba(255, 255, 255, 0) 100%) !important;
 }
 
 .alps-card-scroller__arrow span {
@@ -292,8 +308,8 @@ a.alps-card-scroller__card:hover .alps-card-scroller__image {
     font-size: 12px;
   }
 
-  .alps-card-scroller__arrow {
-    width: 56px;
+  .alps-card-scroller .alps-card-scroller__arrow {
+    width: 48px;
     padding: 0 4px;
   }
 

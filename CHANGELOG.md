@@ -3,6 +3,10 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.30.2]
+### Fixed
+- Card scroller arrows: the ALPS colour stylesheets' button style showed as a coloured, rounded block behind each arrow. The arrows now show only a light white fade and the round arrow button.
+
 ## [3.30.1]
 ### Fixed
 - Hand-written images in page content (for example the front page's book and logo snippets) get their attachment's width, height, srcset and sizes, so WordPress lazy-loads them instead of downloading every one at full size when the page opens.
