@@ -3,6 +3,10 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.30.5]
+### Fixed
+- Facebook and other link previews show the post image again when Yoast SEO is active. Yoast skips AVIF images, so posts with an AVIF featured image had no `og:image`; the theme now gives Yoast the JPEG fallback (of the Yoast social image, or else the featured image) when Yoast found no usable image. An image Yoast can use is left alone.
+
 ## [3.30.4]
 ### Changed
 - Latest-post sliders have fewer lines: no rule under the heading, no underline border on the heading link or above the dots, no focus box after a mouse click; the frame is lighter.

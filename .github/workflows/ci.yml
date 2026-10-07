@@ -51,10 +51,11 @@ jobs:
             -not -path './node_modules/*' \
             -print0 | xargs -0 -n1 php -l
 
-      - name: Run upload-image regression checks
+      - name: Run image and Open Graph regression checks
         run: |
           php tests/images/run.php
           php tests/images/retention.php
+          php tests/seo/run.php
 
       - name: Run search regression checks
         run: php tests/search/run.php

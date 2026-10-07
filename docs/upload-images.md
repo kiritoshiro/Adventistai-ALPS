@@ -25,7 +25,7 @@ Deleting an attachment also deletes its JPEG fallback, unless another attachment
 
 ## Delivery (`App\ImageDelivery`)
 
-Converted images are served as `<picture>`: an AVIF `<source>` listing the small and full AVIF by width, and the JPEG as the `<img>`, with width and height to avoid layout shift. This applies to theme templates (cards, lists, carousels, headers), `wp_get_attachment_image()` output (featured images, blocks) and images in post content. Page-header backgrounds use `image-set()` with an AVIF and a JPEG line; browsers without `type()` support keep the JPEG. Open Graph images use the JPEG, since not every network reads AVIF. Images that were never converted keep WordPress's normal responsive markup.
+Converted images are served as `<picture>`: an AVIF `<source>` listing the small and full AVIF by width, and the JPEG as the `<img>`, with width and height to avoid layout shift. This applies to theme templates (cards, lists, carousels, headers), `wp_get_attachment_image()` output (featured images, blocks) and images in post content. Page-header backgrounds use `image-set()` with an AVIF and a JPEG line; browsers without `type()` support keep the JPEG. Open Graph images use the JPEG, since not every network reads AVIF. With Yoast SEO active, Yoast owns the tags but skips AVIF images, so the theme gives Yoast the JPEG of the post's Yoast social image or featured image whenever Yoast found no usable image (`SeoDefaults::addYoastImage()`). Images that were never converted keep WordPress's normal responsive markup.
 
 Images are shown whole:
 
