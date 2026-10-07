@@ -85,6 +85,31 @@
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
+/*
+ * site-overrides.css gives every link in .text a 1px bottom border and removes
+ * the other sides with !important, which turned the card frame into a single
+ * blue line. Restore the frame with heavier selectors.
+ */
+.alps-card-scroller .alps-card-scroller__track .alps-card-scroller__item a.alps-card-scroller__card {
+  border: 1px solid #ececec !important;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+
+.alps-card-scroller .alps-card-scroller__track .alps-card-scroller__item a.alps-card-scroller__card:hover,
+.alps-card-scroller .alps-card-scroller__track .alps-card-scroller__item a.alps-card-scroller__card:focus-visible {
+  border-color: #ddd !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.09), 0 2px 5px rgba(0, 0, 0, 0.04) !important;
+}
+
+.alps-card-scroller .alps-card-scroller__track .alps-card-scroller__item a.alps-card-scroller__card--more,
+.alps-card-scroller .alps-card-scroller__track .alps-card-scroller__item a.alps-card-scroller__card--more:hover,
+.alps-card-scroller .alps-card-scroller__track .alps-card-scroller__item a.alps-card-scroller__card--more:focus-visible,
+.alps-card-scroller .alps-card-scroller__frame a.alps-card-scroller__arrow.alps-card-scroller__arrow--more,
+.alps-card-scroller .alps-card-scroller__frame a.alps-card-scroller__arrow.alps-card-scroller__arrow--more:hover {
+  border: 0 none !important;
+  box-shadow: none !important;
+}
+
 /* Only cards that are links react to the pointer. */
 .alps-card-scroller a.alps-card-scroller__card:hover,
 .alps-card-scroller a.alps-card-scroller__card:focus-visible {

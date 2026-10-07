@@ -37,12 +37,14 @@
 }
 
 /*
- * The ALPS stylesheets underline links with a border; inside the slider the
- * heading link and each slide link (the line above the dots) only add lines.
+ * site-overrides.css underlines every link in .text with a bottom border and
+ * !important (its heaviest selector is ".text a:hover:not(.o-inline-list a)").
+ * Inside the slider the heading link and each slide link (the line above the
+ * dots) only add lines, so these selectors are heavier and !important too.
  */
-.alps-latest-slider .alps-latest-slider__title a,
-.alps-latest-slider .alps-latest-slider__link {
-  border-bottom: 0;
+.alps-latest-sliders .alps-latest-slider .alps-latest-slider__heading .alps-latest-slider__title a,
+.alps-latest-sliders .alps-latest-slider .alps-latest-slider__viewport .alps-latest-slider__slide a.alps-latest-slider__link {
+  border-bottom: 0 none !important;
   text-decoration: none;
 }
 
