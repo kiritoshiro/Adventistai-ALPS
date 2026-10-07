@@ -30,7 +30,9 @@ $checks = 0;
 $ok = function ($condition, $message) use (&$checks) { check($condition, $message); $checks++; };
 
 $ok(Block::render([]) === '', 'empty block renders nothing');
-$ok(Block::render(['items' => [['title' => 'No link']]]) === '', 'cards without a link are dropped');
+$ok(Block::render(['items' => [['url' => 'https://example.org/']]]) === '', 'cards with nothing to show are dropped');
+$plain = Block::render(['items' => [['title' => 'No link']]]);
+$ok(strpos($plain, '<div class="alps-card-scroller__card"><span class="alps-card-scroller__title">No link</span></div>') !== false, 'a card without a link is shown, not as a link');
 
 $items = [
     ['imageUrl' => 'https://adventistai.lt/wp-content/uploads/known.jpeg', 'title' => 'Kelias pas Kristų', 'url' => 'https://adventistai.lt/kelias-pas-kristu/'],
@@ -39,7 +41,8 @@ $items = [
     ['title' => 'XSS', 'url' => 'javascript:alert(1)'],
 ];
 $html = Block::render(['heading' => 'Knygos', 'headingUrl' => 'https://adventistai.lt/knygos/', 'items' => $items]);
-$ok(substr_count($html, 'role="listitem"') === 3, 'three valid cards rendered');
+$ok(substr_count($html, 'role="listitem"') === 4, 'four cards rendered');
+$ok(strpos($html, '<div class="alps-card-scroller__card"><span class="alps-card-scroller__title">XSS</span></div>') !== false, 'a card with an unsafe URL is shown without a link');
 $ok(strpos($html, 'javascript:') === false, 'unsafe URL rejected');
 $ok(strpos($html, 'alps-card-scroller--cover') !== false, 'default layout is cover');
 $ok(strpos($html, '<h2 class="alps-card-scroller__heading"><a href="https://adventistai.lt/knygos/">Knygos</a></h2>') !== false, 'linked heading');

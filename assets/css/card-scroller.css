@@ -85,8 +85,9 @@
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
-.alps-card-scroller .alps-card-scroller__card:hover,
-.alps-card-scroller .alps-card-scroller__card:focus-visible {
+/* Only cards that are links react to the pointer. */
+.alps-card-scroller a.alps-card-scroller__card:hover,
+.alps-card-scroller a.alps-card-scroller__card:focus-visible {
   border-color: #ddd;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.09), 0 2px 5px rgba(0, 0, 0, 0.04);
   transform: translateY(-4px);
@@ -115,7 +116,7 @@
   transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
-.alps-card-scroller__card:hover .alps-card-scroller__image {
+a.alps-card-scroller__card:hover .alps-card-scroller__image {
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.17);
   transform: scale(1.025);
 }
@@ -132,7 +133,7 @@
   box-shadow: none;
 }
 
-.alps-card-scroller--logo .alps-card-scroller__card:hover .alps-card-scroller__image {
+.alps-card-scroller--logo a.alps-card-scroller__card:hover .alps-card-scroller__image {
   box-shadow: none;
   transform: scale(1.035);
 }
@@ -312,8 +313,19 @@
   --card-width: 220px;
 }
 
+/*
+ * The editor has no arrows or drag scrolling, and the row's scrollbar is
+ * hidden, so a long row pushed the last cards and "Pridėti kortelę" out of
+ * reach. While editing, cards wrap onto new rows instead.
+ */
+.alps-card-scroller.is-editing .alps-card-scroller__frame {
+  overflow: visible;
+}
+
 .alps-card-scroller.is-editing .alps-card-scroller__track {
+  flex-wrap: wrap;
   align-items: flex-start;
+  overflow: visible;
   cursor: auto;
 }
 
@@ -339,7 +351,10 @@
 
 .alps-card-scroller.is-editing .alps-card-scroller__item:last-child {
   align-items: center;
+  align-self: stretch;
+  min-height: 120px;
 }
+
 
 @media (prefers-reduced-motion: reduce) {
   .alps-card-scroller__card,
@@ -348,8 +363,8 @@
     transition: none;
   }
 
-  .alps-card-scroller .alps-card-scroller__card:hover,
-  .alps-card-scroller__card:hover .alps-card-scroller__image {
+  .alps-card-scroller a.alps-card-scroller__card:hover,
+  a.alps-card-scroller__card:hover .alps-card-scroller__image {
     transform: none;
   }
 }

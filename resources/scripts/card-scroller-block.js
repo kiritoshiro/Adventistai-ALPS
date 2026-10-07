@@ -39,7 +39,8 @@ function CardEditor({item, index, count, layout, onChange, onMove, onRemove}) {
       <TextControl __nextHasNoMarginBottom label={__('Pavadinimas', 'alps')} value={item.title} onChange={(title) => set({title})} />
       {layout === 'logo' && <TextControl __nextHasNoMarginBottom label={__('Aprašymas', 'alps')} value={item.description}
         onChange={(description) => set({description})} />}
-      <TextControl __nextHasNoMarginBottom label={__('Nuoroda', 'alps')} type="url" value={item.url} onChange={(url) => set({url})} />
+      <TextControl __nextHasNoMarginBottom label={__('Nuoroda', 'alps')} type="url" value={item.url}
+        help={__('Be nuorodos kortelė rodoma, bet jos paspausti negalima.', 'alps')} onChange={(url) => set({url})} />
       <TextControl __nextHasNoMarginBottom label={__('Alternatyvus tekstas', 'alps')} value={item.alt}
         help={__('Tuščias – naudojamas pavadinimas.', 'alps')} onChange={(alt) => set({alt})} />
       <ToggleControl __nextHasNoMarginBottom label={__('Atidaryti naujame lange', 'alps')} checked={item.newTab}
@@ -110,6 +111,17 @@ registerBlockType('alps/card-scroller', {
   keywords: ['slider', 'carousel', 'books', 'logos', 'slankiklis', 'knygos', 'kortelės'],
   attributes,
   supports: {anchor: true, align: ['wide', 'full'], html: false},
+  // Shown in the block inserter's preview.
+  example: {
+    attributes: {
+      heading: __('Knygos', 'alps'),
+      items: [
+        {title: __('Kelias pas Kristų', 'alps'), url: '#'},
+        {title: __('Didžioji kova', 'alps'), url: '#'},
+        {title: __('Ugdymas', 'alps'), url: '#'},
+      ],
+    },
+  },
   edit: Edit,
   save: () => null,
 });
