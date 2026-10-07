@@ -74,4 +74,14 @@ $ok(strpos($logo, 'aria-label="Kortelės"') !== false, 'unlabelled list gets a g
 
 $ok(strpos(Block::render(['layout' => 'evil', 'items' => $items]), 'alps-card-scroller--cover') !== false, 'unknown layout falls back to cover');
 
+// End of the row: a link to the "more" page takes the next arrow's place.
+$ok(strpos($html, 'data-card-scroller-more') !== false && strpos($html, 'alps-card-scroller__arrow--more" href="https://adventistai.lt/knygos/"') !== false, 'heading link is the end-of-row destination');
+$ok(strpos($html, 'aria-label="Daugiau: Knygos" data-card-scroller-more hidden><span aria-hidden="true">→</span></a>') !== false, 'more link is labelled and starts hidden');
+$onlyUrl = Block::render(['items' => $items, 'moreUrl' => 'https://adventistai.lt/visos-knygos/']);
+$ok(strpos($onlyUrl, 'arrow--more" href="https://adventistai.lt/visos-knygos/"') !== false, 'Daugiau URL without a label still gives the end-of-row link');
+$ok(strpos($onlyUrl, 'alps-card-scroller__card--more') === false, 'no Daugiau card without a label');
+$ok(strpos($logo, 'data-card-scroller-more') === false, 'no end-of-row link when the row ends with a Daugiau card');
+$ok(strpos(Block::render(['items' => $items]), 'data-card-scroller-more') === false, 'no end-of-row link without a destination');
+$ok(strpos(Block::render(['items' => $items, 'moreUrl' => 'javascript:alert(1)']), 'data-card-scroller-more') === false, 'unsafe Daugiau URL is ignored');
+
 echo "Card scroller block: {$checks} checks passed.\n";

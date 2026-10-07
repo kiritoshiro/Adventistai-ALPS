@@ -75,6 +75,7 @@ function Edit({attributes: values, setAttributes}) {
           help={__('Paskutinė kortelė rodoma, kai užpildytas tekstas ir nuoroda.', 'alps')}
           onChange={(moreLabel) => setAttributes({moreLabel})} />
         <TextControl __nextHasNoMarginBottom label={__('Mygtuko „Daugiau“ nuoroda', 'alps')} type="url" value={values.moreUrl}
+          help={__('Pasiekus eilės galą, rodyklė → veda čia (tuščia – į antraštės nuorodą).', 'alps')}
           onChange={(moreUrl) => setAttributes({moreUrl})} />
       </PanelBody>
     </InspectorControls>

@@ -261,6 +261,21 @@ a.alps-card-scroller__card:hover .alps-card-scroller__image {
   outline: none;
 }
 
+/* The end-of-row link to the "more" page: same place, a "go to" arrow in the link colour. */
+.alps-card-scroller a.alps-card-scroller__arrow--more {
+  color: #fff !important;
+  text-decoration: none !important;
+}
+
+.alps-card-scroller .alps-card-scroller__arrow--more span {
+  background: #1775c8;
+}
+
+.alps-card-scroller .alps-card-scroller__arrow--more:hover span,
+.alps-card-scroller .alps-card-scroller__arrow--more:focus-visible span {
+  background: #1267b2;
+}
+
 .alps-card-scroller__arrow:focus-visible span {
   outline: 2px solid #1775c8;
   outline-offset: 2px;
