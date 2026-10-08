@@ -127,17 +127,22 @@
                   <div class="alps-latest-slider__image-frame">
                     @php
                       $thumbnailFile = wp_get_attachment_image_src($thumbnailId, 'full');
-                      // WordPress gives "high" to the first eager image it meets; the
-                      // first row picks the largest one instead (priorityIndex above).
-                      $priorityAttributes = $loadEager ? ['fetchpriority' => $moduleIndex === $priorityIndex ? 'high' : 'auto'] : [];
+                      // WordPress gives "high" to the first eager image it meets, so the
+                      // eager images say "auto". The largest one in the first row
+                      // (priorityIndex above) gets high priority through a preload
+                      // limited to wide screens; on phones the slider is further down.
+                      $thumbnailHtml = (string) get_the_post_thumbnail($postId, 'full', [
+                        'class' => 'alps-latest-slider__image',
+                        'alt' => $thumbnailAlt,
+                        'loading' => $loadEager ? 'eager' : 'lazy',
+                        'decoding' => 'async',
+                        'sizes' => \App\LatestPostSlider::imageSizes((int) $sliderColumns, (int) ($thumbnailFile[1] ?? 0), (int) ($thumbnailFile[2] ?? 0)),
+                      ] + ($loadEager ? ['fetchpriority' => 'auto'] : []));
                     @endphp
-                    {!! get_the_post_thumbnail($postId, 'full', [
-                      'class' => 'alps-latest-slider__image',
-                      'alt' => $thumbnailAlt,
-                      'loading' => $loadEager ? 'eager' : 'lazy',
-                      'decoding' => 'async',
-                      'sizes' => \App\LatestPostSlider::imageSizes((int) $sliderColumns, (int) ($thumbnailFile[1] ?? 0), (int) ($thumbnailFile[2] ?? 0)),
-                    ] + $priorityAttributes) !!}
+                    @if ($loadEager && $moduleIndex === $priorityIndex)
+                      {!! \App\LatestPostSlider::priorityPreload($thumbnailHtml) !!}
+                    @endif
+                    {!! $thumbnailHtml !!}
                   </div>
                 @endif
 

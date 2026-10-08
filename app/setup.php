@@ -71,6 +71,22 @@ add_action('wp_enqueue_scripts', function () {
 }, 9999);
 
 /**
+ * The ALPS stylesheet is linked only after the embedded block and plugin
+ * styles, about 90 KB into the page. Announcing it first thing in <head>
+ * lets the browser start it straight away. Same URL as the link, so it is
+ * fetched once.
+ */
+add_action('wp_head', function () {
+    $styles = wp_styles();
+    $style = $styles->registered['alps-main'] ?? null;
+    if (!$style || !in_array('alps-main', $styles->queue, true) || !is_string($style->src) || $style->src === '') {
+        return;
+    }
+    // The URL WordPress prints for the stylesheet itself (version and filters included).
+    printf("<link rel=\"preload\" href=\"%s\" as=\"style\">\n", esc_url($styles->_css_href($style->src, $style->ver, 'alps-main')));
+}, 1);
+
+/**
  * Preload the fonts used above the fold before any stylesheet is requested.
  * Regular and Bold Noto Sans cover the navigation and headings (550-700
  * weights resolve to the Bold face); Source Serif covers the hero text.

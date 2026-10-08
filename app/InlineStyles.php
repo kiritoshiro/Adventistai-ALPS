@@ -16,17 +16,20 @@ if (! defined('ABSPATH')) {
  * on wp_head and wp_footer at priority 1, smallest first, up to
  * `styles_inline_size_limit` bytes in total, rewriting relative url()s).
  * This adds that data to every queued local stylesheet of at most MAX_FILE
- * bytes. Larger files (the theme's main CSS, the calendar's) stay linked and
- * cacheable. The cascade order does not change: the <style> is printed where
- * the <link> would have been.
+ * bytes. That includes the theme's app.css (17 KB) and site overrides (13 KB)
+ * and the calendar's front-page magenda.min.css (24 KB): linked, each was a
+ * render-blocking request on phones. Only the ALPS main stylesheet (200 KB)
+ * stays linked and cacheable; setup.php announces it at the top of <head>.
+ * The cascade order does not change: the <style> is printed where the <link>
+ * would have been.
  */
 class InlineStyles
 {
     /** Largest stylesheet that is inlined, in bytes. */
-    const MAX_FILE = 12000;
+    const MAX_FILE = 26000;
 
     /** Total inlined per page, in bytes (WordPress' default is 20000). */
-    const LIMIT = 90000;
+    const LIMIT = 150000;
 
     public static function register()
     {

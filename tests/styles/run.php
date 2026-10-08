@@ -21,7 +21,7 @@ function check($label, $condition)
 // compiled views and an Acorn manifest.
 $files = [
     'wp-content/plugins/small/a.css' => str_repeat('a{}', 100),
-    'wp-content/themes/t/big.css' => str_repeat('b{}', 5000),
+    'wp-content/themes/t/big.css' => str_repeat('b{}', 9000),
     'wp-includes/css/core.css' => 'c{}',
     'wp-content/cache/acorn/framework/views/one.php' => '<?php',
     'wp-content/cache/acorn/framework/views/two.php' => '<?php',
@@ -76,9 +76,9 @@ style('print', 'https://example.test/wp-content/plugins/small/a.css', 'print');
 style('remote', 'https://fonts.example.org/x.css');
 InlineStyles::markSmallStyles();
 check('a small local stylesheet gets path data (WordPress then inlines it)', $real('wp-content/plugins/small/a.css') === wp_styles()->get_data('small', 'path'));
-check('a stylesheet over 12 KB stays a link', false === wp_styles()->get_data('big', 'path'));
+check('a stylesheet over 26 KB stays a link', false === wp_styles()->get_data('big', 'path'));
 check('print-only and remote stylesheets stay links', false === wp_styles()->get_data('print', 'path') && false === wp_styles()->get_data('remote', 'path'));
-check('the inline total is raised to 90 KB', 90000 === InlineStyles::limit(20000));
+check('the inline total is raised to 150 KB', 150000 === InlineStyles::limit(20000));
 
 check('Acorn storage defaults to wp-content/cache/acorn', WP_CONTENT_DIR . '/cache/acorn' === ThemeCache::storagePath());
 check('clearing removes the compiled views', 2 === ThemeCache::clear() && ! glob(WP_CONTENT_DIR . '/cache/acorn/framework/views/*.php'));

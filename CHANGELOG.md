@@ -3,6 +3,15 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.31.1]
+### Changed
+- Faster first paint on phones (PageSpeed mobile: render-blocking requests, LCP request discovery, document size).
+  - **Fewer stylesheet requests:** `App\InlineStyles` now embeds local stylesheets up to 26 KB (was 12 KB), up to 150 KB per page (was 90 KB). The theme's `app.css` (17 KB) and site overrides (13 KB) and the calendar's front-page `magenda.min.css` (24 KB) were separate render-blocking requests. Only the ALPS main stylesheet (200 KB) stays linked and cacheable.
+  - **The ALPS stylesheet is announced first:** its `<link>` comes after about 90 KB of embedded styles, so a `<link rel="preload" as="style">` for the same URL is now printed at the top of `<head>`.
+  - **Latest Post Slider:** the first row's largest image gets high priority on screens over 1000 px only, through a preload limited to `(min-width: 1001px)` that repeats the image's AVIF `srcset` and `sizes`; the image itself says `fetchpriority="auto"`. On phones the slider sits below other content, and its 139 KB image took bandwidth from the real LCP image there.
+  - **Sabbath timer:** the page no longer embeds seven weeks of sunset times for 20 cities (16 KB of JSON). `sabbath-timer.js` calculates each city's Friday and Saturday sunsets from its coordinates with the same formula the PHP used; the payload is the city list (1.4 KB). `tests/sabbath/sunsets.cjs` checks the calculation against the PHP results for six cities over a year, to the second, including both daylight-saving changes. Times are worked out from the visitor's clock, so a cached page never runs out of dates.
+  - **Minified copies:** `scripts/minify-assets.mjs` (was `minify-site-overrides.mjs`) also writes `card-scroller.min.css` (7.7 KB from 9.9 KB) and `sabbath-timer.min.js` (6.5 KB from 14 KB), which the theme loads or embeds; the readable files are used under `SCRIPT_DEBUG` or when a copy is missing. CI fails when a copy is out of date.
+
 ## [3.31.0]
 ### Added
 - Appearance → ALPS Theme Settings → **Images**: AVIF quality (20–95, default 82, the WordPress default), the full image's longest side (320–1920 px) and the small image's (64–768 px) for new uploads. An empty field keeps the default. The tab shows the values in use. While the WP Cleanup plugin is active with an ALPS-compatible policy, its settings are used instead, as before, and the tab says so; WP Cleanup 0.12.0 has the same AVIF quality setting.

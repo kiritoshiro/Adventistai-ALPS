@@ -1,6 +1,82 @@
 (() => {
   'use strict';
 
+  // Sabbath start and end are calculated here from each city's coordinates,
+  // so the page carries only the city list, not weeks of times per city.
+  // Apparent sunset, Sun's centre 50' below the horizon (90°50' zenith);
+  // the same formula the theme computed in PHP until 3.31.1.
+  const rad = (degrees) => (degrees / 180) * Math.PI;
+  const deg = (radians) => (radians / Math.PI) * 180;
+  const normalize = (degrees) => {
+    const value = degrees % 360;
+    return value < 0 ? value + 360 : value;
+  };
+
+  // Unix seconds of sunset on a calendar date (month 1-12), or null.
+  const sunset = (year, month, day, lat, lon) => {
+    const midnight = Date.UTC(year, month - 1, day);
+    const dayOfYear = Math.round((midnight - Date.UTC(year, 0, 1)) / 86400000) + 1;
+    const lonHour = lon / 15;
+    const t = dayOfYear + (18 - lonHour) / 24;
+    const anomaly = 0.9856 * t - 3.289;
+    const trueLon = normalize(anomaly + 1.916 * Math.sin(rad(anomaly)) + 0.02 * Math.sin(rad(2 * anomaly)) + 282.634);
+    let ascension = normalize(deg(Math.atan(0.91764 * Math.tan(rad(trueLon)))));
+    ascension = (ascension + Math.floor(trueLon / 90) * 90 - Math.floor(ascension / 90) * 90) / 15;
+    const sinDec = 0.39782 * Math.sin(rad(trueLon));
+    const cosDec = Math.cos(Math.asin(sinDec));
+    const cosHour = (Math.cos(rad(90.833333)) - sinDec * Math.sin(rad(lat))) / (cosDec * Math.cos(rad(lat)));
+    if (cosHour < -1 || cosHour > 1) return null;
+    let utc = (deg(Math.acos(cosHour)) / 15 + ascension - 0.06571 * t - 6.622 - lonHour) % 24;
+    if (utc < 0) utc += 24;
+    const seconds = Math.round(utc * 3600);
+    return midnight / 1000 + (seconds >= 86400 ? 0 : seconds);
+  };
+
+  // Wall-clock parts of an instant in a time zone, and the reverse.
+  const formatters = {};
+  const zoned = (ms, zone) => {
+    formatters[zone] = formatters[zone] || new Intl.DateTimeFormat('en-GB', {
+      timeZone: zone, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
+    });
+    const parts = {};
+    formatters[zone].formatToParts(new Date(ms)).forEach((part) => { parts[part.type] = Number(part.value); });
+    return parts;
+  };
+  const zonedSeconds = (year, month, day, hour, zone) => {
+    const guess = Date.UTC(year, month - 1, day, hour);
+    const at = zoned(guess, zone);
+    const offset = Date.UTC(at.year, at.month - 1, at.day, at.hour, at.minute, at.second) - guess;
+    return (guess - offset) / 1000;
+  };
+
+  // Last week's, this week's and next week's Friday and Saturday sunsets
+  // (weeks start on Monday in the time zone); a start is revealed at
+  // revealHour on its Friday.
+  const weekEvents = (lat, lon, nowMs, zone, revealHour) => {
+    const today = zoned(nowMs, zone);
+    const base = Date.UTC(today.year, today.month - 1, today.day);
+    const monday = base - ((new Date(base).getUTCDay() || 7) - 1) * 86400000;
+    const events = [];
+    for (let week = -1; week <= 1; week += 1) {
+      const date = (offset) => {
+        const value = new Date(monday + (week * 7 + offset) * 86400000);
+        return [value.getUTCFullYear(), value.getUTCMonth() + 1, value.getUTCDate()];
+      };
+      const friday = date(4);
+      const start = sunset(...friday, lat, lon);
+      const end = sunset(...date(5), lat, lon);
+      if (start !== null) events.push({ type: 'start', timestamp: start, revealTimestamp: zonedSeconds(...friday, revealHour, zone) });
+      if (end !== null) events.push({ type: 'end', timestamp: end });
+    }
+    return events.sort((a, b) => a.timestamp - b.timestamp);
+  };
+
+  // tests/sabbath/sunsets.cjs checks the calculation against the PHP results.
+  if (typeof module === 'object' && module && module.exports) {
+    module.exports = { sunset, weekEvents };
+    return;
+  }
+
   const root = document.querySelector('[data-sabbath-timer]');
   if (!root) return;
 
@@ -73,9 +149,27 @@
     return timeFormatter.format(new Date(Number(event.timestamp) * 1000));
   };
 
-  const cityState = (cityKey, nowMs) => {
+  // Events per city, recalculated once a day.
+  const zone = data.timezone || 'Europe/Vilnius';
+  const revealHour = Number(data.fridayRevealHour) || 0;
+  let eventsDay = '';
+  let eventsByCity = {};
+  const cityEvents = (cityKey, nowMs) => {
+    const today = zoned(nowMs, zone);
+    const day = `${today.year}-${today.month}-${today.day}`;
+    if (day !== eventsDay) {
+      eventsDay = day;
+      eventsByCity = {};
+    }
     const city = cities[cityKey];
-    const events = city && Array.isArray(city.events) ? city.events : [];
+    if (!eventsByCity[cityKey] && city) {
+      eventsByCity[cityKey] = weekEvents(Number(city.lat), Number(city.lon), nowMs, zone, revealHour);
+    }
+    return eventsByCity[cityKey] || [];
+  };
+
+  const cityState = (cityKey, nowMs) => {
+    const events = cityEvents(cityKey, nowMs);
     if (!events.length) return { mode: 'hidden', start: null, end: null };
 
     for (let i = 0; i < events.length; i += 1) {
