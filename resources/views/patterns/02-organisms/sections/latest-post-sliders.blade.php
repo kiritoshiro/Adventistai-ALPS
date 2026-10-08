@@ -14,11 +14,26 @@
       ];
     }
   }
+
+  // The first row of sliders in the page's first section is near the top:
+  // their first images load at once, the largest one with high priority.
+  $eagerSliders = 0;
+  $priorityIndex = -1;
+  if (!empty($renderableSliderModules) && \App\LatestPostSlider::claimEagerSection()) {
+    $eagerSliders = min(count($renderableSliderModules), max(1, (int) $sliderColumns));
+    $firstSizes = [];
+    foreach (array_slice($renderableSliderModules, 0, $eagerSliders) as $renderableSliderModule) {
+      $firstThumbnailId = get_post_thumbnail_id($renderableSliderModule['posts'][0]->ID);
+      $firstFile = $firstThumbnailId ? wp_get_attachment_image_src($firstThumbnailId, 'full') : false;
+      $firstSizes[] = $firstFile ? [(int) $firstFile[1], (int) $firstFile[2]] : null;
+    }
+    $priorityIndex = \App\LatestPostSlider::priorityIndex($firstSizes);
+  }
 @endphp
 
 @if (!empty($renderableSliderModules))
   <section {!! $sectionAttributes ?: 'class="alps-latest-sliders u-space--double--top" style="--alps-latest-slider-columns: ' . esc_attr($sliderColumns) . ';"' !!} data-alps-latest-sliders>
-    @foreach ($renderableSliderModules as $renderableSliderModule)
+    @foreach ($renderableSliderModules as $moduleIndex => $renderableSliderModule)
       @php
         $module = $renderableSliderModule['module'];
         $sliderPosts = $renderableSliderModule['posts'];
@@ -96,7 +111,7 @@
               $thumbnailAlt = $thumbnailAlt ?: $postTitle;
               $categoryName = html_entity_decode(\App\ContentHelpers::categoryName((int) $postId), ENT_QUOTES | ENT_HTML5, 'UTF-8');
               $isActive = $slideIndex === 0;
-              $loadEager = $isActive && $thumbnailId && \App\LatestPostSlider::claimEagerImage();
+              $loadEager = $isActive && $thumbnailId && $moduleIndex < $eagerSliders;
             @endphp
 
             <article
@@ -112,6 +127,9 @@
                   <div class="alps-latest-slider__image-frame">
                     @php
                       $thumbnailFile = wp_get_attachment_image_src($thumbnailId, 'full');
+                      // WordPress gives "high" to the first eager image it meets; the
+                      // first row picks the largest one instead (priorityIndex above).
+                      $priorityAttributes = $loadEager ? ['fetchpriority' => $moduleIndex === $priorityIndex ? 'high' : 'auto'] : [];
                     @endphp
                     {!! get_the_post_thumbnail($postId, 'full', [
                       'class' => 'alps-latest-slider__image',
@@ -119,7 +137,7 @@
                       'loading' => $loadEager ? 'eager' : 'lazy',
                       'decoding' => 'async',
                       'sizes' => \App\LatestPostSlider::imageSizes((int) $sliderColumns, (int) ($thumbnailFile[1] ?? 0), (int) ($thumbnailFile[2] ?? 0)),
-                    ]) !!}
+                    ] + $priorityAttributes) !!}
                   </div>
                 @endif
 

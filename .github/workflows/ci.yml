@@ -66,6 +66,7 @@ jobs:
           php tests/sabbath/run.php
           php tests/styles/run.php
           php tests/styles/head.php
+          php tests/scripts/run.php
 
       - name: Run account access checks
         run: php tests/access/run.php

@@ -7,20 +7,54 @@ namespace App;
  */
 class LatestPostSlider
 {
-    private static bool $eagerImageClaimed = false;
+    private static bool $eagerSectionClaimed = false;
 
     /**
-     * True only for the first slide image rendered on the page. Every slider
-     * shows its first slide, but only the page's first slider can be near the
-     * top; the others load their images lazily like the rest of the page.
+     * True only for the first slider section rendered on the page. Its first
+     * row of sliders (one per column) can be near the top, so their first
+     * slide images load at once; every other slide image loads lazily.
      */
-    public static function claimEagerImage(): bool
+    public static function claimEagerSection(): bool
     {
-        if (self::$eagerImageClaimed) {
+        if (self::$eagerSectionClaimed) {
             return false;
         }
-        self::$eagerImageClaimed = true;
+        self::$eagerSectionClaimed = true;
         return true;
+    }
+
+    /**
+     * Share of the 16:9 frame an image of this size covers once fitted in it
+     * (1 for a 16:9 image, about 0.42 for a 3:4 portrait).
+     */
+    public static function frameShare(int $width, int $height): float
+    {
+        if ($width <= 0 || $height <= 0) {
+            return 0.0;
+        }
+        $ratio = ($width / $height) / (16 / 9);
+        return min($ratio, 1 / $ratio);
+    }
+
+    /**
+     * Which of the first images in a row of sliders is drawn largest, and so
+     * is the likely Largest Contentful Paint: it gets fetchpriority="high".
+     * Sliders in a row share the frame size. -1 when none has an image.
+     *
+     * @param array<int, array{0: int, 1: int}|null> $sizes Width and height per slider, null without an image.
+     */
+    public static function priorityIndex(array $sizes): int
+    {
+        $best = -1;
+        $bestShare = 0.0;
+        foreach ($sizes as $index => $size) {
+            $share = is_array($size) ? self::frameShare((int) $size[0], (int) $size[1]) : 0.0;
+            if ($share > $bestShare) {
+                $best = (int) $index;
+                $bestShare = $share;
+            }
+        }
+        return $best;
     }
 
     /**
