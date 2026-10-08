@@ -3,6 +3,16 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.30.11]
+### Changed
+- Fewer render-blocking scripts (PageSpeed "Render-blocking requests").
+  - **jQuery and jQuery Migrate:** on the front page, for visitors who are not logged in, they move from `<head>` to the footer with the `defer` strategy (`App\ScriptLoading`). Together they were about 37 KiB and 480 ms of blocking. WordPress still decides when the page is printed. A head script that needs jQuery brings it back into `<head>`, and a blocking footer script that needs it keeps it blocking. The ALPS script now uses `defer` instead of `async` on those pages, so it runs after jQuery. The front page prints no inline script that uses jQuery. Other pages are unchanged. The `adventistai_defer_jquery` filter turns this on or off.
+  - **Book showcase:** its popup script (`knygos-front`, from a plugin outside this theme) only adds click and Escape listeners on `document`, so it is now deferred.
+- Latest Post Slider: in the page's first slider block, the first image of every slider in the first row now loads at once. Before, only the first slider's did, so in a two-column block the second slider's 16:9 image, which was the desktop LCP, loaded lazily. The image drawn largest gets `fetchpriority="high"`; the others get `auto`. WordPress used to give "high" to the first eager image, which was a portrait drawn at 42 % of its frame.
+
+### Fixed
+- Forced reflow in `head-script.min.js` (PageSpeed, 80 ms). Modernizr's `touchevents` test injected an `@media (touch-enabled)` probe and read `offsetTop` (and `offsetHeight`) on browsers without `ontouchstart`. No current browser supports that media feature, so the result was always "no touch". The test now returns that result directly, and the script reads no layout. The feature classes on `<html>` are unchanged.
+
 ## [3.30.10]
 ### Fixed
 - Small plugin stylesheets are inlined again. WordPress runs `wp_enqueue_scripts` on `wp_head` priority 1, after the theme's marking pass (priority 0) and just before it inlines (also priority 1), so stylesheets plugins enqueue there stayed separate render-blocking requests (on adventistai.lt: Bible, calendar, cookie banner, book showcase and external posts, 1.7–4 KB each). They are now marked once every `wp_enqueue_scripts` callback has run.
