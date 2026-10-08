@@ -153,6 +153,8 @@ html {
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
+    /* ALPS adds a one-column offset at 701–900px; keep stacked content aligned. */
+    margin-left: 0 !important;
   }
 }
 
