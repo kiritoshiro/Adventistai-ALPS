@@ -3,6 +3,14 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.30.9]
+### Fixed
+- Stacked Gutenberg Columns stay aligned: at 781 px and below, where WordPress stacks columns, the theme's 1.25em left gutter on every column after the first is cleared, so all columns start at the same left edge. Columns set not to stack on mobile keep it.
+- Article and sidebar stay aligned when the sidebar moves below the article: ALPS added a one-seventh viewport left offset at 701–900 px (about 140 px at 850 px); the stacked layout (up to 1000 px) now clears it, so content keeps the normal ~16–19 px inset. Desktop layout is unchanged.
+
+### Changed
+- Workflows: the version comments on the pinned `shivammathur/setup-php` commit now say 2.37.2 (the tag that commit is), clearing the workflow security audit's version-mismatch finding. Pins and behaviour are unchanged.
+
 ## [3.30.8]
 ### Changed
 - Header logo: the SVG `<img>` gets its width and height (from the attachment metadata, or the SVG's own size/viewBox, cached) plus `fetchpriority="high"`. It is the largest element on phones (PageSpeed's LCP element); its rendered size is unchanged (checked at 280 and 1280 px). The footer logo gets its size and lazy loading.

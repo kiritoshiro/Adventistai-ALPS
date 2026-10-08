@@ -166,6 +166,12 @@ button::after, button font::before {
 @media (max-width: 1100px) {
   .text .wp-block-column { flex-basis: 100% !important; min-width: 0; }
 }
+/* Clear main.scss's sibling gutter when core stacks columns; honor opt-out. */
+@media (max-width: 781px) {
+  .text .wp-block-columns:not(.is-not-stacked-on-mobile) > .wp-block-column {
+    margin-left: 0;
+  }
+}
 /* Related-lesson titles: keep them on sensible lines */
 .text .wp-block-column .c-block__title,
 .text .wp-block-column .c-block__heading-title {
