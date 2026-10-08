@@ -34,6 +34,11 @@ class InlineStyles
             return;
         }
         add_action('wp_head', [__CLASS__, 'markSmallStyles'], 0);
+        // WordPress runs wp_enqueue_scripts on wp_head priority 1, after the
+        // pass above and just before wp_maybe_inline_styles (also priority 1),
+        // so stylesheets enqueued there (the Bible, calendar, cookie banner and
+        // other plugin ones) were never marked. Mark them once all are queued.
+        add_action('wp_enqueue_scripts', [__CLASS__, 'markSmallStyles'], PHP_INT_MAX);
         add_action('wp_footer', [__CLASS__, 'markSmallStyles'], 0);
         // Plugins that decide in wp_footer whether the page needs them (the
         // calendar, the Bible popups) enqueue after the two passes above, so

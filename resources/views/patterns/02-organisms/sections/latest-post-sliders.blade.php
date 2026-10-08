@@ -110,11 +110,15 @@
               <a class="alps-latest-slider__link" href="{{ esc_url($postLink) }}">
                 @if ($thumbnailId)
                   <div class="alps-latest-slider__image-frame">
+                    @php
+                      $thumbnailFile = wp_get_attachment_image_src($thumbnailId, 'full');
+                    @endphp
                     {!! get_the_post_thumbnail($postId, 'full', [
                       'class' => 'alps-latest-slider__image',
                       'alt' => $thumbnailAlt,
                       'loading' => $loadEager ? 'eager' : 'lazy',
                       'decoding' => 'async',
+                      'sizes' => \App\LatestPostSlider::imageSizes((int) $sliderColumns, (int) ($thumbnailFile[1] ?? 0), (int) ($thumbnailFile[2] ?? 0)),
                     ]) !!}
                   </div>
                 @endif
