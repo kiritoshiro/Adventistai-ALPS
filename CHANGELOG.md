@@ -3,6 +3,14 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.30.8]
+### Changed
+- Header logo: the SVG `<img>` gets its width and height (from the attachment metadata, or the SVG's own size/viewBox, cached) plus `fetchpriority="high"`. It is the largest element on phones (PageSpeed's LCP element); its rendered size is unchanged (checked at 280 and 1280 px). The footer logo gets its size and lazy loading.
+- Small stylesheets that plugins enqueue during `wp_footer` (the calendar's, the Bible popups') are now inlined too: one more inlining pass runs right before WordPress prints late styles.
+
+### Added
+- Security headers on public pages: `X-Frame-Options: SAMEORIGIN` and `Content-Security-Policy: frame-ancestors 'self'` (no framing by other sites) and `Cross-Origin-Opener-Policy: same-origin-allow-popups`. The CSP holds only the frame rule. Filter `adventistai_security_headers` to change them (e.g. to let a partner site frame pages).
+
 ## [3.30.7]
 ### Changed
 - `site-overrides.css` is loaded as the minified `site-overrides.min.css` (13 KB instead of 32 KB, 2.9 KB instead of 9 KB compressed), built with lightningcss by `scripts/minify-site-overrides.mjs`; CI fails when it is out of date. Under `SCRIPT_DEBUG`, or when the copy is missing, the readable file is used.

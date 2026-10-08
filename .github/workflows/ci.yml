@@ -65,6 +65,7 @@ jobs:
           php tests/blocks/card-scroller.php
           php tests/sabbath/run.php
           php tests/styles/run.php
+          php tests/styles/head.php
 
       - name: Run account access checks
         run: php tests/access/run.php
@@ -83,7 +84,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '24'
           cache: npm

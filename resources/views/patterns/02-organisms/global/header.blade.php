@@ -53,7 +53,7 @@
     <div class="{{ implode(' ', $logoContainerClass) }}">
       <a href="{{ get_home_url() }}" class="c-logo__link{{ $header_logo_class }}">
         @if ($logo)
-          <img class="style-svg" src="{{ wp_get_attachment_url($logo) }}" alt="{{ get_post_meta($logo, '_wp_attachment_image_alt', true) }}">
+          <img class="style-svg" src="{{ wp_get_attachment_url($logo) }}" alt="{{ get_post_meta($logo, '_wp_attachment_image_alt', true) }}"{!! \App\LogoImage::attributes($logo, true) !!}>
         @else
           <span class="{{ $logo_class }}">
             @includeFirst(['patterns.00-atoms.logos.alps-logo-custom', 'patterns.00-atoms.logos.alps-logo'])
