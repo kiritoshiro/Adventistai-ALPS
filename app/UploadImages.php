@@ -18,15 +18,26 @@ final class UploadImages
     /** Set while WordPress makes the small size of a marked upload (it passes no file name then). */
     private static bool $makingSmall = false;
 
-    /** Same defaults as WP Cleanup's image policy. */
+    /**
+     * Same defaults as WP Cleanup's image policy. AVIF quality 82 is what
+     * WordPress uses for AVIF when nothing sets it.
+     */
     private const DEFAULTS = [
         'full_max' => 1920,
         'small_name' => 'alps-small',
         'small_max' => 768,
         'jpeg_max' => 1920,
         'jpeg_quality' => 82,
+        'avif_quality' => 82,
         'jpeg_fallback' => true,
         'set_flag' => true,
+    ];
+
+    /** Appearance → ALPS Theme Settings → Images fields (Carbon Fields theme options). */
+    public const SETTINGS = [
+        'avif_quality' => 'alps_image_avif_quality',
+        'full_max' => 'alps_image_full_max',
+        'small_max' => 'alps_image_small_max',
     ];
 
     public static function register(): void
@@ -38,6 +49,7 @@ final class UploadImages
         });
         add_filter('big_image_size_threshold', [self::class, 'threshold'], 100, 4);
         add_filter('image_editor_output_format', [self::class, 'format'], 100, 3);
+        add_filter('wp_editor_set_quality', [self::class, 'quality'], 100, 2);
         add_filter('intermediate_image_sizes_advanced', [self::class, 'sizes'], 100, 3);
         add_filter('wp_generate_attachment_metadata', [self::class, 'finish'], 100, 2);
         add_filter('wp_generate_attachment_metadata', [self::class, 'fallback'], 110, 2);
@@ -56,20 +68,19 @@ final class UploadImages
     }
 
     /**
-     * Sizes and JPEG settings. When the WP Cleanup plugin is active and its saved
-     * policy fits ALPS (alps-small, at most 1920/768 px), its settings are used so
-     * both describe new uploads identically.
+     * Sizes and quality. The theme's own settings (Appearance → ALPS Theme
+     * Settings → Images) apply first. When the WP Cleanup plugin is active and
+     * its saved policy fits ALPS (alps-small, at most 1920/768 px), its settings
+     * are used instead, so both describe new uploads identically.
      *
-     * @return array{full_max:int,small_name:string,small_max:int,jpeg_max:int,jpeg_quality:int,jpeg_fallback:bool,set_flag:bool}
+     * @return array{full_max:int,small_name:string,small_max:int,jpeg_max:int,jpeg_quality:int,avif_quality:int,jpeg_fallback:bool,set_flag:bool}
      */
     public static function policy(): array
     {
-        $policy = self::DEFAULTS;
-        if (class_exists('\WPCleanup\Media_Policy')) {
-            $plugin = \WPCleanup\Media_Policy::settings();
-            if (is_array($plugin) && \WPCleanup\Media_Policy::alps_compatible($plugin)) {
-                $policy = array_merge($policy, array_intersect_key($plugin, $policy));
-            }
+        $policy = array_merge(self::DEFAULTS, self::themeSettings());
+        $cleanup = self::cleanupPolicy();
+        if ($cleanup) {
+            $policy = array_merge($policy, array_intersect_key($cleanup, $policy));
         }
         if (function_exists('apply_filters')) {
             $policy = (array) apply_filters('alps_upload_image_policy', $policy);
@@ -78,10 +89,67 @@ final class UploadImages
         $policy['small_max'] = max(64, min(768, $policy['full_max'] - 1, (int) $policy['small_max']));
         $policy['jpeg_max'] = max(320, min(8192, (int) $policy['jpeg_max']));
         $policy['jpeg_quality'] = max(40, min(95, (int) $policy['jpeg_quality']));
+        $policy['avif_quality'] = max(20, min(95, (int) $policy['avif_quality']));
         $policy['jpeg_fallback'] = (bool) $policy['jpeg_fallback'];
         $policy['small_name'] = 'alps-small';
         $policy['set_flag'] = (bool) $policy['set_flag'];
         return $policy;
+    }
+
+    /** The values saved under Appearance → ALPS Theme Settings → Images; empty fields are left out. */
+    public static function themeSettings(): array
+    {
+        $settings = [];
+        if (!function_exists('get_option')) {
+            return $settings;
+        }
+        foreach (self::SETTINGS as $key => $field) {
+            // Carbon Fields keeps a theme option as "_<field name>".
+            $value = get_option('_' . $field, '');
+            if (is_scalar($value) && trim((string) $value) !== '' && is_numeric(trim((string) $value))) {
+                $settings[$key] = (int) $value;
+            }
+        }
+        return $settings;
+    }
+
+    /** WP Cleanup's image policy when that plugin is active and its policy fits ALPS, else null. */
+    public static function cleanupPolicy(): ?array
+    {
+        if (!class_exists('\WPCleanup\Media_Policy')) {
+            return null;
+        }
+        $plugin = \WPCleanup\Media_Policy::settings();
+        return is_array($plugin) && \WPCleanup\Media_Policy::alps_compatible($plugin) ? $plugin : null;
+    }
+
+    /**
+     * AVIF quality for every AVIF WordPress writes (new uploads, their small
+     * size, edits). WordPress resets the quality when it converts an image to
+     * another format, which is when this filter runs, so setting it on the
+     * editor before saving would not last.
+     */
+    public static function quality($quality, $mimeType = '')
+    {
+        return $mimeType === 'image/avif' ? self::policy()['avif_quality'] : $quality;
+    }
+
+    /** Text above the Images settings: the values in use and where they come from. */
+    public static function settingsHtml(): string
+    {
+        $policy = self::policy();
+        $values = sprintf(
+            /* translators: 1: AVIF quality, 2: full size in px, 3: small size in px */
+            __('In use for new uploads: AVIF quality %1$d, full image at most %2$d px, small image at most %3$d px.', 'alps'),
+            $policy['avif_quality'],
+            $policy['full_max'],
+            $policy['small_max']
+        );
+        $source = self::cleanupPolicy()
+            ? __('The WP Cleanup plugin is active, so its image policy (Tools → WP Cleanup → Images) is used and the fields below have no effect until it is deactivated.', 'alps')
+            : __('Changes apply to new uploads. Images already in the library keep their files; WP Cleanup can convert them again with these values.', 'alps');
+        return '<p><strong>' . esc_html($values) . '</strong></p><p>' . esc_html($source) . '</p>'
+            . '<p>' . esc_html__('Lower AVIF quality gives smaller files. 82 is the WordPress default; around 60 photos usually look the same at about half the size. The full image is at most 1920 px and the small one at most 768 px, the sizes the theme\'s templates expect.', 'alps') . '</p>';
     }
 
     public static function mark($id): void

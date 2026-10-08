@@ -3,6 +3,11 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.31.0]
+### Added
+- Appearance → ALPS Theme Settings → **Images**: AVIF quality (20–95, default 82, the WordPress default), the full image's longest side (320–1920 px) and the small image's (64–768 px) for new uploads. An empty field keeps the default. The tab shows the values in use. While the WP Cleanup plugin is active with an ALPS-compatible policy, its settings are used instead, as before, and the tab says so; WP Cleanup 0.12.0 has the same AVIF quality setting.
+- The AVIF quality is applied through `wp_editor_set_quality`. WordPress resets the quality when it converts a JPEG or PNG to AVIF, so a quality set on the editor beforehand would be lost. It covers the full AVIF, the `alps-small` size and AVIF edits. The quality is recorded in the upload's `_wpcu_image_outputs` policy, so WP Cleanup can tell which images were made with another value.
+
 ## [3.30.11]
 ### Changed
 - Fewer render-blocking scripts (PageSpeed "Render-blocking requests").
