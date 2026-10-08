@@ -54,6 +54,7 @@ jobs:
       - name: Run image and Open Graph regression checks
         run: |
           php tests/images/run.php
+          php tests/images/settings.php
           php tests/images/retention.php
           php tests/seo/run.php
 

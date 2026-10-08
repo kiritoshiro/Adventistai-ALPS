@@ -267,6 +267,35 @@ function crb_attach_theme_options()
                 ])
                 ->set_width(33),
         ])
+        ->add_tab(__('IMAGES', 'alps'), [
+            Field
+                ::make('html', 'crb_alps_image_policy')
+                ->set_html([\App\UploadImages::class, 'settingsHtml']),
+            Field
+                ::make('text', 'alps_image_avif_quality', __('AVIF quality (20–95)', 'alps'))
+                ->set_attribute('type', 'number')
+                ->set_attribute('min', 20)
+                ->set_attribute('max', 95)
+                ->set_attribute('placeholder', '82')
+                ->set_help_text(__('Empty: 82, the WordPress default.', 'alps'))
+                ->set_width(33),
+            Field
+                ::make('text', 'alps_image_full_max', __('Full image: longest side (px)', 'alps'))
+                ->set_attribute('type', 'number')
+                ->set_attribute('min', 320)
+                ->set_attribute('max', 1920)
+                ->set_attribute('placeholder', '1920')
+                ->set_help_text(__('320–1920. Empty: 1920.', 'alps'))
+                ->set_width(33),
+            Field
+                ::make('text', 'alps_image_small_max', __('Small image: longest side (px)', 'alps'))
+                ->set_attribute('type', 'number')
+                ->set_attribute('min', 64)
+                ->set_attribute('max', 768)
+                ->set_attribute('placeholder', '768')
+                ->set_help_text(__('64–768, smaller than the full image. Empty: 768.', 'alps'))
+                ->set_width(33),
+        ])
         ->add_tab(__('CACHE', 'alps'), [
             Field
                 ::make('html', 'crb_theme_cache')
