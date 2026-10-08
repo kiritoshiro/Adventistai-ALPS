@@ -35,7 +35,21 @@ class InlineStyles
         }
         add_action('wp_head', [__CLASS__, 'markSmallStyles'], 0);
         add_action('wp_footer', [__CLASS__, 'markSmallStyles'], 0);
+        // Plugins that decide in wp_footer whether the page needs them (the
+        // calendar, the Bible popups) enqueue after the two passes above, so
+        // their small stylesheets stayed linked. One more pass right before
+        // WordPress prints those late styles (_wp_footer_scripts, priority 10).
+        add_action('wp_print_footer_scripts', [__CLASS__, 'inlineLateStyles'], 5);
         add_filter('styles_inline_size_limit', [__CLASS__, 'limit']);
+    }
+
+    public static function inlineLateStyles()
+    {
+        self::markSmallStyles();
+        if (function_exists('wp_maybe_inline_styles')) {
+            // Already inlined styles have no src any more and are skipped.
+            wp_maybe_inline_styles();
+        }
     }
 
     public static function limit($limit)

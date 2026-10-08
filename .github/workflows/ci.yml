@@ -65,6 +65,7 @@ jobs:
           php tests/blocks/card-scroller.php
           php tests/sabbath/run.php
           php tests/styles/run.php
+          php tests/styles/head.php
 
       - name: Run account access checks
         run: php tests/access/run.php
