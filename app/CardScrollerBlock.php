@@ -18,7 +18,12 @@ class CardScrollerBlock
     public static function register(): void
     {
         $uri = get_template_directory_uri();
-        $style = '/assets/css/card-scroller.css';
+        // The minified copy (scripts/minify-assets.mjs, kept in step by CI),
+        // or the readable file under SCRIPT_DEBUG or when the copy is missing.
+        $style = '/assets/css/card-scroller.min.css';
+        if ((defined('SCRIPT_DEBUG') && SCRIPT_DEBUG) || ! is_readable(get_template_directory() . $style)) {
+            $style = '/assets/css/card-scroller.css';
+        }
         $script = '/assets/js/card-scroller.js';
 
         wp_register_style('alps-card-scroller', $uri . $style, [], theme_asset_version($uri . $style));

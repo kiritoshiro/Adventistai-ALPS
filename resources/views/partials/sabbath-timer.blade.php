@@ -101,7 +101,12 @@
 @php
   // Embedded straight after the markup: a deferred file would reveal the
   // timer after the content below had already been laid out, shifting it.
-  $sabbathTimerScript = get_template_directory() . '/assets/js/sabbath-timer.js';
+  // The minified copy (scripts/minify-assets.mjs), or the readable file
+  // under SCRIPT_DEBUG or when the copy is missing.
+  $sabbathTimerScript = get_template_directory() . '/assets/js/sabbath-timer.min.js';
+  if ((defined('SCRIPT_DEBUG') && SCRIPT_DEBUG) || !is_readable($sabbathTimerScript)) {
+    $sabbathTimerScript = get_template_directory() . '/assets/js/sabbath-timer.js';
+  }
 @endphp
 @if (is_readable($sabbathTimerScript))
   <script>{!! file_get_contents($sabbathTimerScript) !!}</script>

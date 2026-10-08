@@ -19,8 +19,12 @@ const budgets = [
   ['Search CSS', 'assets/css/adv-search.css', 7_500],
   ['Sabbath timer CSS', 'assets/css/sabbath-timer.css', 8_000],
   ['Search JS', 'assets/js/adv-search.js', 11_000],
-  ['Sabbath timer JS', 'assets/js/sabbath-timer.js', 12_000],
+  // Readable source; it now calculates the sunsets that were embedded as
+  // about 16 KB of JSON. The page embeds the minified copy.
+  ['Sabbath timer JS', 'assets/js/sabbath-timer.js', 15_000],
+  ['Sabbath timer JS (minified, embedded)', 'assets/js/sabbath-timer.min.js', 7_500],
   ['Card scroller CSS', 'assets/css/card-scroller.css', 10_000],
+  ['Card scroller CSS (minified, loaded)', 'assets/css/card-scroller.min.css', 8_500],
   ['Card scroller JS', 'assets/js/card-scroller.js', 4_500],
 ];
 

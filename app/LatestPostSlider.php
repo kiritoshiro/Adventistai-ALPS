@@ -58,6 +58,56 @@ class LatestPostSlider
     }
 
     /**
+     * Viewports where the first row of sliders is near the top. On phones
+     * the slider sits below other content (a video, the Sabbath timer), and
+     * a high-priority slide took bandwidth from the image that was really
+     * the Largest Contentful Paint there.
+     */
+    public const PRIORITY_MEDIA = '(min-width: 1001px)';
+
+    /**
+     * A preload link that gives a slide image high priority on wide screens
+     * only: it repeats the AVIF (or the image's own) srcset and sizes, so the
+     * browser picks the same file the <picture> will use. '' when the markup
+     * has no image.
+     */
+    public static function priorityPreload(string $html): string
+    {
+        $attribute = static function (string $tag, string $name): string {
+            return preg_match('/\s' . $name . '\s*=\s*"([^"]*)"/i', $tag, $m)
+                ? html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8')
+                : '';
+        };
+        $type = '';
+        if (preg_match('/<source\b[^>]*\btype\s*=\s*"image\/avif"[^>]*>/i', $html, $tag)) {
+            $type = 'image/avif';
+        } elseif (! preg_match('/<img\b[^>]*>/i', $html, $tag)) {
+            return '';
+        }
+        $srcset = $attribute($tag[0], 'srcset');
+        $src = $attribute($tag[0], 'src');
+        if ($srcset === '' && $src === '') {
+            return '';
+        }
+
+        $link = [
+            'rel' => 'preload',
+            'as' => 'image',
+            'href' => $srcset === '' ? $src : '',
+            'imagesrcset' => $srcset,
+            'imagesizes' => $srcset === '' ? '' : $attribute($tag[0], 'sizes'),
+            'type' => $type,
+            'media' => self::PRIORITY_MEDIA,
+            'fetchpriority' => 'high',
+        ];
+        $out = '<link';
+        foreach (array_filter($link, static fn (string $value): bool => $value !== '') as $name => $value) {
+            $out .= ' ' . $name . '="' . ($name === 'href' ? esc_url($value) : esc_attr($value)) . '"';
+        }
+        return $out . '>';
+    }
+
+    /**
      * The `sizes` value for a slide image: how wide it is actually drawn.
      *
      * The frame is 16:9 (4:3 when a one-column slider puts the image beside
