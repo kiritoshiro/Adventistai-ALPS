@@ -18,7 +18,7 @@ if (! defined('ABSPATH')) {
  *
  * Only the frame rule is sent as a Content-Security-Policy, so it cannot
  * block scripts or styles. A full CSP and Trusted Types are not set: the
- * site's inline scripts (WordPress, plugins, analytics) would need a
+ * site's embedded <script> blocks (WordPress, plugins, analytics) would need a
  * report-only rollout first. wp-admin and the login page keep WordPress' own
  * headers. Filter `adventistai_security_headers` to change or drop a header
  * (for example to allow framing by a partner site).
