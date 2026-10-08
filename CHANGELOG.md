@@ -3,6 +3,14 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.30.10]
+### Fixed
+- Small plugin stylesheets are inlined again. WordPress runs `wp_enqueue_scripts` on `wp_head` priority 1, after the theme's marking pass (priority 0) and just before it inlines (also priority 1), so stylesheets plugins enqueue there stayed separate render-blocking requests (on adventistai.lt: Bible, calendar, cookie banner, book showcase and external posts, 1.7–4 KB each). They are now marked once every `wp_enqueue_scripts` callback has run.
+- Desktop layout shift (PageSpeed CLS 0.13): the Sabbath rail is the last element of the page, so on a slow connection the browser painted the content at full width first and then narrowed it when the rail arrived, moving the sidebar (left 828 → 709 px, width 507 → 435 px at 1350 px) and the menu. A placeholder now holds the rail's seventh until the rail exists (`:has()`, inside `@supports`), and follows the "hide the Sabbath column" settings.
+
+### Changed
+- Latest Post Slider images get a `sizes` value that matches how wide they are drawn: the frame (at most 100vw minus padding on phones, about 560 px for one column, 840 px shared by the columns on wide screens), scaled down for portrait images that are fitted inside a 16:9 frame. Browsers downloaded the full file (743–1,000 px) for 160–400 px frames; a portrait cover in a two-column slider now asks for about 177 px.
+
 ## [3.30.9]
 ### Fixed
 - Stacked Gutenberg Columns stay aligned: at 781 px and below, where WordPress stacks columns, the theme's 1.25em left gutter on every column after the first is cleared, so all columns start at the same left edge. Columns set not to stack on mobile keep it.

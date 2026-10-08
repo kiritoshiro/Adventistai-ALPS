@@ -27,7 +27,8 @@ function wp_get_attachment_metadata($id) { return $GLOBALS['meta'][$id] ?? false
 function get_attached_file($id) { return $GLOBALS['files'][$id] ?? ''; }
 function get_transient($key) { return $GLOBALS['transients'][$key] ?? false; }
 function set_transient($key, $value, $ttl) { $GLOBALS['transients'][$key] = $value; }
-function add_action() {}
+$GLOBALS['actions'] = [];
+function add_action($hook, $callback, $priority = 10) { $GLOBALS['actions'][] = [$hook, $priority, is_array($callback) ? $callback[1] : $callback]; }
 function add_filter() {}
 function apply_filters($name, $value) { return isset($GLOBALS['filters'][$name]) ? $GLOBALS['filters'][$name]($value) : $value; }
 function is_admin() { return false; }
@@ -67,6 +68,9 @@ $GLOBALS['filters']['adventistai_security_headers'] = function ($h) { unset($h['
 $headers = SecurityHeaders::headers();
 check('a filter can drop or change headers', ! isset($headers['X-Frame-Options']) && 'frame-ancestors https://partner.example' === $headers['Content-Security-Policy']);
 
+InlineStyles::register();
+check('marks plugin styles after every wp_enqueue_scripts callback', in_array(['wp_enqueue_scripts', PHP_INT_MAX, 'markSmallStyles'], $GLOBALS['actions'], true));
+check('still marks styles queued before wp_head and in wp_footer', in_array(['wp_head', 0, 'markSmallStyles'], $GLOBALS['actions'], true) && in_array(['wp_footer', 0, 'markSmallStyles'], $GLOBALS['actions'], true));
 InlineStyles::inlineLateStyles();
 check('late pass runs WordPress inlining again', 1 === $GLOBALS['inlined']);
 
