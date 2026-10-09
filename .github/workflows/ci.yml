@@ -56,6 +56,7 @@ jobs:
           php tests/images/run.php
           php tests/images/settings.php
           php tests/images/retention.php
+          php tests/images/tone.php
           php tests/seo/run.php
 
       - name: Run search regression checks

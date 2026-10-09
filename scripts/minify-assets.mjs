@@ -11,6 +11,7 @@ import { minify } from 'terser';
 const assets = [
   ['assets/css/site-overrides.css', 'assets/css/site-overrides.min.css'],
   ['assets/css/card-scroller.css', 'assets/css/card-scroller.min.css'],
+  ['assets/css/page-hero.css', 'assets/css/page-hero.min.css'],
   ['assets/js/sabbath-timer.js', 'assets/js/sabbath-timer.min.js'],
 ];
 

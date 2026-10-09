@@ -3,6 +3,13 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.32.0]
+### Changed
+- Page and post headers with a featured (or header) image are smaller and fit the column. They were sized to the image's shape and capped at 85% of the window height, which made them about as tall as the window on wide screens, left a white gap beside them (the cap shrank the width too) and did not change with browser zoom.
+  - **Layout:** the whole image at its own shape on the left, at most 26rem high (34rem for the "page header" hero layout) and at most 60% of the window, so it now follows browser zoom. The rest of the band is a blurred copy of the same image (the same file, no extra download) with the title on it; the image's edge fades into it. When the header is narrower than 42rem the title goes under the image, and a tall image is kept to 20rem (50% of the window).
+  - **Readable title, chosen per image:** `App\HeaderTone` reduces the image to 24 px, then picks white or dark text and the lightest dimming layer under it that gives at least 4.5:1 contrast for all but the brightest (or darkest) tenth of those pixels (large titles need 3:1). White text is kept unless dark text needs clearly less dimming. The result is stored on the attachment (`_alps_header_tone`) and recomputed when its file changes; it reads the JPEG fallback, the small AVIF or the attachment, and falls back to white text on 55% dimming if the file cannot be read.
+  - The header's CSS (`assets/css/page-hero.css`, 1.6 KB minified) is embedded only on pages that show such a header. The front page's header (Sabbath timer) and pages without an image are unchanged; the Header block keeps its previous behaviour.
+
 ## [3.31.2]
 ### Fixed
 - Sabbath timer: the city list was cut off and covered on phones. It opened inside the page header, which clips its overflow and sits in a stacking context below the content after it (the search button and its underline painted over the list). It now opens in the browser's top layer (`popover="manual"`) and is placed under its button with fixed coordinates, inside the viewport: under the button's left edge on phones, right-aligned on wider screens as before, upwards when there is little room below. The list's height follows the space available, and it follows the button when the page scrolls. Keyboard use, Escape and clicking outside work as before. Browsers without the Popover API keep the previous placement.
