@@ -3,6 +3,10 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.31.2]
+### Fixed
+- Sabbath timer: the city list was cut off and covered on phones. It opened inside the page header, which clips its overflow and sits in a stacking context below the content after it (the search button and its underline painted over the list). It now opens in the browser's top layer (`popover="manual"`) and is placed under its button with fixed coordinates, inside the viewport: under the button's left edge on phones, right-aligned on wider screens as before, upwards when there is little room below. The list's height follows the space available, and it follows the button when the page scrolls. Keyboard use, Escape and clicking outside work as before. Browsers without the Popover API keep the previous placement.
+
 ## [3.31.1]
 ### Changed
 - Faster first paint on phones (PageSpeed mobile: render-blocking requests, LCP request discovery, document size).
