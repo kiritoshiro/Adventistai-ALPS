@@ -193,9 +193,44 @@
     return { mode: 'hidden', start: null, end: null };
   };
 
+  // The city list opens in the browser's top layer (popover="manual") where
+  // supported. The page header clips its overflow and sits in a stacking
+  // context below the content after it, so on phones a list positioned
+  // inside it was cut off or covered. In the top layer it is placed under
+  // its button with fixed coordinates and kept inside the viewport.
+  const topLayer = typeof HTMLElement === 'function' && typeof HTMLElement.prototype.showPopover === 'function';
+  if (topLayer) {
+    [popover, activePopover].forEach((panel) => {
+      if (panel) panel.setAttribute('popover', 'manual');
+    });
+  }
+
+  const placePopover = (button, panel) => {
+    const edge = 8;
+    const gap = 10;
+    const rect = button.getBoundingClientRect();
+    const phone = window.matchMedia('(max-width: 760px)').matches;
+    const width = Math.min(Math.max(panel.offsetWidth, phone ? 280 : 240), window.innerWidth - 2 * edge);
+    // Under the button's left edge on phones, its right edge on wider screens (as before).
+    const start = phone ? rect.left : rect.right - width;
+    const below = window.innerHeight - rect.bottom - gap - edge;
+    const above = rect.top - gap - edge;
+    const up = below < 220 && above > below;
+    panel.style.left = `${Math.round(Math.min(Math.max(edge, start), window.innerWidth - edge - width))}px`;
+    panel.style.width = `${Math.round(width)}px`;
+    panel.style.top = up ? 'auto' : `${Math.round(rect.bottom + gap)}px`;
+    panel.style.bottom = up ? `${Math.round(window.innerHeight - rect.top + gap)}px` : 'auto';
+    const list = panel.querySelector('[role="listbox"]');
+    if (list) list.style.maxHeight = `${Math.round(Math.max(120, Math.min(420, (up ? above : below) - 50)))}px`;
+  };
+
+  const openPanels = [];
   const closePopover = (button, panel, restoreFocus = false) => {
     if (!button || !panel) return;
+    if (topLayer && panel.matches(':popover-open')) panel.hidePopover();
     panel.hidden = true;
+    const index = openPanels.findIndex((open) => open[1] === panel);
+    if (index > -1) openPanels.splice(index, 1);
     button.setAttribute('aria-expanded', 'false');
     if (restoreFocus) button.focus();
   };
@@ -203,10 +238,20 @@
   const openPopover = (button, panel, buttons, attr) => {
     if (!button || !panel) return;
     panel.hidden = false;
+    if (topLayer) {
+      panel.showPopover();
+      placePopover(button, panel);
+      openPanels.push([button, panel]);
+    }
     button.setAttribute('aria-expanded', 'true');
     const selected = buttons.find((item) => item.getAttribute(attr) === selectedCity);
-    if (selected) selected.focus();
+    if (selected) selected.focus({ preventScroll: topLayer });
   };
+
+  // A fixed list follows its button when the page scrolls or the window resizes.
+  const replace = () => openPanels.forEach(([button, panel]) => placePopover(button, panel));
+  window.addEventListener('scroll', replace, { passive: true });
+  window.addEventListener('resize', replace);
 
   const updateCityChoice = (cityKey) => {
     if (!cityKey || !cities[cityKey]) return;

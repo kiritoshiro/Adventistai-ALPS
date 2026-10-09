@@ -142,6 +142,15 @@
   color: #222;
 }
 
+/* In the browser's top layer (sabbath-timer.js places it with fixed coordinates). */
+.adventistai-sabbath-timer__selector-popover:popover-open {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  min-width: 0;
+  overflow: visible;
+}
+
 .adventistai-sabbath-timer__selector-title {
   padding: 6px 14px 8px;
   font-size: 11px;
