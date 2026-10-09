@@ -197,7 +197,7 @@ final class HeaderTone
         $w = max(1, (int) round($width * $scale));
         $h = max(1, (int) round($height * $scale));
         $small = imagecreatetruecolor($w, $h);
-        // Averages the source pixels, like the blur does.
+        // Averages the source pixels, as the blurred backdrop does.
         imagecopyresampled($small, $image, 0, 0, 0, 0, $w, $h, $width, $height);
         $pixels = [];
         for ($y = 0; $y < $h; $y++) {
