@@ -59,7 +59,14 @@
   }
 @endphp
 
-@if ($header_background_image)
+@php
+  // The whole image at a moderate height, the rest of the band a blurred copy
+  // of it with the title on top, in a colour chosen for contrast (App\HeaderTone).
+  // Not on the front page, whose header holds the Sabbath timer.
+  $alps_hero = $header_background_image && empty($remove_header) && !is_front_page() ? \App\ImageDelivery::headerFit((int) $header_background_image) : null;
+@endphp
+
+@if ($header_background_image && !$alps_hero)
   @php
     $page_header_class = 'o-background-image u-background--cover has-background';
     $page_header_inner_class = 'u-gradient--bottom';
@@ -68,18 +75,36 @@
     if (is_page_template('views/template-posts.blade.php')) {
       $page_header_content_class = '';
     }
-    // Size the header to the image instead of cutting it to a thin band (App\ImageDelivery).
-    $alps_header_fit = \App\ImageDelivery::headerFit((int) $header_background_image);
-    $page_header_style = '';
-    if ($alps_header_fit) {
-      $page_header_class .= ' alps-fit-header alps-fit-header--' . $alps_header_fit['mode'];
-      $page_header_style = '--alps-header-ratio:' . $alps_header_fit['ratio'];
-    }
   @endphp
   <style type="text/css">{!! \App\ImageDelivery::backgroundCss('.o-background-image', (int) $header_background_image) !!}</style>
 @endif
 
-@if (empty($remove_header))
+@if ($alps_hero)
+  @php
+    $alps_tone = \App\HeaderTone::forAttachment((int) $header_background_image);
+    $alps_hero_class = 'alps-hero alps-hero--' . $alps_hero['mode'] . ($feature_image_hero == 'page-header' ? ' alps-hero--tall' : '');
+    $alps_hero_style = '--alps-hero-ratio:' . $alps_hero['ratio'] . ';--alps-hero-ink:' . $alps_tone['ink'] . ';--alps-hero-scrim:' . $alps_tone['scrim'];
+  @endphp
+  {!! \App\HeaderTone::stylesheet() !!}
+  <style type="text/css">{!! \App\ImageDelivery::backgroundCss('.alps-hero__media,.alps-hero__blur', (int) $header_background_image) !!}</style>
+  <header class="c-page-header c-page-header__long u-theme--background-color--dark u-space--zero--top {{ $alps_hero_class }}" style="{{ $alps_hero_style }}">
+    <div class="alps-hero__blur" aria-hidden="true"></div>
+    <div class="alps-hero__row">
+      <div class="alps-hero__media" aria-hidden="true"></div>
+      <div class="alps-hero__text">
+        @if ($long_header_kicker)
+          <span class="o-kicker">{{ $long_header_kicker }}</span>
+        @endif
+        <h1 class="u-font--primary--xl u-font-weight--bold">
+          {!! wp_kses_post($long_header_title) !!}
+        </h1>
+        @if ($long_header_subtitle)
+          <span class="o-kicker">{{ $long_header_subtitle }}</span>
+        @endif
+      </div>
+    </div>
+  </header>
+@elseif (empty($remove_header))
   <header class="{{ $page_header_classes }} {{ $page_header_class }}"@if (!empty($page_header_style)) style="{{ $page_header_style }}"@endif>
     <div class="c-page-header__long--inner l-grid l-grid--7-col {{ $page_header_inner_class }}">
       <div class="c-page-header__content c-page-header__long__content l-grid-wrap l-grid-wrap--5-of-7 u-border--left {{ $page_header_content_class }}{{ is_front_page() ? ' adventistai-sabbath-timer-host' : '' }}">
@@ -99,11 +124,12 @@
       </div>
     </div>
   </header>
-  @if ($page_sub_title)
-    <div class="c-page-header__subtitle c-page-header__long__subtitle l-grid l-grid--7-col u-space--top--zero">
-      <div class="l-grid-wrap l-grid-wrap--5-of-7 u-shift--left--1-col--at-medium u-border--left u-font--secondary--m">
-        {{ $page_sub_title }}
-      </div>
+@endif
+
+@if (empty($remove_header) && $page_sub_title)
+  <div class="c-page-header__subtitle c-page-header__long__subtitle l-grid l-grid--7-col u-space--top--zero">
+    <div class="l-grid-wrap l-grid-wrap--5-of-7 u-shift--left--1-col--at-medium u-border--left u-font--secondary--m">
+      {{ $page_sub_title }}
     </div>
-  @endif
+  </div>
 @endif

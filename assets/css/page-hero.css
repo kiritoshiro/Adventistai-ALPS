@@ -1,0 +1,91 @@
+/* Page and post headers with an image: the whole image at a moderate height
+   on the left, the rest of the band a blurred copy of the same image (the same
+   file, no extra download) with the title on it. Embedded only on pages that
+   show such a header (page-header.blade.php); the minified copy is written by
+   scripts/minify-assets.mjs.
+
+   The height is capped in rem, so it follows browser zoom, and by the window
+   height. App\HeaderTone picks the title colour and the dimming under it from
+   the image (--alps-hero-ink, --alps-hero-scrim: at least 4.5:1). Narrow
+   headers put the title under the image. The ALPS page-header padding rules
+   use !important in site-overrides.css, hence the flag here. */
+.c-page-header.alps-hero {
+  --alps-hero-max: min(26rem, 60vh);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 0 !important;
+  container: alps-hero / inline-size;
+}
+.c-page-header.alps-hero--tall {
+  --alps-hero-max: min(34rem, 72vh);
+}
+.alps-hero__blur {
+  position: absolute;
+  inset: -4rem;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(2.5rem);
+}
+.alps-hero__blur::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--alps-hero-scrim, rgba(0, 0, 0, 0.55));
+}
+.alps-hero__row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+.alps-hero__media {
+  flex: 0 1 auto;
+  width: calc(var(--alps-hero-max) * var(--alps-hero-ratio, 1.7778));
+  min-width: 0;
+  aspect-ratio: var(--alps-hero-ratio, 1.7778);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* Its edge fades into the blurred copy instead of a hard line. */
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
+}
+.alps-hero__text {
+  flex: 1 0 16rem;
+  min-width: 0;
+  margin: 1.75rem clamp(1.25rem, 3vw, 3.5rem);
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 2px solid var(--alps-hero-ink, #fff);
+  color: var(--alps-hero-ink, #fff);
+  overflow-wrap: break-word;
+}
+.alps-hero__text h1,
+.alps-hero__text .o-kicker {
+  color: var(--alps-hero-ink, #fff) !important;
+  margin: 0;
+}
+.alps-hero__text .o-kicker {
+  display: block;
+  margin: 0.5rem 0;
+}
+@container alps-hero (max-width: 42rem) {
+  /* The title takes its own row here, so a tall image is kept shorter. */
+  .alps-hero__row {
+    --alps-hero-max: min(20rem, 50vh);
+    flex-direction: column;
+  }
+  .alps-hero__media {
+    flex: none;
+    width: min(100%, calc(var(--alps-hero-max) * var(--alps-hero-ratio, 1.7778)));
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .alps-hero__text {
+    flex: none;
+    align-self: stretch;
+    margin: 1.25rem var(--site-gutter, 1.25rem) 1.5rem;
+  }
+}
