@@ -55,12 +55,12 @@ function crb_page_options()
 				->set_width(33),
 				Field
 				::make('radio', 'featured_image_hero_layout', __('Display larger banner', 'alps'))
-                ->set_help_text(__('Display feature image and text either a 50/50 hero or large image banner. Requires a feature image or custom image be set. This will override "Remove Page Header" setting.', 'alps'))
+                ->set_help_text(__('Show the whole featured or custom image with the title on a blurred copy of the image. Choose the taller banner for more image height.', 'alps'))
                 ->set_default_value(setDefaultHeader())
                 ->add_options([
                     'false' => __('Do not show larger banner.', 'alps'),
-                    'header-block-featured' => __('Show larger banner as 50/50 hero with large image and text.', 'alps'),
-                    'page-header' => __('Show larger image banner with text overlay.', 'alps')
+                    'header-block-featured' => __('Show fitted image with a blurred title background.', 'alps'),
+                    'page-header' => __('Show taller fitted image with a blurred title background.', 'alps')
                 ])
                 ->set_width(33),
 			Field

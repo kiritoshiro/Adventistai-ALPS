@@ -29,7 +29,7 @@ const budgets = [
   ['Card scroller JS', 'assets/js/card-scroller.js', 4_500],
   // Embedded only on pages whose header shows an image (page-header.blade.php).
   ['Page header image CSS', 'assets/css/page-hero.css', 3_500],
-  ['Page header image CSS (minified, embedded)', 'assets/css/page-hero.min.css', 1_800],
+  ['Page header image CSS (minified, embedded)', 'assets/css/page-hero.min.css', 2_100],
 ];
 
 let failed = false;

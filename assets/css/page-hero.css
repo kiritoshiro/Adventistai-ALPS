@@ -1,7 +1,7 @@
 /* Page and post headers with an image: the whole image at a moderate height
    on the left, the rest of the band a blurred copy of the same image (the same
    file, no extra download) with the title on it. Embedded only on pages that
-   show such a header (page-header.blade.php); the minified copy is written by
+   show such a header (partials/image-header.blade.php); the minified copy is written by
    scripts/minify-assets.mjs.
 
    The height is capped in rem, so it follows browser zoom, and by the window
@@ -70,6 +70,25 @@
 .alps-hero__text .o-kicker {
   display: block;
   margin: 0.5rem 0;
+}
+.alps-hero__text .alps-hero__category,
+.alps-hero__date,
+.alps-hero__caption {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.alps-hero__description {
+  margin: 0.75rem 0;
+}
+.alps-hero__date {
+  display: block;
+  margin-top: 0.75rem;
+}
+.alps-hero__caption {
+  position: relative;
+  z-index: 1;
+  padding: 0.5rem var(--site-gutter, 1.25rem);
+  color: var(--alps-hero-ink, #fff);
 }
 @container alps-hero (max-width: 42rem) {
   /* The title takes its own row here, so a tall image is kept shorter. */

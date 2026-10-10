@@ -3,6 +3,12 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.32.1]
+### Changed
+
+- Use the same fitted image, blurred backdrop and automatic title contrast for the older featured-image header layout choices. Preserve their excerpt, date and image caption.
+- Show the post's primary category in smaller text directly below the title; fall back to the first category. Pages do not acquire a category label.
+
 ## [3.32.0]
 ### Changed
 - Page and post headers with a featured (or header) image are smaller and fit the column. They were sized to the image's shape and capped at 85% of the window height, which made them about as tall as the window on wide screens, left a white gap beside them (the cap shrank the width too) and did not change with browser zoom.

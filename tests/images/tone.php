@@ -117,7 +117,7 @@ try {
 
     // The shipped CSS and its minified copy exist and stay small.
     $shipped = __DIR__ . '/../../assets/css/page-hero.min.css';
-    check(is_readable($shipped) && filesize($shipped) < 1800 && str_contains((string) file_get_contents($shipped), '--alps-hero-scrim'), 'shipped minified CSS');
+    check(is_readable($shipped) && filesize($shipped) < 2100 && str_contains((string) file_get_contents($shipped), '--alps-hero-scrim'), 'shipped minified CSS');
 } catch (Throwable $e) {
     fwrite(STDERR, 'FAIL: ' . $e->getMessage() . "\n");
     exit(1);
