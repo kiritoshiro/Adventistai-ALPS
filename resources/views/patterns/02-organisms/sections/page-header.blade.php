@@ -80,30 +80,14 @@
 @endif
 
 @if ($alps_hero)
-  @php
-    $alps_tone = \App\HeaderTone::forAttachment((int) $header_background_image);
-    $alps_hero_class = 'alps-hero alps-hero--' . $alps_hero['mode'] . ($feature_image_hero == 'page-header' ? ' alps-hero--tall' : '');
-    $alps_hero_style = '--alps-hero-ratio:' . $alps_hero['ratio'] . ';--alps-hero-ink:' . $alps_tone['ink'] . ';--alps-hero-scrim:' . $alps_tone['scrim'];
-  @endphp
-  {!! \App\HeaderTone::stylesheet() !!}
-  <style type="text/css">{!! \App\ImageDelivery::backgroundCss('.alps-hero__media,.alps-hero__blur', (int) $header_background_image) !!}</style>
-  <header class="c-page-header c-page-header__long u-theme--background-color--dark u-space--zero--top {{ $alps_hero_class }}" style="{{ $alps_hero_style }}">
-    <div class="alps-hero__blur" aria-hidden="true"></div>
-    <div class="alps-hero__row">
-      <div class="alps-hero__media" aria-hidden="true"></div>
-      <div class="alps-hero__text">
-        @if ($long_header_kicker)
-          <span class="o-kicker">{{ $long_header_kicker }}</span>
-        @endif
-        <h1 class="u-font--primary--xl u-font-weight--bold">
-          {!! wp_kses_post($long_header_title) !!}
-        </h1>
-        @if ($long_header_subtitle)
-          <span class="o-kicker">{{ $long_header_subtitle }}</span>
-        @endif
-      </div>
-    </div>
-  </header>
+  @include('partials.image-header', ['imageHeader' => [
+    'id' => (int) $header_background_image,
+    'fit' => $alps_hero,
+    'tall' => $feature_image_hero == 'page-header',
+    'title' => $long_header_title,
+    'kicker' => $long_header_kicker,
+    'subtitle' => $long_header_subtitle,
+  ]])
 @elseif (empty($remove_header))
   <header class="{{ $page_header_classes }} {{ $page_header_class }}"@if (!empty($page_header_style)) style="{{ $page_header_style }}"@endif>
     <div class="c-page-header__long--inner l-grid l-grid--7-col {{ $page_header_inner_class }}">
@@ -117,6 +101,7 @@
           <h1 class="u-font--primary--xl u-color--white u-font-weight--bold">
             {!! wp_kses_post($long_header_title) !!}
           </h1>
+          @include('partials.post-header-category', ['postHeaderCategoryClass' => 'u-color--white'])
           @if ($long_header_subtitle)
             <span class="o-kicker u-color--white">{{ $long_header_subtitle }}</span>
           @endif

@@ -27,6 +27,8 @@
     'u-shift--left--1-col--at-xxlarge'
   ];
 
+  $alps_header_fit = null;
+
   if (@isset($headerBackgroundImage)) {
     $headerClasses[] = 'o-background-image';
     $headerClasses[] = 'u-background--cover';
@@ -42,6 +44,15 @@
   }
 @endphp
 
+@if ($alps_header_fit && !is_front_page())
+  @include('partials.image-header', ['imageHeader' => [
+    'id' => (int) $headerBackgroundImage,
+    'fit' => $alps_header_fit,
+    'title' => $headerTitle,
+    'kicker' => $headerKicker ?? '',
+  ]])
+@else
+
 @if (@isset($headerBackgroundImage))
   <style type="text/css">{!! \App\ImageDelivery::backgroundCss('.o-background-image', (int) $headerBackgroundImage) !!}</style>
 @endif
@@ -55,9 +66,11 @@
       <h1 class="u-font--primary--xl u-color--white u-font-weight--bold">
         {!! wp_kses_post($headerTitle) !!}
       </h1>
+      @include('partials.post-header-category', ['postHeaderCategoryClass' => 'u-color--white'])
     </div>
   </div>
 </header>
+@endif
 
 @if (@isset($GLOBALS["headerSubtitle"]))
   <div class="c-page-header__subtitle c-page-header__long__subtitle l-grid l-grid--7-col u-space--top--zero">

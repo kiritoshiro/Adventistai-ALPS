@@ -26,7 +26,22 @@
     }
 @endphp
 
-@if ($hasHeaderImage)
+@php
+  $featuredHeaderFit = !is_front_page() && !empty($headerImageId)
+    ? \App\ImageDelivery::headerFit((int) $headerImageId) : null;
+@endphp
+
+@if ($hasHeaderImage && $featuredHeaderFit)
+  @include('partials.image-header', ['imageHeader' => [
+    'id' => (int) $headerImageId,
+    'fit' => $featuredHeaderFit,
+    'title' => $headerTitle,
+    'kicker' => $headerKicker,
+    'description' => $headerDesc,
+    'date' => $headerDate,
+    'caption' => $headerImageCaption,
+  ]])
+@elseif ($hasHeaderImage)
   <header class="c-page-header c-page-header__feature">
     <div class="c-page-header__content">
       @include('patterns.01-molecules.blocks.media-block-v2')
