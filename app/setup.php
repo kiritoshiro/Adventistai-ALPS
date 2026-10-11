@@ -99,19 +99,23 @@ add_action('wp_head', function () {
 /**
  * Preload the fonts used above the fold before any stylesheet is requested.
  * Regular and Bold Noto Sans cover the navigation and headings (550-700
- * weights resolve to the Bold face); Source Serif covers the hero text.
+ * weights resolve to the Bold face). Source Serif ("Noto Serif", 56 KB) is
+ * the primary navigation's face, which ALPS shows from 501px; on narrower
+ * screens nothing above the fold uses it, so phones skip the preload and
+ * the font arrives when it is first used (font-display: swap).
  */
 add_action('wp_head', function () {
     $fonts = [
-        '/assets/fonts/noto-sans/NotoSans-Regular.woff2',
-        '/assets/fonts/noto-sans/NotoSans-Bold.woff2',
-        '/assets/fonts/source-serif/SourceSerif4-Variable.woff2',
+        '/assets/fonts/noto-sans/NotoSans-Regular.woff2' => '',
+        '/assets/fonts/noto-sans/NotoSans-Bold.woff2' => '',
+        '/assets/fonts/source-serif/SourceSerif4-Variable.woff2' => '(min-width: 501px)',
     ];
 
-    foreach ($fonts as $font) {
+    foreach ($fonts as $font => $media) {
         printf(
-            '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
-            esc_url(get_template_directory_uri() . $font)
+            '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin%s>' . "\n",
+            esc_url(get_template_directory_uri() . $font),
+            $media === '' ? '' : ' media="' . esc_attr($media) . '"'
         );
     }
 }, 2);

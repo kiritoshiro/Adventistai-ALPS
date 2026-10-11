@@ -116,6 +116,14 @@ button::after, button font::before {
   border-bottom-color: transparent !important;
 }
 
+/* The cookie banner's and settings window's text took ALPS's serif paragraph
+   face; it matches their sans-serif titles instead. Phones then need no serif
+   above the fold, and the serif font is only preloaded from 501px
+   (app/setup.php). */
+.aicc-banner p, .aicc-modal p {
+  font-family: "Noto Sans", Helvetica, Arial, sans-serif !important;
+}
+
 /* --- 6. Reduced motion ---------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
