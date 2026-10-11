@@ -112,13 +112,30 @@ check('an image without AVIF: its own srcset, no type', false !== strpos(LatestP
 check('an image with only src: href', false !== strpos(LatestPostSlider::priorityPreload('<img src="https://e.test/a.jpg?x=1&amp;y=2" alt="">'), 'href="https://e.test/a.jpg?x=1&amp;y=2"'));
 check('no image: no preload', '' === LatestPostSlider::priorityPreload('<span>text</span>'));
 
+// Blade renders the content before the layout's wp_head(): the preload waits for <head>.
+$GLOBALS['did_head'] = 0;
+function did_action($hook) { return 'wp_head' === $hook ? $GLOBALS['did_head'] : 0; }
+check('before wp_head: nothing next to the slide', '' === LatestPostSlider::queuePreload($picture));
+ob_start();
+LatestPostSlider::printHeadPreload();
+check('wp_head prints the queued preload', $preload . "\n" === ob_get_clean());
+ob_start();
+LatestPostSlider::printHeadPreload();
+check('and only once', '' === ob_get_clean());
+$GLOBALS['did_head'] = 1;
+check('after wp_head: the preload stays next to the slide', $preload === LatestPostSlider::queuePreload($picture));
+ob_start();
+LatestPostSlider::printHeadPreload();
+check('nothing left for <head> then', '' === ob_get_clean());
+
 $template = (string) file_get_contents(dirname(__DIR__, 2) . '/resources/views/patterns/02-organisms/sections/latest-post-sliders.blade.php');
-check('slide images never say fetchpriority="high" themselves', false === strpos($template, "'high'") && false !== strpos($template, 'priorityPreload($thumbnailHtml)'));
+check('slide images never say fetchpriority="high" themselves', false === strpos($template, "'high'") && false !== strpos($template, 'queuePreload($thumbnailHtml)'));
 check('the template no longer calls the removed per-image claim', false === strpos($template, 'claimEagerImage'));
 check('lazy images get no fetchpriority attribute', false !== strpos($template, "(\$loadEager ? ['fetchpriority' => 'auto'] : [])"));
 
 $functions = (string) file_get_contents(dirname(__DIR__, 2) . '/functions.php');
 check('functions.php loads and registers ScriptLoading', false !== strpos($functions, "'ScriptLoading'") && false !== strpos($functions, '\App\ScriptLoading::register();'));
+check('functions.php prints the slider preload early in <head>', false !== strpos($functions, "add_action('wp_head', [\\App\\LatestPostSlider::class, 'printHeadPreload'], 2);"));
 
 $head = (string) file_get_contents(dirname(__DIR__, 2) . '/app/local/alps/js/head-script.min.js');
 check('Modernizr touch test reads no layout', false === strpos($head, 'a.join("touch-enabled),(")') && false === strpos($head, 't=9===e.offsetTop'));

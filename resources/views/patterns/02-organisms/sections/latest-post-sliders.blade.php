@@ -130,7 +130,8 @@
                       // WordPress gives "high" to the first eager image it meets, so the
                       // eager images say "auto". The largest one in the first row
                       // (priorityIndex above) gets high priority through a preload
-                      // limited to wide screens; on phones the slider is further down.
+                      // in <head>, limited to wide screens; on phones the slider is
+                      // further down.
                       $thumbnailHtml = (string) get_the_post_thumbnail($postId, 'full', [
                         'class' => 'alps-latest-slider__image',
                         'alt' => $thumbnailAlt,
@@ -140,7 +141,7 @@
                       ] + ($loadEager ? ['fetchpriority' => 'auto'] : []));
                     @endphp
                     @if ($loadEager && $moduleIndex === $priorityIndex)
-                      {!! \App\LatestPostSlider::priorityPreload($thumbnailHtml) !!}
+                      {!! \App\LatestPostSlider::queuePreload($thumbnailHtml) !!}
                     @endif
                     {!! $thumbnailHtml !!}
                   </div>

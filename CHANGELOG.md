@@ -3,6 +3,10 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.32.2]
+### Changed
+- The Latest Post Slider's high-priority image preload (wide screens) is printed in `<head>`, right after the main stylesheet and font preloads. It was printed next to the slide, about 290 KB into the front page's HTML, so on desktop the Largest Contentful Paint image (a slide) still started about 1.6 s into a local Lighthouse run. Blade renders the page content before the layout's `wp_head()`, so the slider keeps the link for `wp_head` (priority 2), and prints it next to the slide only when `<head>` has already been sent.
+
 ## [3.32.1]
 ### Changed
 
