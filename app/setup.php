@@ -54,6 +54,16 @@ add_action('wp_enqueue_scripts', function () {
         $url = $alps['styles']['themes'][$color];
     }
 
+    // The trimmed copy (scripts/trim-alps-css.mjs) leaves out the rules for
+    // ALPS components the site never uses. The full file is loaded under
+    // SCRIPT_DEBUG, when the copy is missing, or when the filter says no.
+    $trimmed = substr($url, 0, -strlen('.css')) . '.used.css';
+    if (!(defined('SCRIPT_DEBUG') && SCRIPT_DEBUG)
+        && apply_filters('adventistai_trimmed_alps_css', true)
+        && theme_asset_version($trimmed) !== null) {
+        $url = $trimmed;
+    }
+
     wp_enqueue_style('alps-main', $url, [], theme_asset_version($url));
 
     // The pattern-library script reads the global jQuery as soon as it runs,

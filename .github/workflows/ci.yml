@@ -121,6 +121,9 @@ jobs:
       - name: Check the minified copies are up to date
         run: node scripts/minify-assets.mjs --check
 
+      - name: Check the trimmed ALPS stylesheet is up to date
+        run: node scripts/trim-alps-css.mjs --check
+
       - name: Sabbath times calculated in the browser match the PHP results
         run: node tests/sabbath/sunsets.cjs
 
