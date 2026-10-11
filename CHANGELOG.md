@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [3.32.4]
 ### Changed
 - Section titles typed as Heading blocks on the front page ("Vaizdo įrašai", "Naujausi straipsniai kituose puslapiuose") use Noto Sans, like the block titles around them (card scroller, sliders, external posts). Headings inside articles and other pages keep Noto Serif.
+- Block titles share one style, whichever plugin prints them: post sliders, YouTube channel, external posts, WP YouTube playlists, sidebar widget headings and image-widget titles. Noto Sans 600, 1.1rem on phones rising to 1.2rem, line height 1.25, `#04132b`, no capitals or letter spacing. Linked titles (and the card scroller's and front-page section titles' links) have no underline. Before, they ranged from 15.2 px regular underlined to 28 px grey and 20 px bold capitals.
 
 ## [3.32.3]
 ### Changed
