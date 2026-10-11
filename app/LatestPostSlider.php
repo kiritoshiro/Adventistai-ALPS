@@ -9,6 +9,9 @@ class LatestPostSlider
 {
     private static bool $eagerSectionClaimed = false;
 
+    /** The priority preload waiting for wp_head. */
+    private static string $headPreload = '';
+
     /**
      * True only for the first slider section rendered on the page. Its first
      * row of sliders (one per column) can be near the top, so their first
@@ -105,6 +108,36 @@ class LatestPostSlider
             $out .= ' ' . $name . '="' . ($name === 'href' ? esc_url($value) : esc_attr($value)) . '"';
         }
         return $out . '>';
+    }
+
+    /**
+     * Keep the slide's preload for <head>, where the browser finds it while
+     * the page is still downloading; next to the slide it came about 290 KB
+     * into the front page's HTML. Blade renders a template's content section
+     * before the layout that calls wp_head(), so the slider normally runs
+     * first. Returns the link for the slide itself when wp_head has already
+     * run.
+     */
+    public static function queuePreload(string $html): string
+    {
+        $preload = self::priorityPreload($html);
+        if (did_action('wp_head')) {
+            return $preload;
+        }
+        self::$headPreload = $preload;
+        return '';
+    }
+
+    /**
+     * Print the queued preload (wp_head, priority 2: before the stylesheets).
+     */
+    public static function printHeadPreload(): void
+    {
+        if ('' !== self::$headPreload) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- priorityPreload() escapes every attribute value.
+            echo self::$headPreload . "\n";
+            self::$headPreload = '';
+        }
     }
 
     /**
