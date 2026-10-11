@@ -3,6 +3,11 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.32.5]
+### Changed
+- The Source Serif ("Noto Serif", 56 KB) preload carries `media="(min-width: 501px)"`: the primary navigation that uses it shows from 501px, and on phones it competed with the main stylesheet and Noto Sans for bandwidth before the first paint.
+- The cookie banner's and settings window's paragraphs use Noto Sans, like their titles, instead of ALPS's serif paragraph face. On a first visit the banner text was a serif LCP candidate that re-rendered when the font arrived.
+
 ## [3.32.4]
 ### Changed
 - Section titles typed as Heading blocks on the front page ("Vaizdo įrašai", "Naujausi straipsniai kituose puslapiuose") use Noto Sans, like the block titles around them (card scroller, sliders, external posts). Headings inside articles and other pages keep Noto Serif.
