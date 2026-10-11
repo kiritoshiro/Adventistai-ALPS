@@ -3,6 +3,11 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.32.4]
+### Changed
+- Section titles typed as Heading blocks on the front page ("Vaizdo įrašai", "Naujausi straipsniai kituose puslapiuose") use Noto Sans, like the block titles around them (card scroller, sliders, external posts). Headings inside articles and other pages keep Noto Serif.
+- Block titles share one style, whichever plugin prints them: post sliders, YouTube channel, external posts, WP YouTube playlists, sidebar widget headings and image-widget titles. Noto Sans 600, 1.1rem on phones rising to 1.2rem, line height 1.25, `#04132b`, no capitals or letter spacing. Linked titles (and the card scroller's and front-page section titles' links) have no underline. Before, they ranged from 15.2 px regular underlined to 28 px grey and 20 px bold capitals.
+
 ## [3.32.3]
 ### Changed
 - The theme links a trimmed copy of the ALPS stylesheet, `main-denim.used.css` (118 KB, 15.5 KB gzipped, was 200 KB / 26.5 KB). It leaves out only the rules that need an ALPS class the site never produces. `scripts/collect-alps-classes.mjs` lists the used classes in `scripts/alps-used-classes.txt` from the theme's PHP, Blade and JS, the ALPS Gutenberg Blocks source, and saved live pages and plugin scripts. `scripts/trim-alps-css.mjs` writes the copy, and CI checks that it is up to date. The full file is still loaded under `SCRIPT_DEBUG`, when the copy is missing, or when the `adventistai_trimmed_alps_css` filter returns false. If an editor starts using a new ALPS class, add it to the list and run the trim script.

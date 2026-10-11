@@ -86,6 +86,36 @@ button::after, button font::before {
 .text > h2 { font-size: 1.75rem !important; }
 .text > h3 { font-size: 1.375rem !important; }
 
+/* The front page's section titles sit between blocks whose own titles are
+   sans-serif (card scroller, sliders, external posts), so they match those. */
+.home .text > h1, .home .text > h2, .home .text > h3 {
+  font-family: "Noto Sans", Helvetica, Arial, sans-serif !important;
+}
+
+/* Block titles share one style, whichever plugin prints them: post sliders,
+   YouTube channel, external posts, WP YouTube playlists and sidebar widgets.
+   Linked titles look like the rest of the title, not like a text link. */
+.alps-latest-slider__title, .alps-ytc__title, .alps-epa-feed-title,
+.wpy-list-title, .c-widget .wp-block-heading, .c-block__heading-title {
+  font-family: "Noto Sans", Helvetica, Arial, sans-serif !important;
+  font-size: clamp(1.1rem, 1rem + .4vw, 1.2rem) !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  color: #04132b !important;
+}
+.alps-latest-slider__title a, .alps-ytc__title a, .alps-epa-feed-title a,
+.wpy-list-title a, .c-widget .wp-block-heading a, .c-block__heading-title a,
+.alps-card-scroller__heading a, .home .text > h2 a {
+  color: inherit !important;
+  font: inherit !important;
+  text-decoration: none !important;
+  border-bottom: 0 !important;
+  /* The column-link rule in section 2 still draws a 1px line in columns. */
+  border-bottom-color: transparent !important;
+}
+
 /* --- 6. Reduced motion ---------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
