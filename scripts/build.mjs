@@ -66,9 +66,12 @@ const wordpressScripts = new Set([
   'block-editor',
   'blocks',
   'components',
+  'core-data',
   'data',
+  'editor',
   'element',
   'i18n',
+  'plugins',
   'server-side-render',
 ]);
 const wordpressGlobals = (handles) => ({

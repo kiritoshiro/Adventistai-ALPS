@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
-"""Browser test of Appearance → ALPS Theme Settings in WordPress Playground.
+"""Browser tests of the theme's field screens in WordPress Playground.
 
-Boots a Playground site with this theme, the render-seed.php content and a
-test Editor account, then runs settings-page.mjs (Playwright) against it.
+Boots a Playground site with this theme, the render-seed.php content, a test
+Editor account and a test-only REST route that shows a post's raw meta to
+admins, then runs one Playwright script against it:
+
+  settings-page  settings-page.mjs: Appearance → ALPS Theme Settings
+  editor-panels  editor-panels.mjs: the block editor sidebar panels
+
 Needs Node.js, `composer install` and Playwright (`npm i -g playwright` and
 `npx playwright install chromium`; found through NODE_PATH = npm root -g).
 
-Usage: python3 tests/fields/settings-e2e.py [--php 8.4]
+Usage: python3 tests/fields/e2e.py settings-page|editor-panels [--php 8.4]
 """
 import argparse
 import json
@@ -27,6 +32,7 @@ THEME_VFS = "/wordpress/wp-content/themes/adventistai"
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("script", choices=["settings-page", "editor-panels"])
     parser.add_argument("--php", default="8.4")
     parser.add_argument("--wp", default="latest")
     args = parser.parse_args()
@@ -40,6 +46,18 @@ def main():
 
     steps = [{"step": "defineWpConfigConsts", "consts": {"WP_DEBUG": True, "WP_DEBUG_LOG": "/logs/debug.log", "WP_DEBUG_DISPLAY": False}}]
     steps += config.get("setup", [])
+    test_meta = [
+        '<?php',
+        '// Test site only: raw post meta for the browser tests.',
+        "add_action('rest_api_init', function () {",
+        "    register_rest_route('alps-test/v1', '/meta/(?P<id>\\d+)', [",
+        "        'methods' => 'GET',",
+        "        'permission_callback' => function () { return current_user_can('manage_options'); },",
+        "        'callback' => function ($request) { return get_post_meta((int) $request['id']); },",
+        '    ]);',
+        '});',
+    ]
+    steps.append({"step": "writeFile", "path": "/wordpress/wp-content/mu-plugins/alps-test-meta.php", "data": chr(10).join(test_meta) + chr(10)})
     steps.append({"step": "activateTheme", "themeFolderName": "adventistai"})
     steps.append({"step": "runPHP", "code": (
         "<?php require '/wordpress/wp-load.php'; $alps_render_seed = true;"
@@ -82,8 +100,8 @@ def main():
         env = dict(os.environ)
         npm_root = subprocess.run("npm root -g", shell=True, capture_output=True, text=True).stdout.strip()
         env["NODE_PATH"] = npm_root
-        shot = os.path.join(ROOT, "tests", "fields", "fixtures", "settings-page-phone.png")
-        code = subprocess.run(["node", os.path.join(ROOT, "tests", "fields", "settings-page.mjs"), f"http://127.0.0.1:{PORT}", shot], env=env).returncode
+        shot = os.path.join(ROOT, "tests", "fields", "fixtures", f"{args.script}-phone.png")
+        code = subprocess.run(["node", os.path.join(ROOT, "tests", "fields", f"{args.script}.mjs"), f"http://127.0.0.1:{PORT}", shot], env=env).returncode
     finally:
         if proc.poll() is None:
             if os.name == "nt":

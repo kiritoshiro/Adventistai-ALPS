@@ -433,6 +433,165 @@ $same('SettingsPage::sanitize(footer_description)', [
     7 => 'not a row',
 ]));
 
+// 6. Store::setPost() writes the rows carbon_set_post_meta() writes.
+$meta_snapshot = function ($id, $name = null) {
+    global $wpdb;
+    $rows = [];
+    foreach ($wpdb->get_results($wpdb->prepare("SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id = %d ORDER BY meta_key, meta_id", $id)) as $row) {
+        if ($name === null ? strpos($row->meta_key, '_edit_') !== 0 && strpos($row->meta_key, '_wp_') !== 0 : ($row->meta_key === "_$name" || strpos($row->meta_key, "_$name|") === 0)) {
+            $rows[] = [$row->meta_key, $row->meta_value];
+        }
+    }
+    return $rows;
+};
+$post_write_cases = function ($name, $field) use ($write_cases, $value_for, $page_target, $post_target) {
+    if ($field['type'] === 'association') {
+        return [
+            'none' => [],
+            'two' => $value_for($name, $field),
+            'strings' => ["post:page:$page_target", "post:post:$post_target"],
+            'legacy-id' => [(string) $post_target],
+            'blank' => ['  '],
+        ];
+    }
+    return $write_cases($name, $field);
+};
+$writer_page = $new_post('page', 'Writer page');
+foreach ($registry_post as $name => $field) {
+    foreach ($post_write_cases($name, $field) as $case => $value) {
+        foreach ([false, true] as $stray) {
+            $results = [];
+            foreach (['carbon', 'store'] as $writer) {
+                carbon_set_post_meta($writer_page, $name, $value_for($name, $field));
+                if ($stray) {
+                    add_post_meta($writer_page, "_$name|||7|value", 'stray');
+                }
+                if ($writer === 'carbon') {
+                    carbon_set_post_meta($writer_page, $name, $value);
+                } else {
+                    \App\Fields\Store::setPost($writer_page, $name, $value);
+                }
+                $results[$writer] = $meta_snapshot($writer_page, $name);
+                foreach ($results[$writer] as $row) {
+                    delete_post_meta($writer_page, $row[0]);
+                }
+            }
+            $same("setPost[$name:$case" . ($stray ? '+stray' : '') . ']', $results['carbon'], $results['store']);
+        }
+    }
+}
+$same('setPost unknown field', false, \App\Fields\Store::setPost($writer_page, 'no_such_field', 'x'));
+$same('setPost post 0', false, \App\Fields\Store::setPost(0, 'kicker', 'x'));
+
+// 7. The block editor's REST field.
+use App\Fields\PostPanels;
+
+$admin = get_users(['role' => 'administrator', 'number' => 1])[0];
+$rest = function ($method, $route, $body = null, $user = null) use ($admin) {
+    wp_set_current_user($user ? $user : $admin->ID);
+    $request = new WP_REST_Request($method, $route);
+    if ($method === 'GET') {
+        $request->set_param('context', 'edit');
+    }
+    if ($body !== null) {
+        $request->set_header('Content-Type', 'application/json');
+        $request->set_body(wp_json_encode($body));
+    }
+    $response = rest_do_request($request);
+    wp_set_current_user(0);
+    return $response;
+};
+// The field as the editor receives it (JSON).
+$alps = function ($response) {
+    return json_decode(wp_json_encode($response->get_data()['alps_fields']), true);
+};
+$same('panel post types include post and page', true, in_array('post', PostPanels::blockEditorTypes(), true) && in_array('page', PostPanels::blockEditorTypes(), true));
+$same('attachments stay on Carbon Fields boxes', true, in_array('attachment', PostPanels::classicTypes(), true));
+
+$filled = $new_post('page', 'REST filled page');
+foreach ($registry_post as $name => $field) {
+    carbon_set_post_meta($filled, $name, $value_for($name, $field));
+}
+$got = $rest('GET', "/wp/v2/pages/$filled");
+$same('REST GET status', 200, $got->get_status());
+$fields = $alps($got);
+$same('REST GET = PostPanels::values', PostPanels::values(get_post($filled), true), $fields);
+$same('REST GET hero_carousel rows', 2, count($fields['hero_carousel'] ?? []));
+$same('REST view context hides the field', false, array_key_exists('alps_fields', rest_do_request(new WP_REST_Request('GET', "/wp/v2/pages/$filled"))->get_data()));
+
+// Sending everything back unchanged writes nothing; one change writes that field only.
+$before = $meta_snapshot($filled);
+$rest('POST', "/wp/v2/pages/$filled", ['alps_fields' => $fields]);
+$same('REST unchanged save writes nothing', $before, $meta_snapshot($filled));
+$changed = $fields;
+$changed['hero_kicker'] = 'Kicker from REST';
+$changed['hero_carousel'][0]['slide_heading'] = 'Heading from REST';
+$changed['related_custom_value'] = array_reverse($fields['related_custom_value']);
+$rest('POST', "/wp/v2/pages/$filled", ['alps_fields' => $changed]);
+$after = $meta_snapshot($filled);
+$expected = $filled_expected = $new_post('page', 'Expected rows');
+foreach ($registry_post as $name => $field) {
+    carbon_set_post_meta($expected, $name, $value_for($name, $field));
+}
+carbon_set_post_meta($expected, 'hero_kicker', 'Kicker from REST');
+$carousel = carbon_get_post_meta($expected, 'hero_carousel');
+$carousel[0]['slide_heading'] = 'Heading from REST';
+carbon_set_post_meta($expected, 'hero_carousel', $carousel);
+carbon_set_post_meta($expected, 'related_custom_value', array_reverse($value_for('related_custom_value', $registry_post['related_custom_value'])));
+$same('REST save writes what Carbon Fields would', $meta_snapshot($expected), $after);
+$same('REST save read back', 'Kicker from REST', \App\Fields\Store::post($filled, 'hero_kicker'));
+
+// Cleaning: unknown keys, bad choices, other post types, extra rows, script for authors.
+$author = wp_insert_user(['user_login' => 'fields-author', 'user_pass' => wp_generate_password(), 'role' => 'author', 'user_email' => 'fields-author@example.test']);
+$author_post = wp_insert_post(['post_type' => 'post', 'post_status' => 'draft', 'post_title' => 'Author post', 'post_author' => $author]);
+$rest('POST', "/wp/v2/posts/$author_post", ['alps_fields' => [
+    'kicker' => 'Safe <b>bold</b><script>alert(1)</script>',
+    'head_type' => 'bogus',
+    'related' => 'related_all',
+    'no_such_field' => 'x',
+    'hero_carousel' => array_fill(0, 12, ['slide_heading' => 'Slide']),
+]], $author);
+$same('author text is cleaned', 'Safe <b>bold</b>alert(1)', \App\Fields\Store::post($author_post, 'kicker'));
+$same('bad choice saves the first choice', 'default', \App\Fields\Store::post($author_post, 'head_type'));
+$same('page-only field ignored on posts', [], $meta_snapshot($author_post, 'related'));
+$same('carousel capped at 9 rows', 9, count(\App\Fields\Store::post($author_post, 'hero_carousel')));
+$same('unknown key ignored', [], $meta_snapshot($author_post, 'no_such_field'));
+$assoc = PostPanels::sanitize('related_custom_value', $registry_post['related_custom_value'], [
+    ['id' => $page_target], ['id' => $images[0]], ['id' => 999999], ['id' => $post_target, 'subtype' => 'page'], 'junk',
+]);
+$same('association keeps only existing pages and posts', [['type' => 'post', 'subtype' => 'page', 'id' => $page_target], ['type' => 'post', 'subtype' => 'post', 'id' => $post_target]], $assoc);
+
+// Someone who cannot edit the post changes nothing.
+$subscriber = wp_insert_user(['user_login' => 'fields-subscriber', 'user_pass' => wp_generate_password(), 'role' => 'subscriber', 'user_email' => 'fields-subscriber@example.test']);
+$denied = $rest('POST', "/wp/v2/pages/$filled", ['alps_fields' => ['hero_kicker' => 'From subscriber']], $subscriber);
+$same('subscriber update refused', true, $denied->get_status() >= 400);
+$same('subscriber changed nothing', 'Kicker from REST', \App\Fields\Store::post($filled, 'hero_kicker'));
+
+// The edit-screen defaults: shown for new entries, stored on the first save.
+foreach ([['page', 'page-header'], ['post', 'header-block-featured']] as $case) {
+    list($type, $default) = $case;
+    $draft = wp_insert_post(['post_type' => $type, 'post_status' => 'auto-draft', 'post_title' => "New $type"]);
+    $shown = $alps($rest('GET', '/wp/v2/' . ($type === 'page' ? 'pages' : 'posts') . "/$draft"))['featured_image_hero_layout'];
+    $same("new $type shows the $default banner", $default, $shown);
+    $rest('POST', '/wp/v2/' . ($type === 'page' ? 'pages' : 'posts') . "/$draft", ['title' => "Saved $type", 'status' => 'draft']);
+    $same("first save of a new $type stores it", [['_featured_image_hero_layout', $default]], $meta_snapshot($draft, 'featured_image_hero_layout'));
+}
+$old_page = $new_post('page', 'Old page');
+$rest('POST', "/wp/v2/pages/$old_page", ['title' => 'Old page saved']);
+$same('saving an existing page stores no banner default', [], $meta_snapshot($old_page, 'featured_image_hero_layout'));
+$grid_page = $new_post('page', 'Grid page');
+add_post_meta($grid_page, '_related_grid', 'true');
+$same('grid page shows the landscape crop', 'landscape', $alps($rest('GET', "/wp/v2/pages/$grid_page"))['related_image_crop']);
+$rest('POST', "/wp/v2/pages/$grid_page", ['title' => 'Grid page saved']);
+$same('saving a grid page stores the landscape crop', [['_related_image_crop', 'landscape']], $meta_snapshot($grid_page, 'related_image_crop'));
+$legacy_post = $new_post('post', 'Legacy layout post');
+add_post_meta($legacy_post, '_featured_image_hero_layout', 'hero_layout_1_3');
+// A stored old layout value is a stored value: no default, read as 'false' (as in Carbon Fields).
+$same('old hero layout reads as no banner', 'false', $alps($rest('GET', "/wp/v2/posts/$legacy_post"))['featured_image_hero_layout']);
+$rest('POST', "/wp/v2/posts/$legacy_post", ['alps_fields' => $alps($rest('GET', "/wp/v2/posts/$legacy_post"))]);
+$same('saving the panels keeps it', 'false', \App\Fields\Store::post($legacy_post, 'featured_image_hero_layout'));
+$same('Carbon Fields reads it the same', @carbon_get_post_meta($legacy_post, 'featured_image_hero_layout'), \App\Fields\Store::post($legacy_post, 'featured_image_hero_layout'));
+
 echo 'PHP ' . PHP_VERSION . ', WordPress ' . get_bloginfo('version') . ', Carbon Fields ' . \Carbon_Fields\VERSION . "\n";
 echo "compare: $checks checks, " . count($failures) . " failures\n";
 foreach ($failures as $failure) {

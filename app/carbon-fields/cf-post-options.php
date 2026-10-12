@@ -4,6 +4,17 @@ use Carbon_Fields\Container;
 use Carbon_Fields\Field;
 
 // The defaults live with the field list (app/Fields/Registry.php).
+
+/**
+ * These boxes now only show on classic edit screens (attachments, post types
+ * without the block editor); the block editor has the theme's own panels
+ * (app/Fields/PostPanels.php). The boxes of the removed home and posts
+ * templates are gone; their stored values were left in place.
+ */
+function crb_classic_screen($post_type)
+{
+    return in_array($post_type, \App\Fields\PostPanels::classicTypes(), true);
+}
 function setDefaultHeader() {
     return \App\Fields\Registry::defaultHeroLayout();
 }
@@ -15,6 +26,7 @@ function crb_page_options()
 {
 	Container
 		::make('post_meta', __('ALPS: Header and Page Builder Options', 'alps'))
+		->where('post_type', 'CUSTOM', 'crb_classic_screen')
 		->add_fields([
 			Field
 				::make('separator', 'crb_page_options', __('Header and Page Builder Options', 'alps'))
@@ -56,6 +68,7 @@ function crb_attach_header()
 {
 	Container
 		::make('post_meta', __('ALPS: Header Banner', 'alps'))
+		->where('post_type', 'CUSTOM', 'crb_classic_screen')
 		->add_fields([
 			Field
 				::make('separator', 'crb_long_header', __('Banner', 'alps'))
@@ -79,7 +92,7 @@ function crb_attach_hero()
 {
 	Container
 		::make('post_meta', __('ALPS: Hero', 'alps'))
-		->where('post_template', '!=', 'views/template-posts.blade.php')
+		->where('post_type', 'CUSTOM', 'crb_classic_screen')
 		->add_fields([
 			Field
 				::make('separator', 'crb_hero_banner', __('Hero Banner', 'alps'))
@@ -295,6 +308,7 @@ function crb_attach_page_template_fields()
 {
 	Container
 		::make('post_meta', __('ALPS: Entry Sidebar / Featured Image', 'alps'))
+		->where('post_type', 'CUSTOM', 'crb_classic_screen')
 		->add_fields([
 			Field
 				::make('separator', 'crb_hide_sidebar', __('Hide Sidebar', 'alps'))
@@ -321,7 +335,7 @@ function crb_attach_related_pages()
 	Container
 		::make('post_meta', __('ALPS: Related Pages & Posts', 'alps'))
 		->where('post_type', '=', 'page')
-		->where('post_template', '!=', 'views/template-posts.blade.php')
+		->where('post_type', 'CUSTOM', 'crb_classic_screen')
 		->add_fields([
 			Field
 				::make('radio', 'related', __('Related Pages Format', 'alps'))
@@ -387,348 +401,3 @@ function crb_attach_related_pages()
             ->set_width(50),
 		]);
 }
-
-add_action('carbon_fields_register_fields', 'crb_post_in_banner');
-function crb_post_in_banner()
-{
-	Container
-		::make('post_meta', __('ALPS: Hero Featured Post', 'alps'))
-		->where('post_type', '=', 'page')
-		->where('post_template', '=', 'views/template-posts.blade.php')
-		->add_fields([
-			Field
-				::make('separator', 'crb_fpost_banner', __('Hero: Show Featured Post', 'alps')),
-			Field
-				::make('checkbox', 'show_hero_featured_post', __('Select to display a featured post in the hero.', 'alps'))
-				->set_option_value('true'),
-			Field
-				::make('association', 'hero_featured_post', __('Select - Hero Featured Post', 'alps'))
-				->set_conditional_logic([
-					[
-						'field' => 'show_hero_featured_post',
-						'value' => true,
-					]
-				])
-				->set_types([
-					[
-						'type' => 'post',
-						'post_type' => 'post',
-					]
-				])
-				->set_max(1),
-		]);
-}
-
-// POST FEED - LIST ------------------------------------------------
-add_action('carbon_fields_register_fields', 'crb_post_feed_list');
-function crb_post_feed_list()
-{
-	Container
-		::make('post_meta', __('ALPS: Post Feed List', 'alps'))
-		->where('post_type', '=', 'page')
-		->where('post_template', '=', 'views/template-posts.blade.php')
-		->add_fields([
-			Field
-				::make('separator', 'crb_feed_list_banner', __('Post Feed - List', 'alps')),
-			Field
-				::make('radio', 'post_feed_list', __('Post Feed: List', 'alps'))
-				->set_help_text('Displays as a list of posts.', 'alps')
-				->add_options([
-					'post_feed_list_false' => __('None', 'alps'),
-					'post_feed_list_category' => __('Select a category of posts to feature.', 'alps'),
-					'post_feed_list_custom' => __('Select specific posts to feature.', 'alps'),
-				]),
-			Field
-				::make('separator', 'crb_feed_list_cat_sep', __('Select Post Category', 'alps'))
-				->set_conditional_logic([
-					[
-						'field' => 'post_feed_list',
-						'value' => 'post_feed_list_category',
-					]
-				]),
-			Field
-				::make('separator', 'crb_feed_list_pick_sep', __('Select Specific Posts', 'alps'))
-				->set_conditional_logic([
-					[
-						'field' => 'post_feed_list',
-						'value' => 'post_feed_list_custom',
-					]
-				]),
-			// NEXT THREE FIELDS ARE SHOWN FOR BOTH
-			Field
-				::make('text', 'post_feed_list_title', __('Section Title', 'alps'))
-				->set_help_text(__('Enter the title for this featured posts section.', 'alps'))
-				->set_width(50)
-				->set_conditional_logic([
-					'relation' => 'AND',
-					[
-						'field' => 'post_feed_list',
-						'value' => 'post_feed_list_false',
-						'compare' => 'EXCLUDES',
-					]
-				]),
-			Field
-				::make('text', 'post_feed_list_link', __('Section Link', 'alps'))
-				->set_help_text(__('Enter the link to the posts archive page.', 'alps'))
-				->set_width(50)
-				->set_conditional_logic([
-					'relation' => 'AND',
-					[
-						'field' => 'post_feed_list',
-						'value' => 'post_feed_list_false',
-						'compare' => 'EXCLUDES',
-					]
-				]),
-			Field
-				::make('checkbox', 'post_feed_list_round_image', __('Round Image Thumbnail', 'alps'))
-				->set_help_text(__('Check to make the image thumbnail round.', 'alps'))
-				->set_option_value('true')
-				->set_conditional_logic([
-					'relation' => 'AND',
-					[
-						'field' => 'post_feed_list',
-						'value' => 'post_feed_list_false',
-						'compare' => 'EXCLUDES',
-					]
-				]),
-			// ONLY CATEGORY FIELDS FOLLOW WITH SPECIFIC / SELECTED ONES TO FOLLOW THIS
-			Field
-				::make('association', 'post_feed_list_category_array', __('Select - Category', 'alps'))
-				->set_help_text(__('Click on the category you want to select on the left and it will be selected on the right side. You can only select one category.', 'alps'))
-				->set_types([
-					[
-						'type' => 'term',
-						'taxonomy' => 'category',
-					]
-				])
-				->set_max(1)
-				->set_conditional_logic([
-					[
-						'field' => 'post_feed_list',
-						'value' => 'post_feed_list_category',
-					]
-				]),
-			Field
-				::make('text', 'post_feed_list_count', __('Number of Posts', 'alps'))
-				->set_help_text(__('Enter the number of posts you would like to display. (If empty, defaults to 3 posts in the selected category)', 'alps'))
-				->set_width(50)
-				->set_conditional_logic([
-					[
-						'field' => 'post_feed_list',
-						'value' => 'post_feed_list_category',
-					]
-				]),
-			Field
-				::make('text', 'post_feed_list_offset', __('Post Offset', 'alps'))
-				->set_help_text(__('Enter the number of posts you would like to offset.'))
-				->set_width(50)
-				->set_conditional_logic([
-					[
-						'field' => 'post_feed_list',
-						'value' => 'post_feed_list_category',
-					]
-				]),
-			// ONLY SPECIFIC / SELECTED POSTS
-			Field::make('association', 'post_feed_list_custom_array', __('Select - Custom Posts', 'alps'))
-				->set_help_text(__('Click on the posts you want to select on the left and they will be selected on the right side.', 'alps'))
-				->set_types([
-					[
-						'type' => 'post',
-						'post_type' => 'post',
-					]
-				])
-				->set_conditional_logic([
-					[
-						'field' => 'post_feed_list',
-						'value' => 'post_feed_list_custom',
-					]
-				]),
-		]);
-}
-
-// POST FEED - FULL ------------------------------------------------
-add_action('carbon_fields_register_fields', 'crb_post_feed_full');
-function crb_post_feed_full()
-{
-	Container
-		::make('post_meta', __('ALPS: Post Feed - Full Width'))
-		->where('post_type', '=', 'page')
-		->where('post_template', '=', 'views/template-posts.blade.php')
-		->add_fields([
-			Field
-				::make('separator', 'crb_feed_list_banner', __('Post Feed - Full Width', 'alps')),
-			Field
-				::make('radio', 'post_feed_full', __('Post Feed: Full Width', 'alps'))
-				->set_help_text(__('Displays as a list of posts.', 'alps'))
-				->add_options([
-					'post_feed_full_false' => __('None', 'alps'),
-					'post_feed_full_category' => __('Select a category of posts to feature.', 'alps'),
-				]),
-			Field
-				::make('separator', 'crb_feed_full_cat_sep', __('Select Post Category', 'alps'))
-				->set_conditional_logic([
-					[
-						'field' => 'post_feed_full',
-						'value' => 'post_feed_full_category',
-					]
-				]),
-			// NEXT THREE FIELDS ARE SHOWN FOR BOTH
-			Field
-				::make('text', 'post_feed_full_title', __('Section Title', 'alps'))
-				->set_help_text(__('Enter the title for this featured posts section.', 'alps'))
-				->set_width(50)
-				->set_conditional_logic([
-					'relation' => 'AND',
-					[
-						'field' => 'post_feed_full',
-						'value' => 'post_feed_full_category',
-					]
-				]),
-			Field
-				::make('text', 'post_feed_full_link', __('Section Link', 'alps'))
-				->set_help_text(__('Enter the link to the posts archive page.', 'alps'))
-				->set_width(50)
-				->set_conditional_logic([
-					'relation' => 'AND',
-					[
-						'field' => 'post_feed_full',
-						'value' => 'post_feed_full_category'
-					]
-				]),
-			Field
-				::make('checkbox', 'post_feed_full_featured', __('Full Width Featured Post', 'alps'))
-				->set_help_text(__('Select to include a post full width.', 'alps'))
-				->set_option_value('post_feed_full_featured_true')
-				->set_conditional_logic([
-					'relation' => 'AND',
-					[
-						'field' => 'post_feed_full',
-						'value' => 'post_feed_full_category',
-					]
-				]),
-			Field
-				::make('association', 'post_feed_full_featured_array', __('Featured Post', 'alps'))
-				->set_help_text(__('Select (1) post to feature as a full width post.', 'alps'))
-				->set_types([
-					[
-						'type' => 'post',
-						'post_type' => 'post'
-					]
-				])
-				->set_max(1)
-				->set_conditional_logic([
-					[
-						'field' => 'post_feed_full',
-						'value' => 'post_feed_full_category'
-					],
-					[
-						'field' => 'post_feed_full_featured',
-						'value' => true
-					]
-				]),
-			Field
-				::make('text', 'post_feed_full_offset', __('Post Offset', 'alps'))
-				->set_help_text(__('Enter the number of posts you would like to offset.', 'alps'))
-				->set_width(50)
-				->set_conditional_logic([
-					[
-						'field' => 'post_feed_full',
-						'value' => 'post_feed_list_category'
-					]
-				]),
-			Field
-				::make('association', 'post_feed_full_category_array', __('Select - Category', 'alps'))
-				->set_help_text(__('Click on the category you want to select on the left and it will be selected on the right side. You can only select one category.', 'alps'))
-				->set_types([
-					[
-						'type' => 'term',
-						'taxonomy' => 'category'
-					]
-				])
-				->set_max(1)
-				->set_conditional_logic([
-					[
-						'field' => 'post_feed_full',
-						'value' => 'post_feed_full_category'
-					]
-				]),
-		]);
-}
-
-// POST FEED - ARCHIVE ------------------------------------------------
-add_action('carbon_fields_register_fields', 'crb_post_feed_archive');
-function crb_post_feed_archive()
-{
-	Container
-		::make('post_meta', __('ALPS: Post Feed Archive', 'alps'))
-		->where('post_type', '=', 'page')
-		->where('post_template', '=', 'views/template-posts.blade.php')
-		->add_fields([
-			Field
-				::make('separator', 'crb_feed_archive_banner', __('Post Feed - Archive', 'alps')),
-			Field
-				::make('radio', 'post_feed_archive', __('Post Feed: Archive', 'alps'))
-				->set_help_text(__('Displays as a list of posts.', 'alps'))
-				->add_options([
-					'post_feed_archive_false' => __('None', 'alps'),
-					'post_feed_archive_category' => __('Select a category of posts to feature.', 'alps'),
-				]),
-			Field
-				::make('separator', 'crb_feed_archive_cat_sep', __('Select Post Category', 'alps'))
-				->set_conditional_logic([
-					[
-						'field' => 'post_feed_archive',
-						'value' => 'post_feed_archive',
-					]
-				]),
-			Field
-				::make('text', 'post_feed_archive_title', __('Section Title', 'alps'))
-				->set_help_text(__('Enter the title for this featured posts section.', 'alps'))
-				->set_width(50)
-				->set_conditional_logic([
-					'relation' => 'AND',
-					[
-						'field' => 'post_feed_archive',
-						'value' => 'post_feed_archive_category'
-					]
-				]),
-			Field
-				::make('text', 'post_feed_archive_link', __('Section Link', 'alps'))
-				->set_help_text(__('Enter the link to the posts archive page.', 'alps'))
-				->set_width(50)
-				->set_conditional_logic([
-					'relation' => 'AND',
-					[
-						'field' => 'post_feed_archive',
-						'value' => 'post_feed_archive_category'
-					]
-				]),
-			Field
-				::make('text', 'post_feed_archive_offset', __('Post Offset', 'alps'))
-				->set_help_text(__('Enter the number of posts you would like to offset.', 'alps'))
-				->set_width(50)
-				->set_conditional_logic([
-					[
-						'field' => 'post_feed_archive',
-						'value' => 'post_feed_archive_category'
-					]
-				]),
-			Field
-				::make('association', 'post_feed_archive_category_array', __('Select - Category', 'alps'))
-				->set_help_text(__('Click on the category you want to select on the left and it will be selected on the right side. You can only select one category.', 'alps'))
-				->set_types([
-					[
-						'type' => 'term',
-						'taxonomy' => 'category'
-					]
-				])
-				->set_max(1)
-				->set_conditional_logic([
-					[
-						'field' => 'post_feed_archive',
-						'value' => 'post_feed_archive_category'
-					]
-				]),
-		]);
-}
-// End of post option fields.

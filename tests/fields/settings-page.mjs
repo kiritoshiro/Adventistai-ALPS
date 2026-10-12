@@ -1,6 +1,6 @@
 // Browser test of Appearance → ALPS Theme Settings (app/Fields/SettingsPage.php)
-// on a Playground site prepared by settings-e2e.py. Usage:
-//   node tests/fields/settings-page.mjs http://127.0.0.1:9497
+// on a Playground site prepared by e2e.py. Usage:
+//   python3 tests/fields/e2e.py settings-page   (or: node tests/fields/settings-page.mjs <url>)
 // Needs Playwright (global install: NODE_PATH="$(npm root -g)").
 import {createRequire} from 'node:module';
 

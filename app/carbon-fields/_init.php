@@ -1,6 +1,5 @@
 <?php
 require_once('cf-global.php');
-require_once('cf-front-page.php');
 require_once('cf-post-options.php');
 
 // LOAD CF FROM COMPOSER ADDED VENDOR DIR
