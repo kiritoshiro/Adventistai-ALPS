@@ -3,7 +3,7 @@
     <img class="c-block__image" itemprop="image" src="<?php echo esc_url(get_avatar_url(get_the_author_meta('email'), array("size" => 400))); ?>">
   <?php endif; ?>
   <h4 class="c-media-block__kicker c-block__kicker u-space--zero--top">
-    <?php echo esc_html($settings['text_link_title']); ?>
+    <?php echo esc_html($settings['text_link_author'] ?? ''); ?>
   </h4>
   <h3 class="u-theme--color--darker u-font--primary--m vcard author" itemprop="url" rel="author">
     <a href="<?php echo esc_url(get_author_posts_url(get_the_author_meta('ID'))); ?>" class="c-block__title-link u-theme--link-hover--dark fn" itemprop="name">

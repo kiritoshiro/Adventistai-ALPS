@@ -10,8 +10,9 @@ file-modification version strings. PHP log lines written while each theme
 renders are compared too (the same notices may occur in both). Exits 1 on any
 difference.
 
-Both checkouts need `composer install`. Activating the theme rewrites
-theme.json in both; the files are restored afterwards.
+Both checkouts need `composer install`. Older theme versions rewrite
+theme.json on every request; the files are restored afterwards, and a
+rewrite in this checkout counts as a failure.
 
 Usage: python3 tests/fields/render-compare.py --old ../alps-old [--php 8.4]
 """
@@ -192,6 +193,12 @@ def main():
     finally:
         stop(proc)
         for checkout, data in originals.items():
+            with open(os.path.join(checkout, "theme.json"), "rb") as fh:
+                if fh.read() == data:
+                    continue
+            if checkout == ROOT:
+                failures.append("theme.json of this checkout was rewritten")
+                print("FAIL  theme.json of this checkout was rewritten (restored)")
             with open(os.path.join(checkout, "theme.json"), "wb") as fh:
                 fh.write(data)
 

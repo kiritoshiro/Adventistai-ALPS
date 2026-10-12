@@ -37,7 +37,7 @@ array_map(function ($file) use ($sage_error) {
     if (!locate_template($file, true, true)) {
         $sage_error(sprintf(__('Error locating <code>%s</code> for inclusion.', 'alps'), $file), 'File not found');
     }
-}, ['helpers', 'setup', 'fields', 'filters', 'admin', 'template-helpers', 'ContentHelpers', 'Breadcrumbs', 'SeoDefaults', 'UploadImages', 'ImageDelivery', 'ContentImages', 'OriginalImageRetention', 'AccountAccess', 'ThemeCache', 'InlineStyles', 'ScriptLoading', 'LogoImage', 'SecurityHeaders']);
+}, ['helpers', 'setup', 'filters', 'admin', 'template-helpers', 'ContentHelpers', 'Breadcrumbs', 'SeoDefaults', 'UploadImages', 'ImageDelivery', 'ContentImages', 'OriginalImageRetention', 'AccountAccess', 'ThemeCache', 'InlineStyles', 'ScriptLoading', 'LogoImage', 'SecurityHeaders']);
 
 \App\SeoDefaults::register();
 \App\UploadImages::register();
@@ -86,6 +86,7 @@ add_action('wp_head', [\App\LatestPostSlider::class, 'printHeadPreload'], 2);
 add_action('wp_footer', [\App\LatestPostSlider::class, 'printDeferScript'], 20);
 \App\SidebarImages::register();
 \App\Fields\Store::register();
+\App\ThemePalette::register();
 add_action('init', [\App\WrappedImageTextBlock::class, 'register']);
 add_action('init', [\App\CardScrollerBlock::class, 'register']);
 \App\PostMediaPriority::register();

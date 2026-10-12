@@ -48,16 +48,6 @@ add_filter('style_loader_src', 'crb_minified_asset_fallback');
 add_filter('use_widgets_block_editor', '__return_false');
 add_filter('gutenberg_use_widgets_block_editor', '__return_false');
 
-// REMOVE MEDIA BUTTON FROM CF RICH TEXT EDITOR
-add_filter('crb_media_buttons_html', function ($html, $field_name) {
-    $fields = ['content_block_freeform_body', 'sb_body', 'content_body_1', 'footer_description'];
-    if (in_array($field_name, $fields)) {
-        return;
-    }
-
-    return $html;
-}, 10, 2);
-
 // ADD CF ADMIN STYLESHEET
 function cf_admin_style()
 {
@@ -65,12 +55,4 @@ function cf_admin_style()
 }
 
 add_action('admin_enqueue_scripts', 'cf_admin_style');
-
-// ADD CF JAVASCRIPT
-function cf_admin_js($hook)
-{
-    wp_enqueue_script('cf-admin-js', get_template_directory_uri() . '/app/carbon-fields/cf-admin.js', array('lodash' ));
-}
-
-add_action('admin_enqueue_scripts', 'cf_admin_js');
 

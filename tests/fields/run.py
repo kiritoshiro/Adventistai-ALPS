@@ -8,8 +8,9 @@ Playground smoke test) and runs one script inside it:
   compare  compare.php: App\\Fields\\Store and Registry against Carbon Fields;
            exits 1 on any difference
 
-Needs Node.js (npx) and `composer install`. Activating the theme rewrites
-theme.json in the mounted checkout; the file is restored afterwards.
+Needs Node.js (npx) and `composer install`. The theme must not write
+theme.json (older theme versions rewrote its palette on every
+request); if the file changes it is restored and the run fails.
 
 Usage: python3 tests/fields/run.py capture|compare [--php 8.4] [--wp latest]
 """
@@ -64,6 +65,7 @@ def main():
     theme_json = os.path.join(ROOT, "theme.json")
     with open(theme_json, "rb") as fh:
         original = fh.read()
+    rewritten = False
     with tempfile.TemporaryDirectory() as tmp:
         path = os.path.join(tmp, "blueprint.json")
         with open(path, "w", encoding="utf-8") as fh:
@@ -73,12 +75,14 @@ def main():
             result = subprocess.run(cmd, cwd=ROOT, shell=(os.name == "nt"))
         finally:
             with open(theme_json, "rb") as fh:
-                if fh.read() != original:
-                    with open(theme_json, "wb") as out:
-                        out.write(original)
-                    print("Restored theme.json (rewritten by theme activation).")
+                rewritten = fh.read() != original
+            if rewritten:
+                with open(theme_json, "wb") as out:
+                    out.write(original)
     if result.returncode:
         sys.exit(result.returncode)
+    if rewritten:
+        sys.exit("theme.json was rewritten during the run (restored); the palette belongs in app/ThemePalette.php")
 
     output = ""
     if os.path.exists(log_host):
