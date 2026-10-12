@@ -48,3 +48,10 @@ jobs:
         env:
           PHP_VERSION: ${{ matrix.php }}
         run: python3 .github/playground/smoke.py --php "$PHP_VERSION"
+      # App\Fields\Store (the theme's own field reader) must return exactly
+      # what Carbon Fields returns, for saved, empty, invalid and hand-written
+      # edge rows. See tests/fields/compare.php.
+      - name: Theme fields read the same as through Carbon Fields
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: python3 tests/fields/run.py compare --php "$PHP_VERSION"

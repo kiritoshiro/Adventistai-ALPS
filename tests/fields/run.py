@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
-"""Run tests/fields/capture.php in a throwaway WordPress Playground.
+"""Run a tests/fields script in a throwaway WordPress Playground.
 
 Boots WordPress with this theme mounted and activated (same setup steps as the
-Playground smoke test), runs the capture and leaves
-tests/fields/fixtures/carbon-fields-<version>.json in the checkout. Needs
-Node.js (npx) and `composer install`. Activating the theme rewrites theme.json
-in the mounted checkout; the file is restored afterwards.
+Playground smoke test) and runs one script inside it:
 
-Usage: python3 tests/fields/run-capture.py [--php 8.4] [--wp latest]
+  capture  capture.php: rewrites fixtures/carbon-fields-<version>.json
+  compare  compare.php: App\\Fields\\Store and Registry against Carbon Fields;
+           exits 1 on any difference
+
+Needs Node.js (npx) and `composer install`. Activating the theme rewrites
+theme.json in the mounted checkout; the file is restored afterwards.
+
+Usage: python3 tests/fields/run.py capture|compare [--php 8.4] [--wp latest]
 """
 import argparse
 import json
@@ -23,6 +27,7 @@ THEME_VFS = "/wordpress/wp-content/themes/adventistai"
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("script", choices=["capture", "compare"])
     parser.add_argument("--php", default="8.4")
     parser.add_argument("--wp", default="latest")
     args = parser.parse_args()
@@ -36,14 +41,18 @@ def main():
     steps += config.get("setup", [])
     steps.append({"step": "activateTheme", "themeFolderName": "adventistai"})
     # Playground does not print runPHP output or errors, so they go to a file.
-    log = f"{THEME_VFS}/tests/fields/fixtures/capture.log"
+    log_rel = os.path.join("tests", "fields", "fixtures", args.script + ".log")
+    log = f"{THEME_VFS}/tests/fields/fixtures/{args.script}.log"
+    log_host = os.path.join(ROOT, log_rel)
+    if os.path.exists(log_host):
+        os.remove(log_host)
     steps.append({"step": "runPHP", "code": (
         "<?php @mkdir(dirname('" + log + "'), 0777, true);"
         " register_shutdown_function(function () { $e = error_get_last();"
         " if ($e && in_array($e['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {"
         " file_put_contents('" + log + "', 'FATAL ' . $e['message'] . ' in ' . $e['file'] . ':' . $e['line'] . \"\\n\", FILE_APPEND); } });"
         " ob_start(); try { require '/wordpress/wp-load.php';"
-        f" require '{THEME_VFS}/tests/fields/capture.php';"
+        f" require '{THEME_VFS}/tests/fields/{args.script}.php';"
         " } catch (Throwable $t) { echo 'ERROR ' . $t->getMessage() . ' in ' . $t->getFile() . ':' . $t->getLine() . \"\\n\" . $t->getTraceAsString(); }"
         " file_put_contents('" + log + "', ob_get_clean(), FILE_APPEND);"
     )})
@@ -68,7 +77,20 @@ def main():
                     with open(theme_json, "wb") as out:
                         out.write(original)
                     print("Restored theme.json (rewritten by theme activation).")
-    sys.exit(result.returncode)
+    if result.returncode:
+        sys.exit(result.returncode)
+
+    output = ""
+    if os.path.exists(log_host):
+        with open(log_host, encoding="utf-8") as fh:
+            output = fh.read()
+    print(output, end="")
+    if args.script == "compare":
+        lines = output.splitlines()
+        summary = [line for line in lines if line.startswith("compare: ")]
+        if not summary or not summary[0].endswith(" 0 failures") or any(
+                line.startswith(("ERROR", "FATAL")) for line in lines):
+            sys.exit(f"compare failed (log: {log_rel})")
 
 
 if __name__ == "__main__":

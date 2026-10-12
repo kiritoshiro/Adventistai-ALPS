@@ -1,3 +1,5 @@
-# Written by run-capture.py on every run; the JSON fixture is what is kept.
-fixtures/capture.log
+# Written by the runners on every run; the JSON fixture is what is kept.
+fixtures/*.log
+fixtures/render/
+fixtures/render-urls.json
 __pycache__/

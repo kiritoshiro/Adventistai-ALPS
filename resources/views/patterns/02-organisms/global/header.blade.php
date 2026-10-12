@@ -18,12 +18,12 @@
     $header_logo_class = "";
   }
 
-  $header_type = carbon_get_the_post_meta('head_type');
-  if (carbon_get_the_post_meta('hero_type') == 'full_overlay' || $header_type == 'overlay' || $header_type == 'overlay_gradient') {
+  $header_type = \App\Fields\Store::thePost('head_type');
+  if (\App\Fields\Store::thePost('hero_type') == 'full_overlay' || $header_type == 'overlay' || $header_type == 'overlay_gradient') {
     if (!empty($logo_inverted)){
       $logo = $logo_inverted;
     }
-    if (carbon_get_the_post_meta('head_type') == 'overlay'){
+    if (\App\Fields\Store::thePost('head_type') == 'overlay'){
       $header_class = " c-header--overlay";
     }else{
       $header_class = " c-header--overlay u-theme--gradient--top";
@@ -65,7 +65,7 @@
       @include('patterns.01-molecules.navigation.primary-navigation')
     </div>
   </div> <!-- /.c-header--inner -->
-  @if (carbon_get_the_post_meta('hero_type') == 'full_overlay')
+  @if (\App\Fields\Store::thePost('hero_type') == 'full_overlay')
     <div class="c-header__sabbath u-theme--gradient--top">
       <div class="o-logo u-path-fill--white">
         @if (!empty(get_alps_option('sabbath_icon')))

@@ -43,11 +43,11 @@ add_filter('excerpt_more', function () {
    // Add class if sidebar is true on pages and posts
    $post_id = get_queried_object_id();
    // If has page sidebar
-   if (is_active_sidebar('sidebar-page') && (carbon_get_post_meta($post_id, 'hide_sidebar') != 1)) {
+   if (is_active_sidebar('sidebar-page') && (\App\Fields\Store::post($post_id, 'hide_sidebar') != 1)) {
      $classes[] = 'has-sidebar has-sidebar--pages';
    }
    // If has post sidebar
-   if (is_active_sidebar('sidebar-posts') && (carbon_get_post_meta($post_id, 'hide_sidebar') != 1) && (carbon_get_theme_option('index_hide_sidebar') != 1)) {
+   if (is_active_sidebar('sidebar-posts') && (\App\Fields\Store::post($post_id, 'hide_sidebar') != 1) && (\App\Fields\Store::option('index_hide_sidebar') != 1)) {
      $classes[] = 'has-sidebar has-sidebar--posts';
    }
 

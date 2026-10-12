@@ -85,6 +85,7 @@ add_action('init', [\App\LatestPostSliderBlock::class, 'register']);
 add_action('wp_head', [\App\LatestPostSlider::class, 'printHeadPreload'], 2);
 add_action('wp_footer', [\App\LatestPostSlider::class, 'printDeferScript'], 20);
 \App\SidebarImages::register();
+\App\Fields\Store::register();
 add_action('init', [\App\WrappedImageTextBlock::class, 'register']);
 add_action('init', [\App\CardScrollerBlock::class, 'register']);
 \App\PostMediaPriority::register();
@@ -173,7 +174,7 @@ function get_alps_field( $field, $id = NULL ) {
         $id = get_queried_object_id();
     }
 
-    $field_data = carbon_get_post_meta( $id, $field );
+    $field_data = \App\Fields\Store::post( $id, $field );
     if ( !empty( $field_data ) ) {
         if ( is_array( $field_data ) ) {
             if ( count( $field_data ) === 1 ) {
@@ -192,7 +193,7 @@ function get_alps_field( $field, $id = NULL ) {
 function get_alps_option( $field ) {
     global $post;
     $option = '';
-    $option = carbon_get_theme_option( $field );
+    $option = \App\Fields\Store::option( $field );
 
     if ( is_array( $option ) ) {
         // RETURN SINGLE KEY/VAL ARRAY AS VAL (IMAGES)

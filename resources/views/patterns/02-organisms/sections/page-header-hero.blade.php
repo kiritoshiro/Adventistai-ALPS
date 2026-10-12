@@ -2,7 +2,7 @@
   $cf_ = '_';
   $hero_type = get_alps_field('hero_type');
   if (empty($hero_type)) {
-    $hero_type = carbon_get_the_post_meta('hero_type');
+    $hero_type = \App\Fields\Store::thePost('hero_type');
   }
   if ($hero_type == 'false' || $hero_type == NULL)  {
     $hero = false;
@@ -27,7 +27,7 @@
     $extended = '';
     $extended = get_post_meta($post->ID, $cf_.'hero_image_extended', true);
     $scroll_hint = '';
-    $hero_overlay = carbon_get_the_post_meta('hero_overlay');
+    $hero_overlay = \App\Fields\Store::thePost('hero_overlay');
     $overlay_class = ($hero_overlay === 'off') ? '' : 'u-overlay--dark';
     if ($hero_type == 'full_overlay') {
       array_push($hero_image,  get_post_meta($post->ID, $cf_.'hero_image', true));
