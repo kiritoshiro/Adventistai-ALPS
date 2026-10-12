@@ -200,11 +200,13 @@ final class Adv_Search {
 		$css     = get_template_directory() . '/assets/css/adv-search.css';
 		$js      = get_template_directory() . '/assets/js/adv-search.js';
 		// The stylesheet is small and needed on every page (the search lives in
-		// the header), so print it inline rather than as a render-blocking file.
+		// the header), so print it inline rather than as a render-blocking file
+		// (its minified copy, see App\embedded_css()).
 		wp_register_style( 'adv-search', false, array( 'adventistai-overrides' ), is_readable( $css ) ? (string) filemtime( $css ) : '1' );
 		wp_enqueue_style( 'adv-search' );
-		if ( is_readable( $css ) ) {
-			wp_add_inline_style( 'adv-search', (string) file_get_contents( $css ) );
+		$styles = function_exists( 'App\embedded_css' ) ? \App\embedded_css( $css ) : ( is_readable( $css ) ? (string) file_get_contents( $css ) : '' );
+		if ( '' !== $styles ) {
+			wp_add_inline_style( 'adv-search', $styles );
 		}
 		wp_add_inline_style( 'adv-search', ':root{--adv-search-highlight:' . esc_attr( $options['highlight_color'] ) . ';}' );
 		if ( ! empty( $options['live_enabled'] ) ) {

@@ -40,6 +40,7 @@ function is_admin() { return false; }
 function add_action() {}
 function add_filter() {}
 function wp_delete_file($file) { unlink($file); }
+function wp_mkdir_p($dir) { return is_dir($dir) || mkdir($dir, 0777, true); }
 
 class Styles
 {
@@ -75,10 +76,53 @@ style('big', 'https://example.test/wp-content/themes/t/big.css');
 style('print', 'https://example.test/wp-content/plugins/small/a.css', 'print');
 style('remote', 'https://fonts.example.org/x.css');
 InlineStyles::markSmallStyles();
-check('a small local stylesheet gets path data (WordPress then inlines it)', $real('wp-content/plugins/small/a.css') === wp_styles()->get_data('small', 'path'));
+$copy = wp_styles()->get_data('small', 'path');
+check('a small local stylesheet gets path data: a minified copy in wp-content/cache/adventistai/css', is_string($copy) && 0 === strpos($copy, WP_CONTENT_DIR . '/cache/adventistai/css/') && is_file($copy));
 check('a stylesheet over 26 KB stays a link', false === wp_styles()->get_data('big', 'path'));
 check('print-only and remote stylesheets stay links', false === wp_styles()->get_data('print', 'path') && false === wp_styles()->get_data('remote', 'path'));
 check('the inline total is raised to 150 KB', 150000 === InlineStyles::limit(20000));
+
+// Minified copies of plugin stylesheets.
+$plugin = ABSPATH . 'wp-content/plugins/small/readable.css';
+file_put_contents($plugin, "/* Banner */\n.banner {\n    color: red;   /* brand */\n}\n");
+$first = InlineStyles::minifiedPath($plugin);
+check('a readable stylesheet is inlined from its minified copy', is_file($first) && '.banner{color:red;}' === file_get_contents($first));
+check('the copy is reused while the source is unchanged', $first === InlineStyles::minifiedPath($plugin));
+file_put_contents($plugin, ".banner { color: blue; }\n.x { }\n");
+touch($plugin, time() + 60);
+clearstatcache();
+$second = InlineStyles::minifiedPath($plugin);
+check('a changed source gets a new copy and the old one is removed', $second !== $first && ! is_file($first) && '.banner{color:blue;}.x{}' === file_get_contents($second));
+$min = ABSPATH . 'wp-includes/css/core.min.css';
+file_put_contents($min, 'c { }');
+check('*.min.css files are inlined as they are', $min === InlineStyles::minifiedPath($min));
+
+$cases = [
+    'comments and indentation go' => ["a {\n  color: red; /* note */\n}\n", 'a{color:red;}'],
+    'selector whitespace collapses; combinators keep a space' => ['.a   .b , .c >  .d  {x:y}', '.a .b,.c > .d{x:y}'],
+    'a comment between two names stays as an empty comment' => ['a/* x */b{}', 'a/**/b{}'],
+    'a comment before a class just goes' => ['.x/* c */.y{}', '.x.y{}'],
+    'strings are untouched' => ['a{content:" a  /* b */ ; "}', 'a{content:" a  /* b */ ; "}'],
+    'escaped quotes stay inside the string' => ["a{content:'it\\'s  ok'}", "a{content:'it\\'s  ok'}"],
+    'an empty custom property keeps its space' => ['*{--tw-pan-x: ;--tw-pan-y: }', '*{--tw-pan-x: ;--tw-pan-y: }'],
+    'calc() keeps the spaces around + and -' => ['a{width: calc( 100% - 2 * 1rem )}', 'a{width:calc( 100% - 2 * 1rem )}'],
+    'a hex escape keeps the space that ends it' => ['.\\31 0  .a{}', '.\\31 0 .a{}'],
+    'a hex escape followed by a descendant keeps both spaces' => ['.\\31  .a{}', '.\\31  .a{}'],
+    'an escaped space is not whitespace' => ['.a\\ b {}', '.a\\ b{}'],
+    'unquoted url() is copied as it is' => ['a{background:url( img/a b.png ) no-repeat}', 'a{background:url( img/a b.png ) no-repeat}'],
+    'url() with a comment-like path is untouched' => ['a{b:url(x/*y*/z.png)}', 'a{b:url(x/*y*/z.png)}'],
+    'media queries keep "and ("' => ["@media screen and (min-width: 600px) {\n a { b: c }\n}", '@media screen and (min-width:600px){a{b:c}}'],
+    '!important keeps its space' => ['a{color: red !important ;}', 'a{color:red !important;}'],
+    'an unclosed comment runs to the end' => ['a{}/* unfinished', 'a{}'],
+    'pseudo-classes after a descendant space survive' => ['.a :hover{}', '.a :hover{}'],
+];
+foreach ($cases as $label => [$in, $expected]) {
+    $got = InlineStyles::minify($in);
+    check('minify: ' . $label, $expected === $got);
+    if ($expected !== $got) {
+        echo "    expected " . json_encode($expected) . "\n    got      " . json_encode($got) . "\n";
+    }
+}
 
 check('Acorn storage defaults to wp-content/cache/acorn', WP_CONTENT_DIR . '/cache/acorn' === ThemeCache::storagePath());
 check('clearing removes the compiled views', 2 === ThemeCache::clear() && ! glob(WP_CONTENT_DIR . '/cache/acorn/framework/views/*.php'));

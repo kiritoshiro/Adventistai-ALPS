@@ -12,6 +12,9 @@ const assets = [
   ['assets/css/site-overrides.css', 'assets/css/site-overrides.min.css'],
   ['assets/css/card-scroller.css', 'assets/css/card-scroller.min.css'],
   ['assets/css/page-hero.css', 'assets/css/page-hero.min.css'],
+  ['assets/css/responsive-zoom-fixes.css', 'assets/css/responsive-zoom-fixes.min.css'],
+  ['assets/css/sabbath-timer.css', 'assets/css/sabbath-timer.min.css'],
+  ['assets/css/adv-search.css', 'assets/css/adv-search.min.css'],
   ['assets/js/sabbath-timer.js', 'assets/js/sabbath-timer.min.js'],
   ['assets/js/slider-images.js', 'assets/js/slider-images.min.js'],
 ];

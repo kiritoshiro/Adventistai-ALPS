@@ -31,6 +31,12 @@ class InlineStyles
     /** Total inlined per page, in bytes (WordPress' default is 20000). */
     const LIMIT = 150000;
 
+    /** Change when minify() changes, so cached copies are rebuilt. */
+    const MINIFY_VERSION = '1';
+
+    /** Where minified copies of plugin stylesheets are kept (under WP_CONTENT_DIR). */
+    const CACHE_DIR = '/cache/adventistai/css';
+
     public static function register()
     {
         if (is_admin()) {
@@ -116,8 +122,161 @@ class InlineStyles
             $path = self::localPath($style->src);
             $size = '' !== $path ? (int) filesize($path) : 0;
             if ($size > 0 && $size <= self::MAX_FILE) {
-                wp_style_add_data($handle, 'path', $path);
+                wp_style_add_data($handle, 'path', self::minifiedPath($path));
             }
         }
+    }
+
+    /**
+     * The file WordPress should inline for a local stylesheet: a minified copy
+     * in wp-content/cache/adventistai/css/, or the stylesheet itself when it is
+     * already minified (*.min.css), under SCRIPT_DEBUG, or when the copy can't
+     * be written. Plugins ship readable CSS (the cookie banner, the calendar's
+     * lightbox and tooltips, ...), and every comment and indent was printed
+     * into each page. WordPress reads the CSS from 'path' but rewrites relative
+     * url()s against the registered src, so they still resolve. A copy is named
+     * after the source's path, mtime and size, so a plugin update makes a new
+     * one and the old copy is removed.
+     *
+     * @param string $path Absolute path of a local stylesheet.
+     * @return string
+     */
+    public static function minifiedPath($path)
+    {
+        if ('.min.css' === substr($path, -8) || (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG)) {
+            return $path;
+        }
+        $dir = WP_CONTENT_DIR . self::CACHE_DIR;
+        $prefix = md5($path);
+        $copy = sprintf('%s/%s-%s.css', $dir, $prefix, substr(md5(filemtime($path) . ':' . filesize($path) . ':' . self::MINIFY_VERSION), 0, 12));
+        if (is_file($copy)) {
+            return $copy;
+        }
+        $css = file_get_contents($path);
+        if (! is_string($css) || ! wp_mkdir_p($dir) || ! is_writable($dir)) {
+            return $path;
+        }
+        // Written beside the final name and renamed, so a page never reads a
+        // half-written copy.
+        $tmp = $copy . '.' . uniqid('', true) . '.tmp';
+        if (false === file_put_contents($tmp, self::minify($css)) || ! rename($tmp, $copy)) {
+            if (is_file($tmp)) {
+                wp_delete_file($tmp);
+            }
+            return $path;
+        }
+        foreach ((array) glob($dir . '/' . $prefix . '-*.css') as $old) {
+            if ($old !== $copy) {
+                wp_delete_file($old);
+            }
+        }
+        return $copy;
+    }
+
+    /**
+     * Removes comments and redundant whitespace from a stylesheet, and nothing
+     * else. Strings, unquoted url(...) and backslash escapes are copied as they
+     * are. A run of whitespace becomes one space, dropped only next to { } ; ,
+     * or after a colon (but `--tw-pan-x: ;`, an empty custom property, keeps
+     * its space). A comment between two name characters is kept as an empty
+     * comment, so a name, a comment and another name don't merge into one.
+     *
+     * @param string $css Stylesheet.
+     * @return string
+     */
+    public static function minify($css)
+    {
+        $css = (string) $css;
+        $len = strlen($css);
+        $out = '';
+        $space = false;
+        $name = static function ($char) {
+            return '' !== $char && (ctype_alnum($char) || false !== strpos('-_\\%', $char) || ord($char) > 127);
+        };
+
+        for ($i = 0; $i < $len;) {
+            $c = $css[$i];
+
+            if ('/' === $c && '*' === ($css[$i + 1] ?? '')) {
+                $end = strpos($css, '*/', $i + 2);
+                if (false === $end) {
+                    break; // An unclosed comment runs to the end of the file.
+                }
+                $i = $end + 2;
+                if (! $space && $name(substr($out, -1)) && $name($css[$i] ?? '')) {
+                    $out .= '/**/';
+                }
+                continue;
+            }
+
+            if (ctype_space($c)) {
+                $space = true;
+                $i++;
+                continue;
+            }
+
+            if ($space) {
+                $prev = substr($out, -1);
+                $keep = '' !== $out && false === strpos('{};,', $prev) && false === strpos('{};,', $c);
+                if (':' === $prev) {
+                    $keep = ';' === $c || '}' === $c;
+                }
+                if ($keep) {
+                    $out .= ' ';
+                }
+                $space = false;
+            }
+
+            if ('"' === $c || "'" === $c) {
+                $j = $i + 1;
+                while ($j < $len && $css[$j] !== $c && "\n" !== $css[$j]) {
+                    $j += '\\' === $css[$j] ? 2 : 1;
+                }
+                $j = min($j, $len);
+                $stop = ($j < $len && $css[$j] === $c) ? $j + 1 : $j;
+                $out .= substr($css, $i, $stop - $i);
+                $i = $stop;
+                continue;
+            }
+
+            if ('\\' === $c) {
+                $j = $i + 1;
+                if ($j < $len && ctype_xdigit($css[$j])) {
+                    while ($j < $len && $j < $i + 7 && ctype_xdigit($css[$j])) {
+                        $j++;
+                    }
+                    // One whitespace character after a hex escape belongs to it.
+                    if ($j < $len && ctype_space($css[$j])) {
+                        $j += ("\r" === $css[$j] && "\n" === ($css[$j + 1] ?? '')) ? 2 : 1;
+                    }
+                } else {
+                    $j = min($j + 1, $len);
+                }
+                $out .= substr($css, $i, $j - $i);
+                $i = $j;
+                continue;
+            }
+
+            if (('u' === $c || 'U' === $c) && 0 === strncasecmp(substr($css, $i, 4), 'url(', 4) && ! $name(substr($out, -1))) {
+                $j = $i + 4;
+                while ($j < $len && ctype_space($css[$j])) {
+                    $j++;
+                }
+                if ($j < $len && '"' !== $css[$j] && "'" !== $css[$j]) {
+                    while ($j < $len && ')' !== $css[$j]) {
+                        $j += '\\' === $css[$j] ? 2 : 1;
+                    }
+                    $j = min($j + 1, $len);
+                    $out .= substr($css, $i, $j - $i);
+                    $i = $j;
+                    continue;
+                }
+            }
+
+            $out .= $c;
+            $i++;
+        }
+
+        return $out;
     }
 }
