@@ -14,8 +14,8 @@ class LatestPostSlider
 
     /**
      * True only for the first slider section rendered on the page. Its first
-     * row of sliders (one per column) can be near the top, so their first
-     * slide images load at once; every other slide image loads lazily.
+     * row of sliders (one per column) can be near the top on wide screens, so
+     * the largest of their first slide images is preloaded there.
      */
     public static function claimEagerSection(): bool
     {
@@ -137,6 +137,78 @@ class LatestPostSlider
             // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- priorityPreload() escapes every attribute value.
             echo self::$headPreload . "\n";
             self::$headPreload = '';
+        }
+    }
+
+    /** Whether a slide image was deferred, so the page needs deferScript(). */
+    private static bool $deferred = false;
+
+    /** A 1x1 transparent GIF: a hidden slide shows nothing, not its alt text. */
+    public const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+    /**
+     * A hidden slide's image without its address: the files move to
+     * data-alps-src / data-alps-srcset, which deferScript() restores once the
+     * slide is next in line. Hidden slides are laid out (they fade in place),
+     * so loading="lazy" alone fetched every slide of a slider near the top:
+     * about 0.6 MB on the front page before anything was shown.
+     */
+    public static function deferImage(string $html): string
+    {
+        $deferred = (string) preg_replace_callback('/<(img|source)\b[^>]*>/i', static function (array $tag): string {
+            $out = (string) preg_replace('/(\s)(src|srcset)\s*=\s*"/i', '$1data-alps-$2="', $tag[0]);
+            if (0 === strcasecmp($tag[1], 'img')) {
+                $out = (string) preg_replace('/^<img\b/i', '<img src="' . self::BLANK . '"', $out);
+            }
+            return $out;
+        }, $html);
+        if ($deferred !== $html) {
+            self::$deferred = true;
+        }
+        return $deferred;
+    }
+
+    /**
+     * Restores deferred slide images: the active slide and its neighbours,
+     * once the slider is within 600px of the screen and again whenever the
+     * active slide changes there (dots, arrows, swipes, autoplay).
+     */
+    public static function deferScript(): string
+    {
+        return <<<'JS'
+(() => {
+  const load = (slide) => {
+    slide?.querySelectorAll('[data-alps-src], [data-alps-srcset]').forEach((el) => {
+      if (el.dataset.alpsSrcset) { el.srcset = el.dataset.alpsSrcset; delete el.dataset.alpsSrcset; }
+      if (el.dataset.alpsSrc) { el.src = el.dataset.alpsSrc; delete el.dataset.alpsSrc; }
+    });
+  };
+  document.querySelectorAll('[data-alps-latest-slider]').forEach((slider) => {
+    const slides = Array.from(slider.querySelectorAll('[data-alps-slider-slide]'));
+    let near = false;
+    const update = () => {
+      if (!near) return;
+      const i = slides.findIndex((slide) => slide.classList.contains('is-active'));
+      if (i < 0) return;
+      [i, i + 1, i - 1].forEach((n) => load(slides[(n + slides.length) % slides.length]));
+    };
+    new MutationObserver(update).observe(slider, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    if (!('IntersectionObserver' in window)) { near = true; update(); return; }
+    new IntersectionObserver((entries) => {
+      near = entries.some((entry) => entry.isIntersecting);
+      update();
+    }, { rootMargin: '600px 0px' }).observe(slider);
+  });
+})();
+JS;
+    }
+
+    /** Print deferScript() in the footer when a slide image was deferred. */
+    public static function printDeferScript(): void
+    {
+        if (self::$deferred) {
+            wp_print_inline_script_tag(self::deferScript());
+            self::$deferred = false;
         }
     }
 

@@ -3,6 +3,12 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.32.6]
+### Changed
+- Latest Post Slider: hidden slides no longer download their image with the page. Slides fade in place, so `loading="lazy"` still fetched every slide of a slider near the first screen (about 0.6 MB on the front page before anything was shown, which Lighthouse's slow-4G simulation counted towards the mobile LCP). Their `src`/`srcset` move to `data-alps-src`/`data-alps-srcset` (`LatestPostSlider::deferImage()`), with a 1×1 transparent placeholder. A 1 KB inline footer script restores the active slide and its two neighbours once the slider is within 600px of the screen, and again on every slide change (arrows, dots, swipes, autoplay).
+- Latest Post Slider: no slide image is `loading="eager"` any more. The first row's largest first image was eager on every screen, although on phones the slider sits below the first screen; wide screens still fetch it early through the existing `(min-width: 1001px)` preload in `<head>`.
+- Sidebar images (`dynamic_sidebar()`: image widgets and images in block widgets) are always `loading="lazy"` and never `fetchpriority="high"` (`App\SidebarImages`). WordPress counted them as above the fold because the sidebar is printed before the article ends, but on phones it comes after the whole article.
+
 ## [3.32.5]
 ### Changed
 - The Source Serif ("Noto Serif", 56 KB) preload carries `media="(min-width: 501px)"`: the primary navigation that uses it shows from 501px, and on phones it competed with the main stylesheet and Noto Sans for bandwidth before the first paint.
