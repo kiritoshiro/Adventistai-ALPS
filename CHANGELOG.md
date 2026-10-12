@@ -3,6 +3,10 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.32.9]
+### Changed
+- Smaller pages: the stylesheets printed inside each page are minified. The theme's responsive zoom fixes (7.1 → 3.3 KB), Sabbath timer styles (6.2 → 5.1 KB, front page) and search styles (5.2 → 4.4 KB) are embedded from minified copies (`scripts/minify-assets.mjs`; the readable files under `SCRIPT_DEBUG`). Plugin stylesheets the theme embeds (cookie banner, calendar lightbox and tooltips, book showcase, YouTube player, …) are embedded from minified copies kept in `wp-content/cache/adventistai/css/`. Only comments and extra whitespace are removed; the theme's Clear cache also removes these copies. On the homepage this is about 5 KB less compressed HTML.
+
 ## [3.32.8]
 ### Fixed
 - Pages cached before a theme update no longer lose their scripts. Each build gives the theme's scripts and styles new file names and used to delete the old files, but Cloudflare keeps cached pages (the homepage for hours) that still point to them. After 3.32.7 the cached homepage requested `app.f500e6.js`, got a 404 page instead of JavaScript, and its sliders stopped working. `scripts/build.mjs` now keeps the files of the last five different committed builds in `public/`, listed in `public/previous-assets.json`. This release restores the files from 3.32.0–3.32.6. Purging the Cloudflare cache after an update is still the way to show the new version at once.
