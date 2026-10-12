@@ -92,7 +92,19 @@ file_put_contents($plugin, ".banner { color: blue; }\n.x { }\n");
 touch($plugin, time() + 60);
 clearstatcache();
 $second = InlineStyles::minifiedPath($plugin);
-check('a changed source gets a new copy and the old one is removed', $second !== $first && ! is_file($first) && '.banner{color:blue;}.x{}' === file_get_contents($second));
+check('a changed source gets a new copy; a fresh old copy stays (a request may be reading it)', $second !== $first && is_file($first) && '.banner{color:blue;}.x{}' === file_get_contents($second));
+file_put_contents($plugin, ".banner { color: green; }\n");
+touch($plugin, time() + 120);
+touch($first, time() - 7200);
+touch($second, time() - 7200);
+clearstatcache();
+$third = InlineStyles::minifiedPath($plugin);
+check('copies over an hour old are removed when a new one is written', ! is_file($first) && ! is_file($second) && is_file($third));
+function get_template_directory() { return ABSPATH . 'wp-content/themes/t'; }
+@mkdir(ABSPATH . 'wp-content/themes/t/public/css', 0777, true);
+$built = ABSPATH . 'wp-content/themes/t/public/css/app.abc123.css';
+file_put_contents($built, 'a{b:c}');
+check("the theme's own build output (public/) is inlined as it is", realpath($built) === InlineStyles::minifiedPath(realpath($built)));
 $min = ABSPATH . 'wp-includes/css/core.min.css';
 file_put_contents($min, 'c { }');
 check('*.min.css files are inlined as they are', $min === InlineStyles::minifiedPath($min));
@@ -127,6 +139,7 @@ foreach ($cases as $label => [$in, $expected]) {
 check('Acorn storage defaults to wp-content/cache/acorn', WP_CONTENT_DIR . '/cache/acorn' === ThemeCache::storagePath());
 check('clearing removes the compiled views', 2 === ThemeCache::clear() && ! glob(WP_CONTENT_DIR . '/cache/acorn/framework/views/*.php'));
 check('Acorn\'s services manifest is kept', is_file(WP_CONTENT_DIR . '/cache/acorn/framework/cache/services.php'));
+check('clearing also removes the minified stylesheet copies', ! glob(WP_CONTENT_DIR . '/cache/adventistai/css/*.css'));
 
 echo $failures ? "$failures check(s) failed\n" : "All checks passed\n";
 exit($failures ? 1 : 0);

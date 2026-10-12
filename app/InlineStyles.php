@@ -131,12 +131,14 @@ class InlineStyles
      * The file WordPress should inline for a local stylesheet: a minified copy
      * in wp-content/cache/adventistai/css/, or the stylesheet itself when it is
      * already minified (*.min.css), under SCRIPT_DEBUG, or when the copy can't
-     * be written. Plugins ship readable CSS (the cookie banner, the calendar's
-     * lightbox and tooltips, ...), and every comment and indent was printed
-     * into each page. WordPress reads the CSS from 'path' but rewrites relative
-     * url()s against the registered src, so they still resolve. A copy is named
-     * after the source's path, mtime and size, so a plugin update makes a new
-     * one and the old copy is removed.
+     * be written; the theme's own build output (public/) is minified already.
+     * Plugins ship readable CSS (the cookie banner, the calendar's lightbox and
+     * tooltips, ...), and every comment and indent was printed into each page.
+     * WordPress reads the CSS from 'path' but rewrites relative url()s against
+     * the registered src, so they still resolve. A copy is named after the
+     * source's path, mtime and size, so a plugin update makes a new one; older
+     * copies are removed once they are an hour old (a request that picked one
+     * just before may still read it). ThemeCache::clear() removes all copies.
      *
      * @param string $path Absolute path of a local stylesheet.
      * @return string
@@ -144,6 +146,10 @@ class InlineStyles
     public static function minifiedPath($path)
     {
         if ('.min.css' === substr($path, -8) || (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG)) {
+            return $path;
+        }
+        $built = function_exists('get_template_directory') ? realpath(get_template_directory() . '/public') : false;
+        if ($built && 0 === strpos($path, $built . DIRECTORY_SEPARATOR)) {
             return $path;
         }
         $dir = WP_CONTENT_DIR . self::CACHE_DIR;
@@ -166,7 +172,7 @@ class InlineStyles
             return $path;
         }
         foreach ((array) glob($dir . '/' . $prefix . '-*.css') as $old) {
-            if ($old !== $copy) {
+            if ($old !== $copy && filemtime($old) < time() - 3600) {
                 wp_delete_file($old);
             }
         }
