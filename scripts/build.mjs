@@ -2,12 +2,14 @@
 // enqueue: resources/scripts/{app,editor}.js with esbuild and
 // resources/styles/{app,editor}.css with lightningcss, into content-hashed
 // files under public/js and public/css, plus public/manifest.json and
-// public/entrypoints.json in the format bud wrote.
+// public/entrypoints.json in the format bud wrote. Files from the previous
+// builds stay for a while (see previous-assets.json below).
 //
 // public/ is committed and shipped as-is; CI runs this and fails when the
 // result differs from the committed files.
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import browserslist from 'browserslist';
@@ -142,13 +144,62 @@ for (const name of entries) {
 }
 manifest['entrypoints.json'] = 'entrypoints.json';
 
-// Only this script writes public/js and public/css; clear old hashes.
+// Pages cached before a theme update (Cloudflare keeps the homepage for
+// hours) still request the previous hashed files, and a 404 there means no
+// slider script. Keep the files of the last KEEP_GENERATIONS builds, newest
+// first in public/previous-assets.json, so those pages work until their
+// cache expires. A rebuild without source changes leaves the list as it is.
+//
+// The previous build is read from the last commit (git HEAD), not the
+// working tree, so rebuilding several times before committing doesn't count
+// each attempt as a generation and push the released files out. Without
+// git (e.g. a copy without .git) the files in public/ are used.
+const KEEP_GENERATIONS = 5;
+const previousList = 'previous-assets.json';
+const committedFile = (path) => {
+  try {
+    return execFileSync('git', ['show', `HEAD:public/${path}`], { cwd: root, stdio: ['ignore', 'pipe', 'ignore'] });
+  } catch {
+    return existsSync(resolve(publicDir, path)) ? readFileSync(resolve(publicDir, path)) : null;
+  }
+};
+const committedJson = (path, fallback) => {
+  try {
+    return JSON.parse(committedFile(path).toString('utf8'));
+  } catch {
+    return fallback;
+  }
+};
+const assetFiles = (map) => Object.entries(map).filter(([key]) => key !== 'entrypoints.json').map(([, file]) => file).sort();
+const current = assetFiles(manifest);
+const committed = assetFiles(committedJson('manifest.json', {}));
+let generations = committedJson(previousList, []);
+if (committed.length && committed.join() !== current.join()) generations.unshift(committed);
+// Kept files come from the commit, so an earlier local build that deleted
+// one from public/ can't lose it.
+const found = new Map();
+generations = generations
+  .map((list) => list.filter((file) => {
+    if (current.includes(file)) return false;
+    if (!found.has(file)) found.set(file, committedFile(file));
+    return Boolean(found.get(file));
+  }))
+  .filter((list) => list.length)
+  .slice(0, KEEP_GENERATIONS);
+const keptContents = new Map(generations.flat().map((file) => [file, found.get(file)]));
+const keep = new Set([...current, ...keptContents.keys()]);
+
+// Only this script writes public/js and public/css.
 for (const dir of ['js', 'css']) {
-  rmSync(resolve(publicDir, dir), { recursive: true, force: true });
   mkdirSync(resolve(publicDir, dir), { recursive: true });
+  for (const name of readdirSync(resolve(publicDir, dir))) {
+    if (!keep.has(`${dir}/${name}`)) rmSync(resolve(publicDir, dir, name), { recursive: true, force: true });
+  }
 }
+for (const [file, contents] of keptContents) writeFileSync(resolve(publicDir, file), contents);
 for (const { file, code } of files) writeFileSync(resolve(publicDir, file), code);
 writeFileSync(resolve(publicDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
 writeFileSync(resolve(publicDir, 'entrypoints.json'), JSON.stringify(entrypoints, null, 2));
+writeFileSync(resolve(publicDir, previousList), JSON.stringify(generations, null, 2));
 
 for (const { file, code } of files) console.log(`public/${file}  ${code.length} B`);
