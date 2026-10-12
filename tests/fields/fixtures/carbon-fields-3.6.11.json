@@ -1,0 +1,4150 @@
+{
+    "carbon_fields": "3.6.11",
+    "wordpress": "7.1.3",
+    "php": "8.4.25",
+    "theme_version": "3.32.9",
+    "containers": [
+        {
+            "id": "carbon_fields_container_alps_theme_settings",
+            "type": "theme_options",
+            "title": "ALPS Theme Settings",
+            "fields": [
+                {
+                    "name": "logo_recolor",
+                    "type": "checkbox",
+                    "default": "true",
+                    "option_value": "true"
+                },
+                {
+                    "name": "is_wide_logo",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "logo",
+                    "type": "image"
+                },
+                {
+                    "name": "logo_inverted",
+                    "type": "image"
+                },
+                {
+                    "name": "theme_color",
+                    "type": "select",
+                    "options": [
+                        "bluejay",
+                        "campfire",
+                        "cave",
+                        "denim",
+                        "earth",
+                        "emperor",
+                        "forest",
+                        "grapevine",
+                        "iris",
+                        "lily",
+                        "ming",
+                        "night",
+                        "scarlett",
+                        "treefrog",
+                        "velvet",
+                        "winter",
+                        "nad-amethyst",
+                        "nad-branch",
+                        "nad-denim",
+                        "nad-miracle",
+                        "nad-nile",
+                        "nad-spark",
+                        "nad-vine"
+                    ]
+                },
+                {
+                    "name": "dark_theme",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "grid_lines",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "square_buttons",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "site_branding_statement",
+                    "type": "textarea",
+                    "default": "Oficiali Septintosios dienos adventistų bažnyčios interneto svetainė."
+                },
+                {
+                    "name": "global_branding_statement",
+                    "type": "textarea",
+                    "default": "Seventh-day Adventists are devoted to helping people understand the Bible to find freedom, healing, and hope in Jesus."
+                },
+                {
+                    "name": "posts_page_title",
+                    "type": "text"
+                },
+                {
+                    "name": "index_hide_sidebar",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "archive_page_title",
+                    "type": "text"
+                },
+                {
+                    "name": "is_related_stories_image_hidden",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "archive_hide_sidebar",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "posts_label",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "posts_grid",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "posts_grid_3up",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "posts_image",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "posts_image_round",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "sabbath_icon",
+                    "type": "image"
+                },
+                {
+                    "name": "sabbath_background",
+                    "type": "image"
+                },
+                {
+                    "name": "sabbath_scroll",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "sabbath_hide",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "sabbath_hide_screens",
+                    "type": "radio",
+                    "options": [
+                        "hide-sabbath--all",
+                        "hide-sabbath--until-small",
+                        "hide-sabbath--until-medium",
+                        "hide-sabbath--until-large"
+                    ],
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": true,
+                                "field": "sabbath_hide"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "footer_description",
+                    "type": "complex",
+                    "max": -1,
+                    "groups": {
+                        "translatable_footer_description": [
+                            {
+                                "name": "footer_description_en",
+                                "type": "text",
+                                "default": "Oficiali Septintosios dienos adventistų bažnyčios interneto svetainė."
+                            },
+                            {
+                                "name": "footer_description_de",
+                                "type": "text",
+                                "default": "Eine offizielle Website der Kirche der Siebenten-Tags-Adventisten."
+                            },
+                            {
+                                "name": "footer_description_fr",
+                                "type": "text",
+                                "default": "Un site officiel de l'Église adventiste du Septième jour."
+                            },
+                            {
+                                "name": "footer_description_pt-pt",
+                                "type": "text",
+                                "default": "Um site oficial da Igreja Adventista do Sétimo Dia."
+                            },
+                            {
+                                "name": "footer_description_es",
+                                "type": "text",
+                                "default": "Sitio web oficial de la Iglesia Adventista del Séptimo Día."
+                            },
+                            {
+                                "name": "footer_description_ko",
+                                "type": "text",
+                                "default": "제칠 일 안식일 예수 재림 교회의 공식 웹 사이트."
+                            },
+                            {
+                                "name": "footer_description_ru",
+                                "type": "text",
+                                "default": "Официальный веб-сайт Церкви адвентистов седьмого дня."
+                            },
+                            {
+                                "name": "footer_description_zh-hant",
+                                "type": "text",
+                                "default": "基督复临安息日会的官方网站。"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "footer_copyright",
+                    "type": "text",
+                    "default": "Seventh-day Adventist Church"
+                },
+                {
+                    "name": "footer_address",
+                    "type": "complex",
+                    "max": 1,
+                    "groups": {
+                        "_": [
+                            {
+                                "name": "footer_address_street",
+                                "type": "text"
+                            },
+                            {
+                                "name": "footer_address_city",
+                                "type": "text"
+                            },
+                            {
+                                "name": "footer_address_state",
+                                "type": "text"
+                            },
+                            {
+                                "name": "footer_address_zip",
+                                "type": "text"
+                            },
+                            {
+                                "name": "footer_address_country",
+                                "type": "text"
+                            },
+                            {
+                                "name": "footer_phone",
+                                "type": "text"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "footer_logo_icon",
+                    "type": "image"
+                },
+                {
+                    "name": "footer_logo_type",
+                    "type": "radio",
+                    "options": [
+                        "square",
+                        "circle"
+                    ]
+                },
+                {
+                    "name": "alps_image_avif_quality",
+                    "type": "text"
+                },
+                {
+                    "name": "alps_image_full_max",
+                    "type": "text"
+                },
+                {
+                    "name": "alps_image_small_max",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "id": "carbon_fields_container_alps_home_-_row_block",
+            "type": "post_meta",
+            "title": "ALPS: Home - Row Block",
+            "post_types": [
+                "page"
+            ],
+            "fields": [
+                {
+                    "name": "grid_two_columns",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "content_block",
+                    "type": "radio",
+                    "default": "false",
+                    "options": [
+                        "false",
+                        "freeform",
+                        "relationship"
+                    ]
+                },
+                {
+                    "name": "content_block_freeform",
+                    "type": "complex",
+                    "max": -1,
+                    "groups": {
+                        "_": [
+                            {
+                                "name": "content_block_freeform_colorpicker",
+                                "type": "color"
+                            },
+                            {
+                                "name": "content_block_freeform_kicker",
+                                "type": "text"
+                            },
+                            {
+                                "name": "content_block_freeform_title",
+                                "type": "text"
+                            },
+                            {
+                                "name": "content_block_freeform_image",
+                                "type": "image"
+                            },
+                            {
+                                "name": "content_block_freeform_round",
+                                "type": "checkbox",
+                                "default": false,
+                                "option_value": "true"
+                            },
+                            {
+                                "name": "content_block_freeform_body",
+                                "type": "rich_text"
+                            },
+                            {
+                                "name": "content_block_freeform_button_text",
+                                "type": "text"
+                            },
+                            {
+                                "name": "content_block_freeform_button_url",
+                                "type": "text"
+                            }
+                        ]
+                    },
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "freeform",
+                                "field": "content_block"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "content_block_relationship",
+                    "type": "association",
+                    "types": [
+                        {
+                            "type": "post",
+                            "post_type": "page"
+                        },
+                        {
+                            "type": "post",
+                            "post_type": "post"
+                        }
+                    ],
+                    "max": -1,
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "relationship",
+                                "field": "content_block"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": "carbon_fields_container_alps_home_-_story_block",
+            "type": "post_meta",
+            "title": "ALPS: Home - Story Block",
+            "post_types": [
+                "page"
+            ],
+            "fields": [
+                {
+                    "name": "sb_title",
+                    "type": "text"
+                },
+                {
+                    "name": "sb_subtitle",
+                    "type": "text"
+                },
+                {
+                    "name": "sb_background_image",
+                    "type": "image"
+                },
+                {
+                    "name": "sb_thumbnail",
+                    "type": "image"
+                },
+                {
+                    "name": "sb_side_image",
+                    "type": "image"
+                },
+                {
+                    "name": "is_video",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "sb_body",
+                    "type": "rich_text"
+                },
+                {
+                    "name": "sb_url",
+                    "type": "text"
+                },
+                {
+                    "name": "sb_cta",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "id": "carbon_fields_container_alps_header_and_page_builder_options",
+            "type": "post_meta",
+            "title": "ALPS: Header and Page Builder Options",
+            "post_types": [
+                "post",
+                "page",
+                "attachment",
+                "revision",
+                "nav_menu_item",
+                "custom_css",
+                "customize_changeset",
+                "oembed_cache",
+                "user_request",
+                "wp_block",
+                "wp_template",
+                "wp_template_part",
+                "wp_global_styles",
+                "wp_navigation",
+                "wp_font_family",
+                "wp_font_face"
+            ],
+            "fields": [
+                {
+                    "name": "remove_header",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "featured_image_hero_layout",
+                    "type": "radio",
+                    "default": false,
+                    "options": [
+                        "false",
+                        "header-block-featured",
+                        "page-header"
+                    ]
+                },
+                {
+                    "name": "remove_spacing",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "head_type",
+                    "type": "select",
+                    "options": [
+                        "default",
+                        "remove",
+                        "overlay_gradient",
+                        "overlay"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "carbon_fields_container_alps_header_banner",
+            "type": "post_meta",
+            "title": "ALPS: Header Banner",
+            "post_types": [
+                "post",
+                "page",
+                "attachment",
+                "revision",
+                "nav_menu_item",
+                "custom_css",
+                "customize_changeset",
+                "oembed_cache",
+                "user_request",
+                "wp_block",
+                "wp_template",
+                "wp_template_part",
+                "wp_global_styles",
+                "wp_navigation",
+                "wp_font_family",
+                "wp_font_face"
+            ],
+            "fields": [
+                {
+                    "name": "kicker",
+                    "type": "text"
+                },
+                {
+                    "name": "display_title",
+                    "type": "text"
+                },
+                {
+                    "name": "long_header_subtitle",
+                    "type": "text"
+                },
+                {
+                    "name": "page_sub_title",
+                    "type": "text"
+                },
+                {
+                    "name": "header_background_image",
+                    "type": "image"
+                }
+            ]
+        },
+        {
+            "id": "carbon_fields_container_alps_hero",
+            "type": "post_meta",
+            "title": "ALPS: Hero",
+            "post_types": [
+                "post",
+                "page",
+                "attachment",
+                "revision",
+                "nav_menu_item",
+                "custom_css",
+                "customize_changeset",
+                "oembed_cache",
+                "user_request",
+                "wp_block",
+                "wp_template",
+                "wp_template_part",
+                "wp_global_styles",
+                "wp_navigation",
+                "wp_font_family",
+                "wp_font_face"
+            ],
+            "fields": [
+                {
+                    "name": "hero_type",
+                    "type": "radio",
+                    "options": [
+                        "false",
+                        "default",
+                        "full",
+                        "full_without_gradient",
+                        "full_overlay",
+                        "column",
+                        "carousel",
+                        "carousel_without_text_overlay"
+                    ]
+                },
+                {
+                    "name": "hero_overlay",
+                    "type": "radio",
+                    "default": "on",
+                    "options": [
+                        "on",
+                        "off"
+                    ]
+                },
+                {
+                    "name": "hero_image",
+                    "type": "image",
+                    "conditional_logic": {
+                        "relation": "OR",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "default",
+                                "field": "hero_type"
+                            },
+                            {
+                                "compare": "=",
+                                "value": "full",
+                                "field": "hero_type"
+                            },
+                            {
+                                "compare": "=",
+                                "value": "full_without_gradient",
+                                "field": "hero_type"
+                            },
+                            {
+                                "compare": "=",
+                                "value": "full_overlay",
+                                "field": "hero_type"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "hero_title",
+                    "type": "textarea",
+                    "conditional_logic": {
+                        "relation": "OR",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "default",
+                                "field": "hero_type"
+                            },
+                            {
+                                "compare": "=",
+                                "value": "full",
+                                "field": "hero_type"
+                            },
+                            {
+                                "compare": "=",
+                                "value": "full_overlay",
+                                "field": "hero_type"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "hero_kicker",
+                    "type": "text",
+                    "conditional_logic": {
+                        "relation": "OR",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "default",
+                                "field": "hero_type"
+                            },
+                            {
+                                "compare": "=",
+                                "value": "full",
+                                "field": "hero_type"
+                            },
+                            {
+                                "compare": "=",
+                                "value": "full_overlay",
+                                "field": "hero_type"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "hero_link_url",
+                    "type": "text",
+                    "conditional_logic": {
+                        "relation": "OR",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "default",
+                                "field": "hero_type"
+                            },
+                            {
+                                "compare": "=",
+                                "value": "full",
+                                "field": "hero_type"
+                            },
+                            {
+                                "compare": "=",
+                                "value": "full_overlay",
+                                "field": "hero_type"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "hero_link_button",
+                    "type": "text",
+                    "conditional_logic": {
+                        "relation": "OR",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "full",
+                                "field": "hero_type"
+                            },
+                            {
+                                "compare": "=",
+                                "value": "full_overlay",
+                                "field": "hero_type"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "hero_image_extended",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true",
+                    "conditional_logic": {
+                        "relation": "OR",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "default",
+                                "field": "hero_type"
+                            },
+                            {
+                                "compare": "=",
+                                "value": "full",
+                                "field": "hero_type"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "hero_scroll_hint",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true",
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "full",
+                                "field": "hero_type"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "hero_column",
+                    "type": "complex",
+                    "max": 3,
+                    "groups": {
+                        "_": [
+                            {
+                                "name": "hero_image_column",
+                                "type": "image"
+                            },
+                            {
+                                "name": "hero_title_column",
+                                "type": "textarea"
+                            },
+                            {
+                                "name": "hero_kicker_column",
+                                "type": "text"
+                            },
+                            {
+                                "name": "hero_link_url",
+                                "type": "text"
+                            }
+                        ]
+                    },
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "column",
+                                "field": "hero_type"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "hero_carousel",
+                    "type": "complex",
+                    "max": 9,
+                    "groups": {
+                        "_": [
+                            {
+                                "name": "slide_image",
+                                "type": "image"
+                            },
+                            {
+                                "name": "slide_heading",
+                                "type": "text"
+                            },
+                            {
+                                "name": "slide_dek",
+                                "type": "textarea"
+                            },
+                            {
+                                "name": "slide_url",
+                                "type": "text"
+                            },
+                            {
+                                "name": "slide_cta",
+                                "type": "text"
+                            }
+                        ]
+                    },
+                    "conditional_logic": {
+                        "relation": "OR",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "carousel",
+                                "field": "hero_type"
+                            },
+                            {
+                                "compare": "=",
+                                "value": "carousel_without_text_overlay",
+                                "field": "hero_type"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": "carbon_fields_container_alps_entry_sidebar_featured_image",
+            "type": "post_meta",
+            "title": "ALPS: Entry Sidebar / Featured Image",
+            "post_types": [
+                "post",
+                "page",
+                "attachment",
+                "revision",
+                "nav_menu_item",
+                "custom_css",
+                "customize_changeset",
+                "oembed_cache",
+                "user_request",
+                "wp_block",
+                "wp_template",
+                "wp_template_part",
+                "wp_global_styles",
+                "wp_navigation",
+                "wp_font_family",
+                "wp_font_face"
+            ],
+            "fields": [
+                {
+                    "name": "hide_sidebar",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "hide_featured_image",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                }
+            ]
+        },
+        {
+            "id": "carbon_fields_container_alps_related_pages_posts",
+            "type": "post_meta",
+            "title": "ALPS: Related Pages & Posts",
+            "post_types": [
+                "page"
+            ],
+            "fields": [
+                {
+                    "name": "related",
+                    "type": "radio",
+                    "options": [
+                        "false",
+                        "related_top_level",
+                        "related_all",
+                        "related_custom"
+                    ]
+                },
+                {
+                    "name": "related_custom_value",
+                    "type": "association",
+                    "types": [
+                        {
+                            "type": "post",
+                            "post_type": "page"
+                        },
+                        {
+                            "type": "post",
+                            "post_type": "post"
+                        }
+                    ],
+                    "max": -1,
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "related_custom",
+                                "field": "related"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "related_grid",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "related_grid_3up",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true",
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": true,
+                                "field": "related_grid"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "related_image",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "related_image_crop",
+                    "type": "radio",
+                    "default": "square",
+                    "options": [
+                        "square",
+                        "landscape",
+                        "portrait",
+                        "circle"
+                    ],
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": true,
+                                "field": "related_image"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": "carbon_fields_container_alps_hero_featured_post",
+            "type": "post_meta",
+            "title": "ALPS: Hero Featured Post",
+            "post_types": [
+                "page"
+            ],
+            "fields": [
+                {
+                    "name": "show_hero_featured_post",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "hero_featured_post",
+                    "type": "association",
+                    "types": [
+                        {
+                            "type": "post",
+                            "post_type": "post"
+                        }
+                    ],
+                    "max": 1,
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": true,
+                                "field": "show_hero_featured_post"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": "carbon_fields_container_alps_post_feed_list",
+            "type": "post_meta",
+            "title": "ALPS: Post Feed List",
+            "post_types": [
+                "page"
+            ],
+            "fields": [
+                {
+                    "name": "post_feed_list",
+                    "type": "radio",
+                    "options": [
+                        "post_feed_list_false",
+                        "post_feed_list_category",
+                        "post_feed_list_custom"
+                    ]
+                },
+                {
+                    "name": "post_feed_list_title",
+                    "type": "text",
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "EXCLUDES",
+                                "value": "post_feed_list_false",
+                                "field": "post_feed_list"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "post_feed_list_link",
+                    "type": "text",
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "EXCLUDES",
+                                "value": "post_feed_list_false",
+                                "field": "post_feed_list"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "post_feed_list_round_image",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true",
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "EXCLUDES",
+                                "value": "post_feed_list_false",
+                                "field": "post_feed_list"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "post_feed_list_category_array",
+                    "type": "association",
+                    "types": [
+                        {
+                            "type": "term",
+                            "taxonomy": "category"
+                        }
+                    ],
+                    "max": 1,
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "post_feed_list_category",
+                                "field": "post_feed_list"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "post_feed_list_count",
+                    "type": "text",
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "post_feed_list_category",
+                                "field": "post_feed_list"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "post_feed_list_offset",
+                    "type": "text",
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "post_feed_list_category",
+                                "field": "post_feed_list"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "post_feed_list_custom_array",
+                    "type": "association",
+                    "types": [
+                        {
+                            "type": "post",
+                            "post_type": "post"
+                        }
+                    ],
+                    "max": -1,
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "post_feed_list_custom",
+                                "field": "post_feed_list"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": "carbon_fields_container_alps_post_feed_-_full_width",
+            "type": "post_meta",
+            "title": "ALPS: Post Feed - Full Width",
+            "post_types": [
+                "page"
+            ],
+            "fields": [
+                {
+                    "name": "post_feed_full",
+                    "type": "radio",
+                    "options": [
+                        "post_feed_full_false",
+                        "post_feed_full_category"
+                    ]
+                },
+                {
+                    "name": "post_feed_full_title",
+                    "type": "text",
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "post_feed_full_category",
+                                "field": "post_feed_full"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "post_feed_full_link",
+                    "type": "text",
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "post_feed_full_category",
+                                "field": "post_feed_full"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "post_feed_full_featured",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "post_feed_full_featured_true",
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "post_feed_full_category",
+                                "field": "post_feed_full"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "post_feed_full_featured_array",
+                    "type": "association",
+                    "types": [
+                        {
+                            "type": "post",
+                            "post_type": "post"
+                        }
+                    ],
+                    "max": 1,
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "post_feed_full_category",
+                                "field": "post_feed_full"
+                            },
+                            {
+                                "compare": "=",
+                                "value": true,
+                                "field": "post_feed_full_featured"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "post_feed_full_offset",
+                    "type": "text",
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "post_feed_list_category",
+                                "field": "post_feed_full"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "post_feed_full_category_array",
+                    "type": "association",
+                    "types": [
+                        {
+                            "type": "term",
+                            "taxonomy": "category"
+                        }
+                    ],
+                    "max": 1,
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "post_feed_full_category",
+                                "field": "post_feed_full"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": "carbon_fields_container_alps_post_feed_archive",
+            "type": "post_meta",
+            "title": "ALPS: Post Feed Archive",
+            "post_types": [
+                "page"
+            ],
+            "fields": [
+                {
+                    "name": "post_feed_archive",
+                    "type": "radio",
+                    "options": [
+                        "post_feed_archive_false",
+                        "post_feed_archive_category"
+                    ]
+                },
+                {
+                    "name": "post_feed_archive_title",
+                    "type": "text",
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "post_feed_archive_category",
+                                "field": "post_feed_archive"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "post_feed_archive_link",
+                    "type": "text",
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "post_feed_archive_category",
+                                "field": "post_feed_archive"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "post_feed_archive_offset",
+                    "type": "text",
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "post_feed_archive_category",
+                                "field": "post_feed_archive"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "post_feed_archive_category_array",
+                    "type": "association",
+                    "types": [
+                        {
+                            "type": "term",
+                            "taxonomy": "category"
+                        }
+                    ],
+                    "max": 1,
+                    "conditional_logic": {
+                        "relation": "AND",
+                        "rules": [
+                            {
+                                "compare": "=",
+                                "value": "post_feed_archive_category",
+                                "field": "post_feed_archive"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ],
+    "options_before": {
+        "_archive_hide_sidebar": {
+            "value": "",
+            "autoload": "auto"
+        },
+        "_archive_page_title": {
+            "value": "",
+            "autoload": "auto"
+        },
+        "_dark_theme": {
+            "value": "false",
+            "autoload": "auto"
+        },
+        "_footer_copyright": {
+            "value": "General Conference of Seventh-day Adventists",
+            "autoload": "auto"
+        },
+        "_footer_description_en": {
+            "value": "An official website of the Seventh-day Adventist Church.",
+            "autoload": "auto"
+        },
+        "_footer_logo_type": {
+            "value": "circle",
+            "autoload": "auto"
+        },
+        "_global_branding_statement": {
+            "value": "Seventh-day Adventists are devoted to helping people understand the Bible to find freedom, healing, and hope in Jesus.",
+            "autoload": "auto"
+        },
+        "_grid_lines": {
+            "value": "",
+            "autoload": "auto"
+        },
+        "_index_hide_sidebar": {
+            "value": "",
+            "autoload": "auto"
+        },
+        "_is_related_stories_image_hidden": {
+            "value": "",
+            "autoload": "auto"
+        },
+        "_posts_grid": {
+            "value": "",
+            "autoload": "auto"
+        },
+        "_posts_grid_3up": {
+            "value": "",
+            "autoload": "auto"
+        },
+        "_posts_image": {
+            "value": "",
+            "autoload": "auto"
+        },
+        "_posts_image_round": {
+            "value": "",
+            "autoload": "auto"
+        },
+        "_posts_label": {
+            "value": "",
+            "autoload": "auto"
+        },
+        "_posts_page_title": {
+            "value": "",
+            "autoload": "auto"
+        },
+        "_project_alps_version": {
+            "value": "alps-remote",
+            "autoload": "auto"
+        },
+        "_sabbath_hide": {
+            "value": "false",
+            "autoload": "auto"
+        },
+        "_sabbath_scroll": {
+            "value": "false",
+            "autoload": "auto"
+        },
+        "_site_branding_statement": {
+            "value": "An official website of the Seventh-day Adventist Church.",
+            "autoload": "auto"
+        },
+        "_square_buttons": {
+            "value": "",
+            "autoload": "auto"
+        },
+        "_theme_color": {
+            "value": "campfire",
+            "autoload": "auto"
+        },
+        "_translate_description": {
+            "value": "An official website of the Seventh-day Adventist Church.",
+            "autoload": "auto"
+        }
+    },
+    "defaults": {
+        "page": {
+            "grid_two_columns": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "content_block": {
+                "carbon_get_post_meta": "false",
+                "get_alps_field": null
+            },
+            "content_block_freeform": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "content_block_relationship": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "sb_title": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "sb_subtitle": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "sb_background_image": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "sb_thumbnail": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "sb_side_image": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "is_video": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "sb_body": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "sb_url": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "sb_cta": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "remove_header": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "featured_image_hero_layout": {
+                "carbon_get_post_meta": "false",
+                "get_alps_field": null
+            },
+            "remove_spacing": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "head_type": {
+                "carbon_get_post_meta": "default",
+                "get_alps_field": null
+            },
+            "kicker": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "display_title": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "long_header_subtitle": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "page_sub_title": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "header_background_image": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "hero_type": {
+                "carbon_get_post_meta": "false",
+                "get_alps_field": null
+            },
+            "hero_overlay": {
+                "carbon_get_post_meta": "on",
+                "get_alps_field": null
+            },
+            "hero_image": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "hero_title": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "hero_kicker": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "hero_link_url": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "hero_link_button": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "hero_image_extended": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "hero_scroll_hint": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "hero_column": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "hero_carousel": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "hide_sidebar": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "hide_featured_image": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "related": {
+                "carbon_get_post_meta": "false",
+                "get_alps_field": null
+            },
+            "related_custom_value": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "related_grid": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "related_grid_3up": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "related_image": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "related_image_crop": {
+                "carbon_get_post_meta": "square",
+                "get_alps_field": null
+            },
+            "show_hero_featured_post": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "hero_featured_post": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "post_feed_list": {
+                "carbon_get_post_meta": "post_feed_list_false",
+                "get_alps_field": null
+            },
+            "post_feed_list_title": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_list_link": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_list_round_image": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "post_feed_list_category_array": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "post_feed_list_count": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_list_offset": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_list_custom_array": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "post_feed_full": {
+                "carbon_get_post_meta": "post_feed_full_false",
+                "get_alps_field": null
+            },
+            "post_feed_full_title": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_full_link": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_full_featured": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "post_feed_full_featured_array": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "post_feed_full_offset": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_full_category_array": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "post_feed_archive": {
+                "carbon_get_post_meta": "post_feed_archive_false",
+                "get_alps_field": null
+            },
+            "post_feed_archive_title": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_archive_link": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_archive_offset": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_archive_category_array": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            }
+        },
+        "post": {
+            "grid_two_columns": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "content_block": {
+                "carbon_get_post_meta": "false",
+                "get_alps_field": null
+            },
+            "content_block_freeform": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "content_block_relationship": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "sb_title": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "sb_subtitle": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "sb_background_image": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "sb_thumbnail": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "sb_side_image": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "is_video": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "sb_body": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "sb_url": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "sb_cta": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "remove_header": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "featured_image_hero_layout": {
+                "carbon_get_post_meta": "false",
+                "get_alps_field": null
+            },
+            "remove_spacing": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "head_type": {
+                "carbon_get_post_meta": "default",
+                "get_alps_field": null
+            },
+            "kicker": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "display_title": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "long_header_subtitle": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "page_sub_title": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "header_background_image": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "hero_type": {
+                "carbon_get_post_meta": "false",
+                "get_alps_field": null
+            },
+            "hero_overlay": {
+                "carbon_get_post_meta": "on",
+                "get_alps_field": null
+            },
+            "hero_image": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "hero_title": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "hero_kicker": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "hero_link_url": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "hero_link_button": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "hero_image_extended": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "hero_scroll_hint": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "hero_column": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "hero_carousel": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "hide_sidebar": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "hide_featured_image": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "related": {
+                "carbon_get_post_meta": "false",
+                "get_alps_field": null
+            },
+            "related_custom_value": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "related_grid": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "related_grid_3up": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "related_image": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "related_image_crop": {
+                "carbon_get_post_meta": "square",
+                "get_alps_field": null
+            },
+            "show_hero_featured_post": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "hero_featured_post": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "post_feed_list": {
+                "carbon_get_post_meta": "post_feed_list_false",
+                "get_alps_field": null
+            },
+            "post_feed_list_title": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_list_link": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_list_round_image": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "post_feed_list_category_array": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "post_feed_list_count": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_list_offset": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_list_custom_array": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "post_feed_full": {
+                "carbon_get_post_meta": "post_feed_full_false",
+                "get_alps_field": null
+            },
+            "post_feed_full_title": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_full_link": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_full_featured": {
+                "carbon_get_post_meta": false,
+                "get_alps_field": false
+            },
+            "post_feed_full_featured_array": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "post_feed_full_offset": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_full_category_array": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            },
+            "post_feed_archive": {
+                "carbon_get_post_meta": "post_feed_archive_false",
+                "get_alps_field": null
+            },
+            "post_feed_archive_title": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_archive_link": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_archive_offset": {
+                "carbon_get_post_meta": "",
+                "get_alps_field": ""
+            },
+            "post_feed_archive_category_array": {
+                "carbon_get_post_meta": [],
+                "get_alps_field": []
+            }
+        },
+        "options": {
+            "logo_recolor": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "is_wide_logo": {
+                "carbon_get_theme_option": false,
+                "get_alps_option": false
+            },
+            "logo": {
+                "carbon_get_theme_option": "",
+                "get_alps_option": ""
+            },
+            "logo_inverted": {
+                "carbon_get_theme_option": "",
+                "get_alps_option": ""
+            },
+            "theme_color": {
+                "carbon_get_theme_option": "campfire",
+                "get_alps_option": "campfire"
+            },
+            "dark_theme": {
+                "carbon_get_theme_option": false,
+                "get_alps_option": false
+            },
+            "grid_lines": {
+                "carbon_get_theme_option": false,
+                "get_alps_option": false
+            },
+            "square_buttons": {
+                "carbon_get_theme_option": false,
+                "get_alps_option": false
+            },
+            "site_branding_statement": {
+                "carbon_get_theme_option": "An official website of the Seventh-day Adventist Church.",
+                "get_alps_option": "An official website of the Seventh-day Adventist Church."
+            },
+            "global_branding_statement": {
+                "carbon_get_theme_option": "Seventh-day Adventists are devoted to helping people understand the Bible to find freedom, healing, and hope in Jesus.",
+                "get_alps_option": "Seventh-day Adventists are devoted to helping people understand the Bible to find freedom, healing, and hope in Jesus."
+            },
+            "posts_page_title": {
+                "carbon_get_theme_option": "",
+                "get_alps_option": ""
+            },
+            "index_hide_sidebar": {
+                "carbon_get_theme_option": false,
+                "get_alps_option": false
+            },
+            "archive_page_title": {
+                "carbon_get_theme_option": "",
+                "get_alps_option": ""
+            },
+            "is_related_stories_image_hidden": {
+                "carbon_get_theme_option": false,
+                "get_alps_option": false
+            },
+            "archive_hide_sidebar": {
+                "carbon_get_theme_option": false,
+                "get_alps_option": false
+            },
+            "posts_label": {
+                "carbon_get_theme_option": false,
+                "get_alps_option": false
+            },
+            "posts_grid": {
+                "carbon_get_theme_option": false,
+                "get_alps_option": false
+            },
+            "posts_grid_3up": {
+                "carbon_get_theme_option": false,
+                "get_alps_option": false
+            },
+            "posts_image": {
+                "carbon_get_theme_option": false,
+                "get_alps_option": false
+            },
+            "posts_image_round": {
+                "carbon_get_theme_option": false,
+                "get_alps_option": false
+            },
+            "sabbath_icon": {
+                "carbon_get_theme_option": "",
+                "get_alps_option": ""
+            },
+            "sabbath_background": {
+                "carbon_get_theme_option": "",
+                "get_alps_option": ""
+            },
+            "sabbath_scroll": {
+                "carbon_get_theme_option": false,
+                "get_alps_option": false
+            },
+            "sabbath_hide": {
+                "carbon_get_theme_option": false,
+                "get_alps_option": false
+            },
+            "sabbath_hide_screens": {
+                "carbon_get_theme_option": "hide-sabbath--all",
+                "get_alps_option": "hide-sabbath--all"
+            },
+            "footer_description": {
+                "carbon_get_theme_option": [],
+                "get_alps_option": []
+            },
+            "footer_copyright": {
+                "carbon_get_theme_option": "General Conference of Seventh-day Adventists",
+                "get_alps_option": "General Conference of Seventh-day Adventists"
+            },
+            "footer_address": {
+                "carbon_get_theme_option": [],
+                "get_alps_option": []
+            },
+            "footer_logo_icon": {
+                "carbon_get_theme_option": "",
+                "get_alps_option": ""
+            },
+            "footer_logo_type": {
+                "carbon_get_theme_option": "circle",
+                "get_alps_option": "circle"
+            },
+            "alps_image_avif_quality": {
+                "carbon_get_theme_option": "",
+                "get_alps_option": ""
+            },
+            "alps_image_full_max": {
+                "carbon_get_theme_option": "",
+                "get_alps_option": ""
+            },
+            "alps_image_small_max": {
+                "carbon_get_theme_option": "",
+                "get_alps_option": ""
+            },
+            "crb_get_i18n_theme_option(footer_description)": ""
+        }
+    },
+    "saved_input": {
+        "page": {
+            "grid_two_columns": "true",
+            "content_block": "relationship",
+            "content_block_freeform": [
+                {
+                    "content_block_freeform_colorpicker": "#123456",
+                    "content_block_freeform_kicker": "Text content_block_freeform_kicker",
+                    "content_block_freeform_title": "Text content_block_freeform_title",
+                    "content_block_freeform_image": 12,
+                    "content_block_freeform_round": "true",
+                    "content_block_freeform_body": "<p>Rich content_block_freeform_body <strong>bold</strong></p>",
+                    "content_block_freeform_button_text": "Text content_block_freeform_button_text",
+                    "content_block_freeform_button_url": "Text content_block_freeform_button_url"
+                },
+                {
+                    "content_block_freeform_colorpicker": "#123456",
+                    "content_block_freeform_kicker": "Text content_block_freeform_kicker row 1",
+                    "content_block_freeform_title": "Text content_block_freeform_title row 1",
+                    "content_block_freeform_image": 13,
+                    "content_block_freeform_round": "true",
+                    "content_block_freeform_body": "<p>Rich content_block_freeform_body <strong>bold</strong></p>",
+                    "content_block_freeform_button_text": "Text content_block_freeform_button_text row 1",
+                    "content_block_freeform_button_url": "Text content_block_freeform_button_url row 1"
+                }
+            ],
+            "content_block_relationship": [
+                {
+                    "type": "post",
+                    "subtype": "page",
+                    "id": 15
+                },
+                {
+                    "type": "post",
+                    "subtype": "post",
+                    "id": 16
+                }
+            ],
+            "sb_title": "Text sb_title",
+            "sb_subtitle": "Text sb_subtitle",
+            "sb_background_image": 12,
+            "sb_thumbnail": 12,
+            "sb_side_image": 12,
+            "is_video": "true",
+            "sb_body": "<p>Rich sb_body <strong>bold</strong></p>",
+            "sb_url": "Text sb_url",
+            "sb_cta": "Text sb_cta",
+            "remove_header": "true",
+            "featured_image_hero_layout": "page-header",
+            "remove_spacing": "true",
+            "head_type": "overlay",
+            "kicker": "Text kicker",
+            "display_title": "Text display_title",
+            "long_header_subtitle": "Text long_header_subtitle",
+            "page_sub_title": "Text page_sub_title",
+            "header_background_image": 12,
+            "hero_type": "carousel_without_text_overlay",
+            "hero_overlay": "off",
+            "hero_image": 12,
+            "hero_title": "Line one hero_title\nLine two",
+            "hero_kicker": "Text hero_kicker",
+            "hero_link_url": "Text hero_link_url",
+            "hero_link_button": "Text hero_link_button",
+            "hero_image_extended": "true",
+            "hero_scroll_hint": "true",
+            "hero_column": [
+                {
+                    "hero_image_column": 12,
+                    "hero_title_column": "Line one hero_title_column\nLine two",
+                    "hero_kicker_column": "Text hero_kicker_column",
+                    "hero_link_url": "Text hero_link_url"
+                },
+                {
+                    "hero_image_column": 13,
+                    "hero_title_column": "Line one hero_title_column\nLine two",
+                    "hero_kicker_column": "Text hero_kicker_column row 1",
+                    "hero_link_url": "Text hero_link_url row 1"
+                }
+            ],
+            "hero_carousel": [
+                {
+                    "slide_image": 12,
+                    "slide_heading": "Text slide_heading",
+                    "slide_dek": "Line one slide_dek\nLine two",
+                    "slide_url": "Text slide_url",
+                    "slide_cta": "Text slide_cta"
+                },
+                {
+                    "slide_image": 13,
+                    "slide_heading": "Text slide_heading row 1",
+                    "slide_dek": "Line one slide_dek\nLine two",
+                    "slide_url": "Text slide_url row 1",
+                    "slide_cta": "Text slide_cta row 1"
+                }
+            ],
+            "hide_sidebar": "true",
+            "hide_featured_image": "true",
+            "related": "related_custom",
+            "related_custom_value": [
+                {
+                    "type": "post",
+                    "subtype": "page",
+                    "id": 15
+                },
+                {
+                    "type": "post",
+                    "subtype": "post",
+                    "id": 16
+                }
+            ],
+            "related_grid": "true",
+            "related_grid_3up": "true",
+            "related_image": "true",
+            "related_image_crop": "circle",
+            "show_hero_featured_post": "true",
+            "hero_featured_post": [
+                {
+                    "type": "post",
+                    "subtype": "post",
+                    "id": 16
+                }
+            ],
+            "post_feed_list": "post_feed_list_custom",
+            "post_feed_list_title": "Text post_feed_list_title",
+            "post_feed_list_link": "Text post_feed_list_link",
+            "post_feed_list_round_image": "true",
+            "post_feed_list_category_array": [
+                {
+                    "type": "term",
+                    "subtype": "category",
+                    "id": 7
+                }
+            ],
+            "post_feed_list_count": "Text post_feed_list_count",
+            "post_feed_list_offset": "Text post_feed_list_offset",
+            "post_feed_list_custom_array": [
+                {
+                    "type": "post",
+                    "subtype": "post",
+                    "id": 16
+                }
+            ],
+            "post_feed_full": "post_feed_full_category",
+            "post_feed_full_title": "Text post_feed_full_title",
+            "post_feed_full_link": "Text post_feed_full_link",
+            "post_feed_full_featured": "post_feed_full_featured_true",
+            "post_feed_full_featured_array": [
+                {
+                    "type": "post",
+                    "subtype": "post",
+                    "id": 16
+                }
+            ],
+            "post_feed_full_offset": "Text post_feed_full_offset",
+            "post_feed_full_category_array": [
+                {
+                    "type": "term",
+                    "subtype": "category",
+                    "id": 7
+                }
+            ],
+            "post_feed_archive": "post_feed_archive_category",
+            "post_feed_archive_title": "Text post_feed_archive_title",
+            "post_feed_archive_link": "Text post_feed_archive_link",
+            "post_feed_archive_offset": "Text post_feed_archive_offset",
+            "post_feed_archive_category_array": [
+                {
+                    "type": "term",
+                    "subtype": "category",
+                    "id": 7
+                }
+            ]
+        },
+        "post": [],
+        "options": {
+            "logo_recolor": "true",
+            "is_wide_logo": "true",
+            "logo": 12,
+            "logo_inverted": 12,
+            "theme_color": "nad-vine",
+            "dark_theme": "true",
+            "grid_lines": "true",
+            "square_buttons": "true",
+            "site_branding_statement": "Line one site_branding_statement\nLine two",
+            "global_branding_statement": "Line one global_branding_statement\nLine two",
+            "posts_page_title": "Text posts_page_title",
+            "index_hide_sidebar": "true",
+            "archive_page_title": "Text archive_page_title",
+            "is_related_stories_image_hidden": "true",
+            "archive_hide_sidebar": "true",
+            "posts_label": "true",
+            "posts_grid": "true",
+            "posts_grid_3up": "true",
+            "posts_image": "true",
+            "posts_image_round": "true",
+            "sabbath_icon": 12,
+            "sabbath_background": 12,
+            "sabbath_scroll": "true",
+            "sabbath_hide": "true",
+            "sabbath_hide_screens": "hide-sabbath--until-large",
+            "footer_description": [
+                {
+                    "_type": "translatable_footer_description",
+                    "footer_description_en": "Text footer_description_en",
+                    "footer_description_de": "Text footer_description_de",
+                    "footer_description_fr": "Text footer_description_fr",
+                    "footer_description_pt-pt": "Text footer_description_pt-pt",
+                    "footer_description_es": "Text footer_description_es",
+                    "footer_description_ko": "Text footer_description_ko",
+                    "footer_description_ru": "Text footer_description_ru",
+                    "footer_description_zh-hant": "Text footer_description_zh-hant"
+                },
+                {
+                    "_type": "translatable_footer_description",
+                    "footer_description_en": "Text footer_description_en row 1",
+                    "footer_description_de": "Text footer_description_de row 1",
+                    "footer_description_fr": "Text footer_description_fr row 1",
+                    "footer_description_pt-pt": "Text footer_description_pt-pt row 1",
+                    "footer_description_es": "Text footer_description_es row 1",
+                    "footer_description_ko": "Text footer_description_ko row 1",
+                    "footer_description_ru": "Text footer_description_ru row 1",
+                    "footer_description_zh-hant": "Text footer_description_zh-hant row 1"
+                }
+            ],
+            "footer_copyright": "Text footer_copyright",
+            "footer_address": [
+                {
+                    "footer_address_street": "Text footer_address_street",
+                    "footer_address_city": "Text footer_address_city",
+                    "footer_address_state": "Text footer_address_state",
+                    "footer_address_zip": "Text footer_address_zip",
+                    "footer_address_country": "Text footer_address_country",
+                    "footer_phone": "Text footer_phone"
+                }
+            ],
+            "footer_logo_icon": 12,
+            "footer_logo_type": "circle",
+            "alps_image_avif_quality": "Text alps_image_avif_quality",
+            "alps_image_full_max": "Text alps_image_full_max",
+            "alps_image_small_max": "Text alps_image_small_max"
+        }
+    },
+    "post_meta_rows": {
+        "page_filled": {
+            "_grid_two_columns": "true",
+            "_content_block": "relationship",
+            "_content_block_freeform|||0|value": "_",
+            "_content_block_freeform|||1|value": "_",
+            "_content_block_freeform|content_block_freeform_colorpicker|0|0|value": "#123456",
+            "_content_block_freeform|content_block_freeform_kicker|0|0|value": "Text content_block_freeform_kicker",
+            "_content_block_freeform|content_block_freeform_title|0|0|value": "Text content_block_freeform_title",
+            "_content_block_freeform|content_block_freeform_image|0|0|value": "{image_a}",
+            "_content_block_freeform|content_block_freeform_round|0|0|value": "true",
+            "_content_block_freeform|content_block_freeform_body|0|0|value": "<p>Rich content_block_freeform_body <strong>bold</strong></p>",
+            "_content_block_freeform|content_block_freeform_button_text|0|0|value": "Text content_block_freeform_button_text",
+            "_content_block_freeform|content_block_freeform_button_url|0|0|value": "Text content_block_freeform_button_url",
+            "_content_block_freeform|content_block_freeform_colorpicker|1|0|value": "#123456",
+            "_content_block_freeform|content_block_freeform_kicker|1|0|value": "Text content_block_freeform_kicker row 1",
+            "_content_block_freeform|content_block_freeform_title|1|0|value": "Text content_block_freeform_title row 1",
+            "_content_block_freeform|content_block_freeform_image|1|0|value": "{image_b}",
+            "_content_block_freeform|content_block_freeform_round|1|0|value": "true",
+            "_content_block_freeform|content_block_freeform_body|1|0|value": "<p>Rich content_block_freeform_body <strong>bold</strong></p>",
+            "_content_block_freeform|content_block_freeform_button_text|1|0|value": "Text content_block_freeform_button_text row 1",
+            "_content_block_freeform|content_block_freeform_button_url|1|0|value": "Text content_block_freeform_button_url row 1",
+            "_content_block_relationship|||0|value": "",
+            "_content_block_relationship|||0|type": "post",
+            "_content_block_relationship|||0|subtype": "page",
+            "_content_block_relationship|||0|id": "{page_target}",
+            "_content_block_relationship|||1|value": "",
+            "_content_block_relationship|||1|type": "post",
+            "_content_block_relationship|||1|subtype": "post",
+            "_content_block_relationship|||1|id": "{post_target}",
+            "_sb_title": "Text sb_title",
+            "_sb_subtitle": "Text sb_subtitle",
+            "_sb_background_image": "{image_a}",
+            "_sb_thumbnail": "{image_a}",
+            "_sb_side_image": "{image_a}",
+            "_is_video": "true",
+            "_sb_body": "<p>Rich sb_body <strong>bold</strong></p>",
+            "_sb_url": "Text sb_url",
+            "_sb_cta": "Text sb_cta",
+            "_remove_header": "true",
+            "_featured_image_hero_layout": "page-header",
+            "_remove_spacing": "true",
+            "_head_type": "overlay",
+            "_kicker": "Text kicker",
+            "_display_title": "Text display_title",
+            "_long_header_subtitle": "Text long_header_subtitle",
+            "_page_sub_title": "Text page_sub_title",
+            "_header_background_image": "{image_a}",
+            "_hero_type": "carousel_without_text_overlay",
+            "_hero_overlay": "off",
+            "_hero_image": "{image_a}",
+            "_hero_title": "Line one hero_title\nLine two",
+            "_hero_kicker": "Text hero_kicker",
+            "_hero_link_url": "Text hero_link_url",
+            "_hero_link_button": "Text hero_link_button",
+            "_hero_image_extended": "true",
+            "_hero_scroll_hint": "true",
+            "_hero_column|||0|value": "_",
+            "_hero_column|||1|value": "_",
+            "_hero_column|hero_image_column|0|0|value": "{image_a}",
+            "_hero_column|hero_title_column|0|0|value": "Line one hero_title_column\nLine two",
+            "_hero_column|hero_kicker_column|0|0|value": "Text hero_kicker_column",
+            "_hero_column|hero_link_url|0|0|value": "Text hero_link_url",
+            "_hero_column|hero_image_column|1|0|value": "{image_b}",
+            "_hero_column|hero_title_column|1|0|value": "Line one hero_title_column\nLine two",
+            "_hero_column|hero_kicker_column|1|0|value": "Text hero_kicker_column row 1",
+            "_hero_column|hero_link_url|1|0|value": "Text hero_link_url row 1",
+            "_hero_carousel|||0|value": "_",
+            "_hero_carousel|||1|value": "_",
+            "_hero_carousel|slide_image|0|0|value": "{image_a}",
+            "_hero_carousel|slide_heading|0|0|value": "Text slide_heading",
+            "_hero_carousel|slide_dek|0|0|value": "Line one slide_dek\nLine two",
+            "_hero_carousel|slide_url|0|0|value": "Text slide_url",
+            "_hero_carousel|slide_cta|0|0|value": "Text slide_cta",
+            "_hero_carousel|slide_image|1|0|value": "{image_b}",
+            "_hero_carousel|slide_heading|1|0|value": "Text slide_heading row 1",
+            "_hero_carousel|slide_dek|1|0|value": "Line one slide_dek\nLine two",
+            "_hero_carousel|slide_url|1|0|value": "Text slide_url row 1",
+            "_hero_carousel|slide_cta|1|0|value": "Text slide_cta row 1",
+            "_hide_sidebar": "true",
+            "_hide_featured_image": "true",
+            "_related": "related_custom",
+            "_related_custom_value|||0|value": "",
+            "_related_custom_value|||0|type": "post",
+            "_related_custom_value|||0|subtype": "page",
+            "_related_custom_value|||0|id": "{page_target}",
+            "_related_custom_value|||1|value": "",
+            "_related_custom_value|||1|type": "post",
+            "_related_custom_value|||1|subtype": "post",
+            "_related_custom_value|||1|id": "{post_target}",
+            "_related_grid": "true",
+            "_related_grid_3up": "true",
+            "_related_image": "true",
+            "_related_image_crop": "circle",
+            "_show_hero_featured_post": "true",
+            "_hero_featured_post|||0|value": "",
+            "_hero_featured_post|||0|type": "post",
+            "_hero_featured_post|||0|subtype": "post",
+            "_hero_featured_post|||0|id": "{post_target}",
+            "_post_feed_list": "post_feed_list_custom",
+            "_post_feed_list_title": "Text post_feed_list_title",
+            "_post_feed_list_link": "Text post_feed_list_link",
+            "_post_feed_list_round_image": "true",
+            "_post_feed_list_category_array|||0|value": "",
+            "_post_feed_list_category_array|||0|type": "term",
+            "_post_feed_list_category_array|||0|subtype": "category",
+            "_post_feed_list_category_array|||0|id": "{term_capture}",
+            "_post_feed_list_count": "Text post_feed_list_count",
+            "_post_feed_list_offset": "Text post_feed_list_offset",
+            "_post_feed_list_custom_array|||0|value": "",
+            "_post_feed_list_custom_array|||0|type": "post",
+            "_post_feed_list_custom_array|||0|subtype": "post",
+            "_post_feed_list_custom_array|||0|id": "{post_target}",
+            "_post_feed_full": "post_feed_full_category",
+            "_post_feed_full_title": "Text post_feed_full_title",
+            "_post_feed_full_link": "Text post_feed_full_link",
+            "_post_feed_full_featured": "post_feed_full_featured_true",
+            "_post_feed_full_featured_array|||0|value": "",
+            "_post_feed_full_featured_array|||0|type": "post",
+            "_post_feed_full_featured_array|||0|subtype": "post",
+            "_post_feed_full_featured_array|||0|id": "{post_target}",
+            "_post_feed_full_offset": "Text post_feed_full_offset",
+            "_post_feed_full_category_array|||0|value": "",
+            "_post_feed_full_category_array|||0|type": "term",
+            "_post_feed_full_category_array|||0|subtype": "category",
+            "_post_feed_full_category_array|||0|id": "{term_capture}",
+            "_post_feed_archive": "post_feed_archive_category",
+            "_post_feed_archive_title": "Text post_feed_archive_title",
+            "_post_feed_archive_link": "Text post_feed_archive_link",
+            "_post_feed_archive_offset": "Text post_feed_archive_offset",
+            "_post_feed_archive_category_array|||0|value": "",
+            "_post_feed_archive_category_array|||0|type": "term",
+            "_post_feed_archive_category_array|||0|subtype": "category",
+            "_post_feed_archive_category_array|||0|id": "{term_capture}"
+        },
+        "post_filled": {
+            "_pingme": "1",
+            "_encloseme": "1",
+            "_grid_two_columns": "true",
+            "_content_block": "relationship",
+            "_content_block_freeform|||0|value": "_",
+            "_content_block_freeform|||1|value": "_",
+            "_content_block_freeform|content_block_freeform_colorpicker|0|0|value": "#123456",
+            "_content_block_freeform|content_block_freeform_kicker|0|0|value": "Text content_block_freeform_kicker",
+            "_content_block_freeform|content_block_freeform_title|0|0|value": "Text content_block_freeform_title",
+            "_content_block_freeform|content_block_freeform_image|0|0|value": "{image_a}",
+            "_content_block_freeform|content_block_freeform_round|0|0|value": "true",
+            "_content_block_freeform|content_block_freeform_body|0|0|value": "<p>Rich content_block_freeform_body <strong>bold</strong></p>",
+            "_content_block_freeform|content_block_freeform_button_text|0|0|value": "Text content_block_freeform_button_text",
+            "_content_block_freeform|content_block_freeform_button_url|0|0|value": "Text content_block_freeform_button_url",
+            "_content_block_freeform|content_block_freeform_colorpicker|1|0|value": "#123456",
+            "_content_block_freeform|content_block_freeform_kicker|1|0|value": "Text content_block_freeform_kicker row 1",
+            "_content_block_freeform|content_block_freeform_title|1|0|value": "Text content_block_freeform_title row 1",
+            "_content_block_freeform|content_block_freeform_image|1|0|value": "{image_b}",
+            "_content_block_freeform|content_block_freeform_round|1|0|value": "true",
+            "_content_block_freeform|content_block_freeform_body|1|0|value": "<p>Rich content_block_freeform_body <strong>bold</strong></p>",
+            "_content_block_freeform|content_block_freeform_button_text|1|0|value": "Text content_block_freeform_button_text row 1",
+            "_content_block_freeform|content_block_freeform_button_url|1|0|value": "Text content_block_freeform_button_url row 1",
+            "_content_block_relationship|||0|value": "",
+            "_content_block_relationship|||0|type": "post",
+            "_content_block_relationship|||0|subtype": "page",
+            "_content_block_relationship|||0|id": "{page_target}",
+            "_content_block_relationship|||1|value": "",
+            "_content_block_relationship|||1|type": "post",
+            "_content_block_relationship|||1|subtype": "post",
+            "_content_block_relationship|||1|id": "{post_target}",
+            "_sb_title": "Text sb_title",
+            "_sb_subtitle": "Text sb_subtitle",
+            "_sb_background_image": "{image_a}",
+            "_sb_thumbnail": "{image_a}",
+            "_sb_side_image": "{image_a}",
+            "_is_video": "true",
+            "_sb_body": "<p>Rich sb_body <strong>bold</strong></p>",
+            "_sb_url": "Text sb_url",
+            "_sb_cta": "Text sb_cta",
+            "_remove_header": "true",
+            "_featured_image_hero_layout": "page-header",
+            "_remove_spacing": "true",
+            "_head_type": "overlay",
+            "_kicker": "Text kicker",
+            "_display_title": "Text display_title",
+            "_long_header_subtitle": "Text long_header_subtitle",
+            "_page_sub_title": "Text page_sub_title",
+            "_header_background_image": "{image_a}",
+            "_hero_type": "carousel_without_text_overlay",
+            "_hero_overlay": "off",
+            "_hero_image": "{image_a}",
+            "_hero_title": "Line one hero_title\nLine two",
+            "_hero_kicker": "Text hero_kicker",
+            "_hero_link_url": "Text hero_link_url",
+            "_hero_link_button": "Text hero_link_button",
+            "_hero_image_extended": "true",
+            "_hero_scroll_hint": "true",
+            "_hero_column|||0|value": "_",
+            "_hero_column|||1|value": "_",
+            "_hero_column|hero_image_column|0|0|value": "{image_a}",
+            "_hero_column|hero_title_column|0|0|value": "Line one hero_title_column\nLine two",
+            "_hero_column|hero_kicker_column|0|0|value": "Text hero_kicker_column",
+            "_hero_column|hero_link_url|0|0|value": "Text hero_link_url",
+            "_hero_column|hero_image_column|1|0|value": "{image_b}",
+            "_hero_column|hero_title_column|1|0|value": "Line one hero_title_column\nLine two",
+            "_hero_column|hero_kicker_column|1|0|value": "Text hero_kicker_column row 1",
+            "_hero_column|hero_link_url|1|0|value": "Text hero_link_url row 1",
+            "_hero_carousel|||0|value": "_",
+            "_hero_carousel|||1|value": "_",
+            "_hero_carousel|slide_image|0|0|value": "{image_a}",
+            "_hero_carousel|slide_heading|0|0|value": "Text slide_heading",
+            "_hero_carousel|slide_dek|0|0|value": "Line one slide_dek\nLine two",
+            "_hero_carousel|slide_url|0|0|value": "Text slide_url",
+            "_hero_carousel|slide_cta|0|0|value": "Text slide_cta",
+            "_hero_carousel|slide_image|1|0|value": "{image_b}",
+            "_hero_carousel|slide_heading|1|0|value": "Text slide_heading row 1",
+            "_hero_carousel|slide_dek|1|0|value": "Line one slide_dek\nLine two",
+            "_hero_carousel|slide_url|1|0|value": "Text slide_url row 1",
+            "_hero_carousel|slide_cta|1|0|value": "Text slide_cta row 1",
+            "_hide_sidebar": "true",
+            "_hide_featured_image": "true",
+            "_related": "related_custom",
+            "_related_custom_value|||0|value": "",
+            "_related_custom_value|||0|type": "post",
+            "_related_custom_value|||0|subtype": "page",
+            "_related_custom_value|||0|id": "{page_target}",
+            "_related_custom_value|||1|value": "",
+            "_related_custom_value|||1|type": "post",
+            "_related_custom_value|||1|subtype": "post",
+            "_related_custom_value|||1|id": "{post_target}",
+            "_related_grid": "true",
+            "_related_grid_3up": "true",
+            "_related_image": "true",
+            "_related_image_crop": "circle",
+            "_show_hero_featured_post": "true",
+            "_hero_featured_post|||0|value": "",
+            "_hero_featured_post|||0|type": "post",
+            "_hero_featured_post|||0|subtype": "post",
+            "_hero_featured_post|||0|id": "{post_target}",
+            "_post_feed_list": "post_feed_list_custom",
+            "_post_feed_list_title": "Text post_feed_list_title",
+            "_post_feed_list_link": "Text post_feed_list_link",
+            "_post_feed_list_round_image": "true",
+            "_post_feed_list_category_array|||0|value": "",
+            "_post_feed_list_category_array|||0|type": "term",
+            "_post_feed_list_category_array|||0|subtype": "category",
+            "_post_feed_list_category_array|||0|id": "{term_capture}",
+            "_post_feed_list_count": "Text post_feed_list_count",
+            "_post_feed_list_offset": "Text post_feed_list_offset",
+            "_post_feed_list_custom_array|||0|value": "",
+            "_post_feed_list_custom_array|||0|type": "post",
+            "_post_feed_list_custom_array|||0|subtype": "post",
+            "_post_feed_list_custom_array|||0|id": "{post_target}",
+            "_post_feed_full": "post_feed_full_category",
+            "_post_feed_full_title": "Text post_feed_full_title",
+            "_post_feed_full_link": "Text post_feed_full_link",
+            "_post_feed_full_featured": "post_feed_full_featured_true",
+            "_post_feed_full_featured_array|||0|value": "",
+            "_post_feed_full_featured_array|||0|type": "post",
+            "_post_feed_full_featured_array|||0|subtype": "post",
+            "_post_feed_full_featured_array|||0|id": "{post_target}",
+            "_post_feed_full_offset": "Text post_feed_full_offset",
+            "_post_feed_full_category_array|||0|value": "",
+            "_post_feed_full_category_array|||0|type": "term",
+            "_post_feed_full_category_array|||0|subtype": "category",
+            "_post_feed_full_category_array|||0|id": "{term_capture}",
+            "_post_feed_archive": "post_feed_archive_category",
+            "_post_feed_archive_title": "Text post_feed_archive_title",
+            "_post_feed_archive_link": "Text post_feed_archive_link",
+            "_post_feed_archive_offset": "Text post_feed_archive_offset",
+            "_post_feed_archive_category_array|||0|value": "",
+            "_post_feed_archive_category_array|||0|type": "term",
+            "_post_feed_archive_category_array|||0|subtype": "category",
+            "_post_feed_archive_category_array|||0|id": "{term_capture}"
+        },
+        "page_empty": []
+    },
+    "option_rows_written": {
+        "_alps_image_avif_quality": {
+            "value": "Text alps_image_avif_quality",
+            "autoload": "off"
+        },
+        "_alps_image_full_max": {
+            "value": "Text alps_image_full_max",
+            "autoload": "off"
+        },
+        "_alps_image_small_max": {
+            "value": "Text alps_image_small_max",
+            "autoload": "off"
+        },
+        "_footer_address|footer_address_city|0|0|value": {
+            "value": "Text footer_address_city",
+            "autoload": "off"
+        },
+        "_footer_address|footer_address_country|0|0|value": {
+            "value": "Text footer_address_country",
+            "autoload": "off"
+        },
+        "_footer_address|footer_address_state|0|0|value": {
+            "value": "Text footer_address_state",
+            "autoload": "off"
+        },
+        "_footer_address|footer_address_street|0|0|value": {
+            "value": "Text footer_address_street",
+            "autoload": "off"
+        },
+        "_footer_address|footer_address_zip|0|0|value": {
+            "value": "Text footer_address_zip",
+            "autoload": "off"
+        },
+        "_footer_address|footer_phone|0|0|value": {
+            "value": "Text footer_phone",
+            "autoload": "off"
+        },
+        "_footer_address|||0|value": {
+            "value": "_",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_de|0|0|value": {
+            "value": "Text footer_description_de",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_de|1|0|value": {
+            "value": "Text footer_description_de row 1",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_en|0|0|value": {
+            "value": "Text footer_description_en",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_en|1|0|value": {
+            "value": "Text footer_description_en row 1",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_es|0|0|value": {
+            "value": "Text footer_description_es",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_es|1|0|value": {
+            "value": "Text footer_description_es row 1",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_fr|0|0|value": {
+            "value": "Text footer_description_fr",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_fr|1|0|value": {
+            "value": "Text footer_description_fr row 1",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_ko|0|0|value": {
+            "value": "Text footer_description_ko",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_ko|1|0|value": {
+            "value": "Text footer_description_ko row 1",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_pt-pt|0|0|value": {
+            "value": "Text footer_description_pt-pt",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_pt-pt|1|0|value": {
+            "value": "Text footer_description_pt-pt row 1",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_ru|0|0|value": {
+            "value": "Text footer_description_ru",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_ru|1|0|value": {
+            "value": "Text footer_description_ru row 1",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_zh-hant|0|0|value": {
+            "value": "Text footer_description_zh-hant",
+            "autoload": "off"
+        },
+        "_footer_description|footer_description_zh-hant|1|0|value": {
+            "value": "Text footer_description_zh-hant row 1",
+            "autoload": "off"
+        },
+        "_footer_description|||0|value": {
+            "value": "translatable_footer_description",
+            "autoload": "off"
+        },
+        "_footer_description|||1|value": {
+            "value": "translatable_footer_description",
+            "autoload": "off"
+        },
+        "_footer_logo_icon": {
+            "value": "{image_a}",
+            "autoload": "off"
+        },
+        "_is_wide_logo": {
+            "value": "true",
+            "autoload": "off"
+        },
+        "_logo": {
+            "value": "{image_a}",
+            "autoload": "off"
+        },
+        "_logo_inverted": {
+            "value": "{image_a}",
+            "autoload": "off"
+        },
+        "_logo_recolor": {
+            "value": "true",
+            "autoload": "off"
+        },
+        "_sabbath_background": {
+            "value": "{image_a}",
+            "autoload": "off"
+        },
+        "_sabbath_hide_screens": {
+            "value": "hide-sabbath--until-large",
+            "autoload": "off"
+        },
+        "_sabbath_icon": {
+            "value": "{image_a}",
+            "autoload": "off"
+        },
+        "_archive_hide_sidebar": {
+            "value": "true",
+            "autoload": "off"
+        },
+        "_archive_page_title": {
+            "value": "Text archive_page_title",
+            "autoload": "off"
+        },
+        "_dark_theme": {
+            "value": "true",
+            "autoload": "off"
+        },
+        "_footer_copyright": {
+            "value": "Text footer_copyright",
+            "autoload": "off"
+        },
+        "_footer_logo_type": {
+            "value": "circle",
+            "autoload": "off"
+        },
+        "_global_branding_statement": {
+            "value": "Line one global_branding_statement\nLine two",
+            "autoload": "off"
+        },
+        "_grid_lines": {
+            "value": "true",
+            "autoload": "off"
+        },
+        "_index_hide_sidebar": {
+            "value": "true",
+            "autoload": "off"
+        },
+        "_is_related_stories_image_hidden": {
+            "value": "true",
+            "autoload": "off"
+        },
+        "_posts_grid": {
+            "value": "true",
+            "autoload": "off"
+        },
+        "_posts_grid_3up": {
+            "value": "true",
+            "autoload": "off"
+        },
+        "_posts_image": {
+            "value": "true",
+            "autoload": "off"
+        },
+        "_posts_image_round": {
+            "value": "true",
+            "autoload": "off"
+        },
+        "_posts_label": {
+            "value": "true",
+            "autoload": "off"
+        },
+        "_posts_page_title": {
+            "value": "Text posts_page_title",
+            "autoload": "off"
+        },
+        "_sabbath_hide": {
+            "value": "true",
+            "autoload": "off"
+        },
+        "_sabbath_scroll": {
+            "value": "true",
+            "autoload": "off"
+        },
+        "_site_branding_statement": {
+            "value": "Line one site_branding_statement\nLine two",
+            "autoload": "off"
+        },
+        "_square_buttons": {
+            "value": "true",
+            "autoload": "off"
+        },
+        "_theme_color": {
+            "value": "nad-vine",
+            "autoload": "off"
+        }
+    },
+    "read_back": {
+        "page": {
+            "grid_two_columns": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "content_block": {
+                "carbon_get_post_meta": "relationship",
+                "get_alps_field": null
+            },
+            "content_block_freeform": {
+                "carbon_get_post_meta": [
+                    {
+                        "_type": "_",
+                        "content_block_freeform_colorpicker": "#123456",
+                        "content_block_freeform_kicker": "Text content_block_freeform_kicker",
+                        "content_block_freeform_title": "Text content_block_freeform_title",
+                        "content_block_freeform_image": "12",
+                        "content_block_freeform_round": true,
+                        "content_block_freeform_body": "<p>Rich content_block_freeform_body <strong>bold</strong></p>",
+                        "content_block_freeform_button_text": "Text content_block_freeform_button_text",
+                        "content_block_freeform_button_url": "Text content_block_freeform_button_url"
+                    },
+                    {
+                        "_type": "_",
+                        "content_block_freeform_colorpicker": "#123456",
+                        "content_block_freeform_kicker": "Text content_block_freeform_kicker row 1",
+                        "content_block_freeform_title": "Text content_block_freeform_title row 1",
+                        "content_block_freeform_image": "13",
+                        "content_block_freeform_round": true,
+                        "content_block_freeform_body": "<p>Rich content_block_freeform_body <strong>bold</strong></p>",
+                        "content_block_freeform_button_text": "Text content_block_freeform_button_text row 1",
+                        "content_block_freeform_button_url": "Text content_block_freeform_button_url row 1"
+                    }
+                ],
+                "get_alps_field": [
+                    {
+                        "_type": "_",
+                        "content_block_freeform_colorpicker": "#123456",
+                        "content_block_freeform_kicker": "Text content_block_freeform_kicker",
+                        "content_block_freeform_title": "Text content_block_freeform_title",
+                        "content_block_freeform_image": "12",
+                        "content_block_freeform_round": true,
+                        "content_block_freeform_body": "<p>Rich content_block_freeform_body <strong>bold</strong></p>",
+                        "content_block_freeform_button_text": "Text content_block_freeform_button_text",
+                        "content_block_freeform_button_url": "Text content_block_freeform_button_url"
+                    },
+                    {
+                        "_type": "_",
+                        "content_block_freeform_colorpicker": "#123456",
+                        "content_block_freeform_kicker": "Text content_block_freeform_kicker row 1",
+                        "content_block_freeform_title": "Text content_block_freeform_title row 1",
+                        "content_block_freeform_image": "13",
+                        "content_block_freeform_round": true,
+                        "content_block_freeform_body": "<p>Rich content_block_freeform_body <strong>bold</strong></p>",
+                        "content_block_freeform_button_text": "Text content_block_freeform_button_text row 1",
+                        "content_block_freeform_button_url": "Text content_block_freeform_button_url row 1"
+                    }
+                ]
+            },
+            "content_block_relationship": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "page",
+                        "id": "15"
+                    },
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "post",
+                        "id": "16"
+                    }
+                ],
+                "get_alps_field": [
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "page",
+                        "id": "15"
+                    },
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "post",
+                        "id": "16"
+                    }
+                ]
+            },
+            "sb_title": {
+                "carbon_get_post_meta": "Text sb_title",
+                "get_alps_field": null
+            },
+            "sb_subtitle": {
+                "carbon_get_post_meta": "Text sb_subtitle",
+                "get_alps_field": null
+            },
+            "sb_background_image": {
+                "carbon_get_post_meta": "12",
+                "get_alps_field": null
+            },
+            "sb_thumbnail": {
+                "carbon_get_post_meta": "12",
+                "get_alps_field": null
+            },
+            "sb_side_image": {
+                "carbon_get_post_meta": "12",
+                "get_alps_field": null
+            },
+            "is_video": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "sb_body": {
+                "carbon_get_post_meta": "<p>Rich sb_body <strong>bold</strong></p>",
+                "get_alps_field": null
+            },
+            "sb_url": {
+                "carbon_get_post_meta": "Text sb_url",
+                "get_alps_field": null
+            },
+            "sb_cta": {
+                "carbon_get_post_meta": "Text sb_cta",
+                "get_alps_field": null
+            },
+            "remove_header": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "featured_image_hero_layout": {
+                "carbon_get_post_meta": "page-header",
+                "get_alps_field": null
+            },
+            "remove_spacing": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "head_type": {
+                "carbon_get_post_meta": "overlay",
+                "get_alps_field": null
+            },
+            "kicker": {
+                "carbon_get_post_meta": "Text kicker",
+                "get_alps_field": null
+            },
+            "display_title": {
+                "carbon_get_post_meta": "Text display_title",
+                "get_alps_field": null
+            },
+            "long_header_subtitle": {
+                "carbon_get_post_meta": "Text long_header_subtitle",
+                "get_alps_field": null
+            },
+            "page_sub_title": {
+                "carbon_get_post_meta": "Text page_sub_title",
+                "get_alps_field": null
+            },
+            "header_background_image": {
+                "carbon_get_post_meta": "12",
+                "get_alps_field": null
+            },
+            "hero_type": {
+                "carbon_get_post_meta": "carousel_without_text_overlay",
+                "get_alps_field": null
+            },
+            "hero_overlay": {
+                "carbon_get_post_meta": "off",
+                "get_alps_field": null
+            },
+            "hero_image": {
+                "carbon_get_post_meta": "12",
+                "get_alps_field": null
+            },
+            "hero_title": {
+                "carbon_get_post_meta": "Line one hero_title\nLine two",
+                "get_alps_field": null
+            },
+            "hero_kicker": {
+                "carbon_get_post_meta": "Text hero_kicker",
+                "get_alps_field": null
+            },
+            "hero_link_url": {
+                "carbon_get_post_meta": "Text hero_link_url",
+                "get_alps_field": null
+            },
+            "hero_link_button": {
+                "carbon_get_post_meta": "Text hero_link_button",
+                "get_alps_field": null
+            },
+            "hero_image_extended": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "hero_scroll_hint": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "hero_column": {
+                "carbon_get_post_meta": [
+                    {
+                        "_type": "_",
+                        "hero_image_column": "12",
+                        "hero_title_column": "Line one hero_title_column\nLine two",
+                        "hero_kicker_column": "Text hero_kicker_column",
+                        "hero_link_url": "Text hero_link_url"
+                    },
+                    {
+                        "_type": "_",
+                        "hero_image_column": "13",
+                        "hero_title_column": "Line one hero_title_column\nLine two",
+                        "hero_kicker_column": "Text hero_kicker_column row 1",
+                        "hero_link_url": "Text hero_link_url row 1"
+                    }
+                ],
+                "get_alps_field": [
+                    {
+                        "_type": "_",
+                        "hero_image_column": "12",
+                        "hero_title_column": "Line one hero_title_column\nLine two",
+                        "hero_kicker_column": "Text hero_kicker_column",
+                        "hero_link_url": "Text hero_link_url"
+                    },
+                    {
+                        "_type": "_",
+                        "hero_image_column": "13",
+                        "hero_title_column": "Line one hero_title_column\nLine two",
+                        "hero_kicker_column": "Text hero_kicker_column row 1",
+                        "hero_link_url": "Text hero_link_url row 1"
+                    }
+                ]
+            },
+            "hero_carousel": {
+                "carbon_get_post_meta": [
+                    {
+                        "_type": "_",
+                        "slide_image": "12",
+                        "slide_heading": "Text slide_heading",
+                        "slide_dek": "Line one slide_dek\nLine two",
+                        "slide_url": "Text slide_url",
+                        "slide_cta": "Text slide_cta"
+                    },
+                    {
+                        "_type": "_",
+                        "slide_image": "13",
+                        "slide_heading": "Text slide_heading row 1",
+                        "slide_dek": "Line one slide_dek\nLine two",
+                        "slide_url": "Text slide_url row 1",
+                        "slide_cta": "Text slide_cta row 1"
+                    }
+                ],
+                "get_alps_field": [
+                    {
+                        "_type": "_",
+                        "slide_image": "12",
+                        "slide_heading": "Text slide_heading",
+                        "slide_dek": "Line one slide_dek\nLine two",
+                        "slide_url": "Text slide_url",
+                        "slide_cta": "Text slide_cta"
+                    },
+                    {
+                        "_type": "_",
+                        "slide_image": "13",
+                        "slide_heading": "Text slide_heading row 1",
+                        "slide_dek": "Line one slide_dek\nLine two",
+                        "slide_url": "Text slide_url row 1",
+                        "slide_cta": "Text slide_cta row 1"
+                    }
+                ]
+            },
+            "hide_sidebar": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "hide_featured_image": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "related": {
+                "carbon_get_post_meta": "related_custom",
+                "get_alps_field": null
+            },
+            "related_custom_value": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "page",
+                        "id": "15"
+                    },
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "post",
+                        "id": "16"
+                    }
+                ],
+                "get_alps_field": [
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "page",
+                        "id": "15"
+                    },
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "post",
+                        "id": "16"
+                    }
+                ]
+            },
+            "related_grid": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "related_grid_3up": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "related_image": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "related_image_crop": {
+                "carbon_get_post_meta": "circle",
+                "get_alps_field": null
+            },
+            "show_hero_featured_post": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "hero_featured_post": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "post",
+                        "id": "16"
+                    }
+                ],
+                "get_alps_field": {
+                    "value": "",
+                    "type": "post",
+                    "subtype": "post",
+                    "id": "16"
+                }
+            },
+            "post_feed_list": {
+                "carbon_get_post_meta": "post_feed_list_custom",
+                "get_alps_field": null
+            },
+            "post_feed_list_title": {
+                "carbon_get_post_meta": "Text post_feed_list_title",
+                "get_alps_field": null
+            },
+            "post_feed_list_link": {
+                "carbon_get_post_meta": "Text post_feed_list_link",
+                "get_alps_field": null
+            },
+            "post_feed_list_round_image": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "post_feed_list_category_array": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "term",
+                        "subtype": "category",
+                        "id": "7"
+                    }
+                ],
+                "get_alps_field": {
+                    "value": "",
+                    "type": "term",
+                    "subtype": "category",
+                    "id": "7"
+                }
+            },
+            "post_feed_list_count": {
+                "carbon_get_post_meta": "Text post_feed_list_count",
+                "get_alps_field": null
+            },
+            "post_feed_list_offset": {
+                "carbon_get_post_meta": "Text post_feed_list_offset",
+                "get_alps_field": null
+            },
+            "post_feed_list_custom_array": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "post",
+                        "id": "16"
+                    }
+                ],
+                "get_alps_field": {
+                    "value": "",
+                    "type": "post",
+                    "subtype": "post",
+                    "id": "16"
+                }
+            },
+            "post_feed_full": {
+                "carbon_get_post_meta": "post_feed_full_category",
+                "get_alps_field": null
+            },
+            "post_feed_full_title": {
+                "carbon_get_post_meta": "Text post_feed_full_title",
+                "get_alps_field": null
+            },
+            "post_feed_full_link": {
+                "carbon_get_post_meta": "Text post_feed_full_link",
+                "get_alps_field": null
+            },
+            "post_feed_full_featured": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "post_feed_full_featured_array": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "post",
+                        "id": "16"
+                    }
+                ],
+                "get_alps_field": {
+                    "value": "",
+                    "type": "post",
+                    "subtype": "post",
+                    "id": "16"
+                }
+            },
+            "post_feed_full_offset": {
+                "carbon_get_post_meta": "Text post_feed_full_offset",
+                "get_alps_field": null
+            },
+            "post_feed_full_category_array": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "term",
+                        "subtype": "category",
+                        "id": "7"
+                    }
+                ],
+                "get_alps_field": {
+                    "value": "",
+                    "type": "term",
+                    "subtype": "category",
+                    "id": "7"
+                }
+            },
+            "post_feed_archive": {
+                "carbon_get_post_meta": "post_feed_archive_category",
+                "get_alps_field": null
+            },
+            "post_feed_archive_title": {
+                "carbon_get_post_meta": "Text post_feed_archive_title",
+                "get_alps_field": null
+            },
+            "post_feed_archive_link": {
+                "carbon_get_post_meta": "Text post_feed_archive_link",
+                "get_alps_field": null
+            },
+            "post_feed_archive_offset": {
+                "carbon_get_post_meta": "Text post_feed_archive_offset",
+                "get_alps_field": null
+            },
+            "post_feed_archive_category_array": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "term",
+                        "subtype": "category",
+                        "id": "7"
+                    }
+                ],
+                "get_alps_field": {
+                    "value": "",
+                    "type": "term",
+                    "subtype": "category",
+                    "id": "7"
+                }
+            }
+        },
+        "post": {
+            "grid_two_columns": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "content_block": {
+                "carbon_get_post_meta": "relationship",
+                "get_alps_field": null
+            },
+            "content_block_freeform": {
+                "carbon_get_post_meta": [
+                    {
+                        "_type": "_",
+                        "content_block_freeform_colorpicker": "#123456",
+                        "content_block_freeform_kicker": "Text content_block_freeform_kicker",
+                        "content_block_freeform_title": "Text content_block_freeform_title",
+                        "content_block_freeform_image": "12",
+                        "content_block_freeform_round": true,
+                        "content_block_freeform_body": "<p>Rich content_block_freeform_body <strong>bold</strong></p>",
+                        "content_block_freeform_button_text": "Text content_block_freeform_button_text",
+                        "content_block_freeform_button_url": "Text content_block_freeform_button_url"
+                    },
+                    {
+                        "_type": "_",
+                        "content_block_freeform_colorpicker": "#123456",
+                        "content_block_freeform_kicker": "Text content_block_freeform_kicker row 1",
+                        "content_block_freeform_title": "Text content_block_freeform_title row 1",
+                        "content_block_freeform_image": "13",
+                        "content_block_freeform_round": true,
+                        "content_block_freeform_body": "<p>Rich content_block_freeform_body <strong>bold</strong></p>",
+                        "content_block_freeform_button_text": "Text content_block_freeform_button_text row 1",
+                        "content_block_freeform_button_url": "Text content_block_freeform_button_url row 1"
+                    }
+                ],
+                "get_alps_field": [
+                    {
+                        "_type": "_",
+                        "content_block_freeform_colorpicker": "#123456",
+                        "content_block_freeform_kicker": "Text content_block_freeform_kicker",
+                        "content_block_freeform_title": "Text content_block_freeform_title",
+                        "content_block_freeform_image": "12",
+                        "content_block_freeform_round": true,
+                        "content_block_freeform_body": "<p>Rich content_block_freeform_body <strong>bold</strong></p>",
+                        "content_block_freeform_button_text": "Text content_block_freeform_button_text",
+                        "content_block_freeform_button_url": "Text content_block_freeform_button_url"
+                    },
+                    {
+                        "_type": "_",
+                        "content_block_freeform_colorpicker": "#123456",
+                        "content_block_freeform_kicker": "Text content_block_freeform_kicker row 1",
+                        "content_block_freeform_title": "Text content_block_freeform_title row 1",
+                        "content_block_freeform_image": "13",
+                        "content_block_freeform_round": true,
+                        "content_block_freeform_body": "<p>Rich content_block_freeform_body <strong>bold</strong></p>",
+                        "content_block_freeform_button_text": "Text content_block_freeform_button_text row 1",
+                        "content_block_freeform_button_url": "Text content_block_freeform_button_url row 1"
+                    }
+                ]
+            },
+            "content_block_relationship": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "page",
+                        "id": "15"
+                    },
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "post",
+                        "id": "16"
+                    }
+                ],
+                "get_alps_field": [
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "page",
+                        "id": "15"
+                    },
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "post",
+                        "id": "16"
+                    }
+                ]
+            },
+            "sb_title": {
+                "carbon_get_post_meta": "Text sb_title",
+                "get_alps_field": null
+            },
+            "sb_subtitle": {
+                "carbon_get_post_meta": "Text sb_subtitle",
+                "get_alps_field": null
+            },
+            "sb_background_image": {
+                "carbon_get_post_meta": "12",
+                "get_alps_field": null
+            },
+            "sb_thumbnail": {
+                "carbon_get_post_meta": "12",
+                "get_alps_field": null
+            },
+            "sb_side_image": {
+                "carbon_get_post_meta": "12",
+                "get_alps_field": null
+            },
+            "is_video": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "sb_body": {
+                "carbon_get_post_meta": "<p>Rich sb_body <strong>bold</strong></p>",
+                "get_alps_field": null
+            },
+            "sb_url": {
+                "carbon_get_post_meta": "Text sb_url",
+                "get_alps_field": null
+            },
+            "sb_cta": {
+                "carbon_get_post_meta": "Text sb_cta",
+                "get_alps_field": null
+            },
+            "remove_header": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "featured_image_hero_layout": {
+                "carbon_get_post_meta": "page-header",
+                "get_alps_field": null
+            },
+            "remove_spacing": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "head_type": {
+                "carbon_get_post_meta": "overlay",
+                "get_alps_field": null
+            },
+            "kicker": {
+                "carbon_get_post_meta": "Text kicker",
+                "get_alps_field": null
+            },
+            "display_title": {
+                "carbon_get_post_meta": "Text display_title",
+                "get_alps_field": null
+            },
+            "long_header_subtitle": {
+                "carbon_get_post_meta": "Text long_header_subtitle",
+                "get_alps_field": null
+            },
+            "page_sub_title": {
+                "carbon_get_post_meta": "Text page_sub_title",
+                "get_alps_field": null
+            },
+            "header_background_image": {
+                "carbon_get_post_meta": "12",
+                "get_alps_field": null
+            },
+            "hero_type": {
+                "carbon_get_post_meta": "carousel_without_text_overlay",
+                "get_alps_field": null
+            },
+            "hero_overlay": {
+                "carbon_get_post_meta": "off",
+                "get_alps_field": null
+            },
+            "hero_image": {
+                "carbon_get_post_meta": "12",
+                "get_alps_field": null
+            },
+            "hero_title": {
+                "carbon_get_post_meta": "Line one hero_title\nLine two",
+                "get_alps_field": null
+            },
+            "hero_kicker": {
+                "carbon_get_post_meta": "Text hero_kicker",
+                "get_alps_field": null
+            },
+            "hero_link_url": {
+                "carbon_get_post_meta": "Text hero_link_url",
+                "get_alps_field": null
+            },
+            "hero_link_button": {
+                "carbon_get_post_meta": "Text hero_link_button",
+                "get_alps_field": null
+            },
+            "hero_image_extended": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "hero_scroll_hint": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "hero_column": {
+                "carbon_get_post_meta": [
+                    {
+                        "_type": "_",
+                        "hero_image_column": "12",
+                        "hero_title_column": "Line one hero_title_column\nLine two",
+                        "hero_kicker_column": "Text hero_kicker_column",
+                        "hero_link_url": "Text hero_link_url"
+                    },
+                    {
+                        "_type": "_",
+                        "hero_image_column": "13",
+                        "hero_title_column": "Line one hero_title_column\nLine two",
+                        "hero_kicker_column": "Text hero_kicker_column row 1",
+                        "hero_link_url": "Text hero_link_url row 1"
+                    }
+                ],
+                "get_alps_field": [
+                    {
+                        "_type": "_",
+                        "hero_image_column": "12",
+                        "hero_title_column": "Line one hero_title_column\nLine two",
+                        "hero_kicker_column": "Text hero_kicker_column",
+                        "hero_link_url": "Text hero_link_url"
+                    },
+                    {
+                        "_type": "_",
+                        "hero_image_column": "13",
+                        "hero_title_column": "Line one hero_title_column\nLine two",
+                        "hero_kicker_column": "Text hero_kicker_column row 1",
+                        "hero_link_url": "Text hero_link_url row 1"
+                    }
+                ]
+            },
+            "hero_carousel": {
+                "carbon_get_post_meta": [
+                    {
+                        "_type": "_",
+                        "slide_image": "12",
+                        "slide_heading": "Text slide_heading",
+                        "slide_dek": "Line one slide_dek\nLine two",
+                        "slide_url": "Text slide_url",
+                        "slide_cta": "Text slide_cta"
+                    },
+                    {
+                        "_type": "_",
+                        "slide_image": "13",
+                        "slide_heading": "Text slide_heading row 1",
+                        "slide_dek": "Line one slide_dek\nLine two",
+                        "slide_url": "Text slide_url row 1",
+                        "slide_cta": "Text slide_cta row 1"
+                    }
+                ],
+                "get_alps_field": [
+                    {
+                        "_type": "_",
+                        "slide_image": "12",
+                        "slide_heading": "Text slide_heading",
+                        "slide_dek": "Line one slide_dek\nLine two",
+                        "slide_url": "Text slide_url",
+                        "slide_cta": "Text slide_cta"
+                    },
+                    {
+                        "_type": "_",
+                        "slide_image": "13",
+                        "slide_heading": "Text slide_heading row 1",
+                        "slide_dek": "Line one slide_dek\nLine two",
+                        "slide_url": "Text slide_url row 1",
+                        "slide_cta": "Text slide_cta row 1"
+                    }
+                ]
+            },
+            "hide_sidebar": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "hide_featured_image": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "related": {
+                "carbon_get_post_meta": "related_custom",
+                "get_alps_field": null
+            },
+            "related_custom_value": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "page",
+                        "id": "15"
+                    },
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "post",
+                        "id": "16"
+                    }
+                ],
+                "get_alps_field": [
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "page",
+                        "id": "15"
+                    },
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "post",
+                        "id": "16"
+                    }
+                ]
+            },
+            "related_grid": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "related_grid_3up": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "related_image": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "related_image_crop": {
+                "carbon_get_post_meta": "circle",
+                "get_alps_field": null
+            },
+            "show_hero_featured_post": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "hero_featured_post": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "post",
+                        "id": "16"
+                    }
+                ],
+                "get_alps_field": {
+                    "value": "",
+                    "type": "post",
+                    "subtype": "post",
+                    "id": "16"
+                }
+            },
+            "post_feed_list": {
+                "carbon_get_post_meta": "post_feed_list_custom",
+                "get_alps_field": null
+            },
+            "post_feed_list_title": {
+                "carbon_get_post_meta": "Text post_feed_list_title",
+                "get_alps_field": null
+            },
+            "post_feed_list_link": {
+                "carbon_get_post_meta": "Text post_feed_list_link",
+                "get_alps_field": null
+            },
+            "post_feed_list_round_image": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "post_feed_list_category_array": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "term",
+                        "subtype": "category",
+                        "id": "7"
+                    }
+                ],
+                "get_alps_field": {
+                    "value": "",
+                    "type": "term",
+                    "subtype": "category",
+                    "id": "7"
+                }
+            },
+            "post_feed_list_count": {
+                "carbon_get_post_meta": "Text post_feed_list_count",
+                "get_alps_field": null
+            },
+            "post_feed_list_offset": {
+                "carbon_get_post_meta": "Text post_feed_list_offset",
+                "get_alps_field": null
+            },
+            "post_feed_list_custom_array": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "post",
+                        "id": "16"
+                    }
+                ],
+                "get_alps_field": {
+                    "value": "",
+                    "type": "post",
+                    "subtype": "post",
+                    "id": "16"
+                }
+            },
+            "post_feed_full": {
+                "carbon_get_post_meta": "post_feed_full_category",
+                "get_alps_field": null
+            },
+            "post_feed_full_title": {
+                "carbon_get_post_meta": "Text post_feed_full_title",
+                "get_alps_field": null
+            },
+            "post_feed_full_link": {
+                "carbon_get_post_meta": "Text post_feed_full_link",
+                "get_alps_field": null
+            },
+            "post_feed_full_featured": {
+                "carbon_get_post_meta": true,
+                "get_alps_field": null
+            },
+            "post_feed_full_featured_array": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "post",
+                        "subtype": "post",
+                        "id": "16"
+                    }
+                ],
+                "get_alps_field": {
+                    "value": "",
+                    "type": "post",
+                    "subtype": "post",
+                    "id": "16"
+                }
+            },
+            "post_feed_full_offset": {
+                "carbon_get_post_meta": "Text post_feed_full_offset",
+                "get_alps_field": null
+            },
+            "post_feed_full_category_array": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "term",
+                        "subtype": "category",
+                        "id": "7"
+                    }
+                ],
+                "get_alps_field": {
+                    "value": "",
+                    "type": "term",
+                    "subtype": "category",
+                    "id": "7"
+                }
+            },
+            "post_feed_archive": {
+                "carbon_get_post_meta": "post_feed_archive_category",
+                "get_alps_field": null
+            },
+            "post_feed_archive_title": {
+                "carbon_get_post_meta": "Text post_feed_archive_title",
+                "get_alps_field": null
+            },
+            "post_feed_archive_link": {
+                "carbon_get_post_meta": "Text post_feed_archive_link",
+                "get_alps_field": null
+            },
+            "post_feed_archive_offset": {
+                "carbon_get_post_meta": "Text post_feed_archive_offset",
+                "get_alps_field": null
+            },
+            "post_feed_archive_category_array": {
+                "carbon_get_post_meta": [
+                    {
+                        "value": "",
+                        "type": "term",
+                        "subtype": "category",
+                        "id": "7"
+                    }
+                ],
+                "get_alps_field": {
+                    "value": "",
+                    "type": "term",
+                    "subtype": "category",
+                    "id": "7"
+                }
+            }
+        },
+        "options": {
+            "logo_recolor": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "is_wide_logo": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "logo": {
+                "carbon_get_theme_option": "12",
+                "get_alps_option": "12"
+            },
+            "logo_inverted": {
+                "carbon_get_theme_option": "12",
+                "get_alps_option": "12"
+            },
+            "theme_color": {
+                "carbon_get_theme_option": "nad-vine",
+                "get_alps_option": "nad-vine"
+            },
+            "dark_theme": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "grid_lines": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "square_buttons": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "site_branding_statement": {
+                "carbon_get_theme_option": "Line one site_branding_statement\nLine two",
+                "get_alps_option": "Line one site_branding_statement\nLine two"
+            },
+            "global_branding_statement": {
+                "carbon_get_theme_option": "Line one global_branding_statement\nLine two",
+                "get_alps_option": "Line one global_branding_statement\nLine two"
+            },
+            "posts_page_title": {
+                "carbon_get_theme_option": "Text posts_page_title",
+                "get_alps_option": "Text posts_page_title"
+            },
+            "index_hide_sidebar": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "archive_page_title": {
+                "carbon_get_theme_option": "Text archive_page_title",
+                "get_alps_option": "Text archive_page_title"
+            },
+            "is_related_stories_image_hidden": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "archive_hide_sidebar": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "posts_label": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "posts_grid": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "posts_grid_3up": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "posts_image": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "posts_image_round": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "sabbath_icon": {
+                "carbon_get_theme_option": "12",
+                "get_alps_option": "12"
+            },
+            "sabbath_background": {
+                "carbon_get_theme_option": "12",
+                "get_alps_option": "12"
+            },
+            "sabbath_scroll": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "sabbath_hide": {
+                "carbon_get_theme_option": true,
+                "get_alps_option": true
+            },
+            "sabbath_hide_screens": {
+                "carbon_get_theme_option": "hide-sabbath--until-large",
+                "get_alps_option": "hide-sabbath--until-large"
+            },
+            "footer_description": {
+                "carbon_get_theme_option": [
+                    {
+                        "_type": "translatable_footer_description",
+                        "footer_description_en": "Text footer_description_en",
+                        "footer_description_de": "Text footer_description_de",
+                        "footer_description_fr": "Text footer_description_fr",
+                        "footer_description_pt-pt": "Text footer_description_pt-pt",
+                        "footer_description_es": "Text footer_description_es",
+                        "footer_description_ko": "Text footer_description_ko",
+                        "footer_description_ru": "Text footer_description_ru",
+                        "footer_description_zh-hant": "Text footer_description_zh-hant"
+                    },
+                    {
+                        "_type": "translatable_footer_description",
+                        "footer_description_en": "Text footer_description_en row 1",
+                        "footer_description_de": "Text footer_description_de row 1",
+                        "footer_description_fr": "Text footer_description_fr row 1",
+                        "footer_description_pt-pt": "Text footer_description_pt-pt row 1",
+                        "footer_description_es": "Text footer_description_es row 1",
+                        "footer_description_ko": "Text footer_description_ko row 1",
+                        "footer_description_ru": "Text footer_description_ru row 1",
+                        "footer_description_zh-hant": "Text footer_description_zh-hant row 1"
+                    }
+                ],
+                "get_alps_option": [
+                    {
+                        "_type": "translatable_footer_description",
+                        "footer_description_en": "Text footer_description_en",
+                        "footer_description_de": "Text footer_description_de",
+                        "footer_description_fr": "Text footer_description_fr",
+                        "footer_description_pt-pt": "Text footer_description_pt-pt",
+                        "footer_description_es": "Text footer_description_es",
+                        "footer_description_ko": "Text footer_description_ko",
+                        "footer_description_ru": "Text footer_description_ru",
+                        "footer_description_zh-hant": "Text footer_description_zh-hant"
+                    },
+                    {
+                        "_type": "translatable_footer_description",
+                        "footer_description_en": "Text footer_description_en row 1",
+                        "footer_description_de": "Text footer_description_de row 1",
+                        "footer_description_fr": "Text footer_description_fr row 1",
+                        "footer_description_pt-pt": "Text footer_description_pt-pt row 1",
+                        "footer_description_es": "Text footer_description_es row 1",
+                        "footer_description_ko": "Text footer_description_ko row 1",
+                        "footer_description_ru": "Text footer_description_ru row 1",
+                        "footer_description_zh-hant": "Text footer_description_zh-hant row 1"
+                    }
+                ]
+            },
+            "footer_copyright": {
+                "carbon_get_theme_option": "Text footer_copyright",
+                "get_alps_option": "Text footer_copyright"
+            },
+            "footer_address": {
+                "carbon_get_theme_option": [
+                    {
+                        "_type": "_",
+                        "footer_address_street": "Text footer_address_street",
+                        "footer_address_city": "Text footer_address_city",
+                        "footer_address_state": "Text footer_address_state",
+                        "footer_address_zip": "Text footer_address_zip",
+                        "footer_address_country": "Text footer_address_country",
+                        "footer_phone": "Text footer_phone"
+                    }
+                ],
+                "get_alps_option": {
+                    "_type": "_",
+                    "footer_address_street": "Text footer_address_street",
+                    "footer_address_city": "Text footer_address_city",
+                    "footer_address_state": "Text footer_address_state",
+                    "footer_address_zip": "Text footer_address_zip",
+                    "footer_address_country": "Text footer_address_country",
+                    "footer_phone": "Text footer_phone"
+                }
+            },
+            "footer_logo_icon": {
+                "carbon_get_theme_option": "12",
+                "get_alps_option": "12"
+            },
+            "footer_logo_type": {
+                "carbon_get_theme_option": "circle",
+                "get_alps_option": "circle"
+            },
+            "alps_image_avif_quality": {
+                "carbon_get_theme_option": "Text alps_image_avif_quality",
+                "get_alps_option": "Text alps_image_avif_quality"
+            },
+            "alps_image_full_max": {
+                "carbon_get_theme_option": "Text alps_image_full_max",
+                "get_alps_option": "Text alps_image_full_max"
+            },
+            "alps_image_small_max": {
+                "carbon_get_theme_option": "Text alps_image_small_max",
+                "get_alps_option": "Text alps_image_small_max"
+            },
+            "crb_get_i18n_theme_option(footer_description)": ""
+        }
+    },
+    "widgets": {
+        "ALPS_Author_Box_Widget": {
+            "id_base": "carbon_fields_alps_widget_author",
+            "option_name": "widget_carbon_fields_alps_widget_author",
+            "fields": [
+                {
+                    "name": "text_link_author",
+                    "type": "text"
+                }
+            ],
+            "input": {
+                "text_link_author": "Text text_link_author"
+            },
+            "stored_instance": {
+                "_text_link_author": "Text text_link_author"
+            },
+            "render_error": "Undefined array key \"text_link_title\" (alps-author-box.php:6)",
+            "rendered_html_length": 277,
+            "rendered_html": "<div class=\"c-block c-block__text has-image u-padding--zero--left u-clear-fix\"> <img class=\"c-block__image\" itemprop=\"image\" src=\"https://secure.gravatar.com/avatar/?s=400&#038;d=mm&#038;r=g\"> <h4 class=\"c-media-block__kicker c-block__kicker u-space--zero--top\">"
+        },
+        "ALPS_Text_With_Link_Widget": {
+            "id_base": "carbon_fields_alps_widget_text_with_link",
+            "option_name": "widget_carbon_fields_alps_widget_text_with_link",
+            "fields": [
+                {
+                    "name": "text_link_title",
+                    "type": "text"
+                },
+                {
+                    "name": "text_link_content",
+                    "type": "textarea"
+                },
+                {
+                    "name": "text_link_url",
+                    "type": "text"
+                },
+                {
+                    "name": "text_link_url_text",
+                    "type": "text"
+                }
+            ],
+            "input": {
+                "text_link_title": "Text text_link_title",
+                "text_link_content": "Line one text_link_content\nLine two",
+                "text_link_url": "Text text_link_url",
+                "text_link_url_text": "Text text_link_url_text"
+            },
+            "stored_instance": {
+                "_text_link_title": "Text text_link_title",
+                "_text_link_content": "Line one text_link_content\nLine two",
+                "_text_link_url": "Text text_link_url",
+                "_text_link_url_text": "Text text_link_url_text"
+            },
+            "render_error": "",
+            "rendered_html_length": 435,
+            "rendered_html": "<div class=\"c-block__breakout u-padding u-padding--double--bottom u-padding--double--top u-spacing u-theme--background-color--darker\"> <h3 class=\"c-block__title u-color--white\">Text text_link_title</h3> <p class=\"c-block__body u-theme--color--lighter\">Line one text_link_content Line two</p> <a class=\"o-button o-button--lighter\" href=\"http://Text%20text_link_url\"> Text text_link_url_text </a> </div>"
+        },
+        "ALPS_Post_Feed_Widget": {
+            "id_base": "carbon_fields_alps_widget_post_feed",
+            "option_name": "widget_carbon_fields_alps_widget_post_feed",
+            "fields": [
+                {
+                    "name": "post_feed_category",
+                    "type": "select",
+                    "options": [
+                        "1"
+                    ]
+                },
+                {
+                    "name": "post_feed_title",
+                    "type": "text"
+                },
+                {
+                    "name": "post_feed_url",
+                    "type": "text"
+                },
+                {
+                    "name": "post_feed_count",
+                    "type": "text"
+                },
+                {
+                    "name": "post_feed_offset",
+                    "type": "text"
+                },
+                {
+                    "name": "post_feed_featured",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                },
+                {
+                    "name": "post_feed_layout",
+                    "type": "checkbox",
+                    "default": false,
+                    "option_value": "true"
+                }
+            ],
+            "input": {
+                "post_feed_category": "1",
+                "post_feed_title": "Text post_feed_title",
+                "post_feed_url": "Text post_feed_url",
+                "post_feed_count": "Text post_feed_count",
+                "post_feed_offset": "Text post_feed_offset",
+                "post_feed_featured": "true",
+                "post_feed_layout": "true"
+            },
+            "stored_instance": {
+                "_post_feed_category": 1,
+                "_post_feed_title": "Text post_feed_title",
+                "_post_feed_url": "Text post_feed_url",
+                "_post_feed_count": "Text post_feed_count",
+                "_post_feed_offset": "Text post_feed_offset",
+                "_post_feed_featured": "true",
+                "_post_feed_layout": "true"
+            },
+            "render_error": "Trying to access array offset on false (alps-post-feed.php:44)",
+            "rendered_html_length": 441,
+            "rendered_html": "<div class=\"c-block-wrap u-spacing u-space--right--negative\"> <div class=\"c-block__heading u-theme--border-color--darker\"> <h3 class=\"c-block__heading-title u-theme--color--darker\"> Text post_feed_title </h3> <a href=\"http://Text%20post_feed_url\" class=\"c-block__heading-link u-theme--color--base u-theme--link-hover--dark\">See All</a> </div> <div class=\"c-block-wrap__content u-spacing\">"
+        },
+        "ALPS_Related_Stories_Widget": {
+            "id_base": "carbon_fields_alps_widget_related_storied",
+            "option_name": "widget_carbon_fields_alps_widget_related_storied",
+            "fields": [
+                {
+                    "name": "related_stories_title",
+                    "type": "text"
+                }
+            ],
+            "input": {
+                "related_stories_title": "Text related_stories_title"
+            },
+            "stored_instance": {
+                "_related_stories_title": "Text related_stories_title"
+            },
+            "render_error": "Undefined variable $post (alps-related-stories.php:5)",
+            "rendered_html_length": 0,
+            "rendered_html": ""
+        }
+    },
+    "ids": {
+        "7": "term_capture",
+        "12": "image_a",
+        "13": "image_b",
+        "14": "image_c",
+        "15": "page_target",
+        "16": "post_target",
+        "17": "page_empty",
+        "18": "post_empty",
+        "19": "page_filled",
+        "20": "post_filled"
+    }
+}
