@@ -158,7 +158,7 @@ The translation in `ALPS for Wordpress` was done thanks to the following individ
 
 ### Build commands
 
-* `npm run build` — Build and minify `resources/` into content-hashed files in `public/`, with `manifest.json` and `entrypoints.json` for Acorn's `bundle()`
+* `npm run build` — Build and minify `resources/` into content-hashed files in `public/`, with `manifest.json` and `entrypoints.json` for Acorn's `bundle()`. The files of the last three different builds stay in `public/` (listed in `previous-assets.json`), so pages cached before an update don't request missing files
 
 ### Documentation
 

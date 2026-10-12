@@ -2,12 +2,13 @@
 // enqueue: resources/scripts/{app,editor}.js with esbuild and
 // resources/styles/{app,editor}.css with lightningcss, into content-hashed
 // files under public/js and public/css, plus public/manifest.json and
-// public/entrypoints.json in the format bud wrote.
+// public/entrypoints.json in the format bud wrote. Files from the previous
+// builds stay for a while (see previous-assets.json below).
 //
 // public/ is committed and shipped as-is; CI runs this and fails when the
 // result differs from the committed files.
 import { createHash } from 'node:crypto';
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import browserslist from 'browserslist';
@@ -142,13 +143,41 @@ for (const name of entries) {
 }
 manifest['entrypoints.json'] = 'entrypoints.json';
 
-// Only this script writes public/js and public/css; clear old hashes.
+// Pages cached before a theme update (Cloudflare keeps the homepage for
+// hours) still request the previous hashed files, and a 404 there means no
+// slider script. Keep the files of the last KEEP_GENERATIONS builds, newest
+// first in public/previous-assets.json, so those pages work until their
+// cache expires. A rebuild without source changes leaves the list as it is.
+const KEEP_GENERATIONS = 3;
+const previousList = resolve(publicDir, 'previous-assets.json');
+const readJson = (file, fallback) => {
+  try {
+    return JSON.parse(readFileSync(file, 'utf8'));
+  } catch {
+    return fallback;
+  }
+};
+const assetFiles = (map) => Object.entries(map).filter(([key]) => key !== 'entrypoints.json').map(([, file]) => file).sort();
+const current = assetFiles(manifest);
+const committed = assetFiles(readJson(resolve(publicDir, 'manifest.json'), {}));
+let generations = readJson(previousList, []);
+if (committed.length && committed.join() !== current.join()) generations.unshift(committed);
+generations = generations
+  .map((list) => list.filter((file) => !current.includes(file) && existsSync(resolve(publicDir, file))))
+  .filter((list) => list.length)
+  .slice(0, KEEP_GENERATIONS);
+const keep = new Set([...current, ...generations.flat()]);
+
+// Only this script writes public/js and public/css.
 for (const dir of ['js', 'css']) {
-  rmSync(resolve(publicDir, dir), { recursive: true, force: true });
   mkdirSync(resolve(publicDir, dir), { recursive: true });
+  for (const name of readdirSync(resolve(publicDir, dir))) {
+    if (!keep.has(`${dir}/${name}`)) rmSync(resolve(publicDir, dir, name), { recursive: true, force: true });
+  }
 }
 for (const { file, code } of files) writeFileSync(resolve(publicDir, file), code);
 writeFileSync(resolve(publicDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
 writeFileSync(resolve(publicDir, 'entrypoints.json'), JSON.stringify(entrypoints, null, 2));
+writeFileSync(previousList, JSON.stringify(generations, null, 2));
 
 for (const { file, code } of files) console.log(`public/${file}  ${code.length} B`);
