@@ -14,8 +14,7 @@ use function Roots\bundle;
  * @return void
  */
 add_action('wp_enqueue_scripts', function () {
-    // Keep Acorn's webpack runtime before the bundle while allowing HTML parsing
-    // to finish before the slider code runs. Editor assets keep their own loader.
+    // Deferred, so HTML parsing finishes before the slider code runs.
     bundle('app')->enqueueCss()->enqueueJs([
         'in_footer' => true,
         'strategy' => 'defer',
@@ -171,7 +170,7 @@ add_action('enqueue_block_assets', function () {
  * registry and inserter live. Since WordPress iframed the canvas in 6.3,
  * enqueue_block_assets is the wrong hook for that, so block registration is
  * enqueued here instead and styles are left on the hook that reaches the
- * iframe. enqueueJs() emits the webpack runtime itself.
+ * iframe.
  *
  * @return void
  */

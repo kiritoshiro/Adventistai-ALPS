@@ -1,4 +1,4 @@
-import {domReady} from '@roots/sage/client';
+import {domReady} from './dom-ready';
 import {registerBlockStyle, unregisterBlockStyle} from '@wordpress/blocks';
 
 import './card-scroller-block';
@@ -8,12 +8,7 @@ import './wrapped-image-text-block';
 /**
  * editor.main
  */
-const main = (err) => {
-  if (err) {
-    // handle hmr errors
-    console.error(err);
-  }
-
+const main = () => {
   unregisterBlockStyle('core/button', 'outline');
 
   registerBlockStyle('core/button', {
@@ -22,10 +17,4 @@ const main = (err) => {
   });
 };
 
-/**
- * Initialize
- *
- * @see https://webpack.js.org/api/hot-module-replacement
- */
 domReady(main);
-import.meta.webpackHot?.accept(main);

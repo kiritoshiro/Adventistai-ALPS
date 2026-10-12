@@ -100,11 +100,10 @@ enforce required checks, so review the gate result before merging there.
   The site, its database and its admin account exist only inside the job. To run it locally (needs Node 24 with npx, and Python 3): `python3 .github/playground/smoke.py --php 8.4`. Settings are in `.github/playground/config.json`.
 - **Links**: `links.yml` checks the links in Markdown and `readme.txt` files with [lychee](https://github.com/lycheeverse/lychee). It runs on pull requests that change them, monthly and on demand. It is not part of the security gate, because a third-party site being down should not block a merge. Exclusions are in `.lychee.toml`; adventistai.lt is excluded because its Cloudflare bot protection answers GitHub runners with 403.
 
-## npm overrides for build-only alerts (2026-10-12)
+## npm build tooling (2026-10-12)
 
-CI audits only runtime npm packages (`npm audit --omit=dev --audit-level=high`), so Dependabot alerts are the only signal for build tooling. Two `overrides` in `package.json` close such alerts:
+The asset build was bud (webpack) with Tailwind 3 and PostCSS: about 945 npm packages. Their file watchers and globbing pulled in braces (GHSA-vfj7-8cjw-p6xm, high, no fixed release), which `npm_audit.py` let through only by a dated exception, plus Dependabot alerts for postcss-selector-parser and sprintf-js. `scripts/build.mjs` now builds the same bundles with esbuild and Lightning CSS. `npm ci` installs 25 packages (browserslist, esbuild, lightningcss, terser and their dependencies), `npm audit` reports none, and `npm-audit-exceptions.json` is empty.
 
-- `"postcss-selector-parser": "^7.1.6"` (GHSA-rj75-hqrm-r3gf; no 6.x fix). Tailwind 3, the postcss-preset-env plugins, postcss-nested and cssnano ask for `^6`. 7.0's breaking change is that nodes inserted while walking a selector are now visited safely; the production build was byte-identical. If a stylesheet change alters `public/` in an unexpected way, compare a build without this override. Remove it once those packages accept 7.x.
-- `"js-yaml@^3": { "argparse": "^2.0.1" }` drops sprintf-js (GHSA-hp3w-g68c-fv3c; no fixed release). js-yaml 3 (via bud's `yml-loader`) uses argparse only in its CLI, which this override breaks; the library is unaffected. Remove it once bud no longer pulls in js-yaml 3.
-
-npm may keep old lockfile entries when an override is added. Check with `npm ls sprintf-js postcss-selector-parser --all`, and delete stale `packages` entries before `npm install` if needed.
+- Tailwind's last output is kept as `resources/styles/tailwind-frozen.css`. The site depends on its reset (headings, lists, images), and posts may use its utility classes.
+- lightningcss and terser are pinned exactly: `scripts/minify-assets.mjs` and `trim-alps-css.mjs` must reproduce the committed minified copies. When updating either, rerun both scripts and commit the new copies.
+- Nesting is flattened (`include: Features.Nesting`); a selector list as the parent becomes `:is(...)`, whose specificity is the highest in the list. Keep the selectors in such a list at equal specificity, or write them out.

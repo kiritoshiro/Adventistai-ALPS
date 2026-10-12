@@ -1,31 +1,28 @@
 {
   "app": {
     "js": [
-      "js/runtime.93e987.js",
-      "js/app.f500e6.js"
+      "js/app.fe6815.js"
     ],
     "css": [
-      "css/app.3a7aff.css"
+      "css/app.56a408.css"
     ],
     "dependencies": []
   },
   "editor": {
     "js": [
-      "js/runtime.93e987.js",
-      "js/editor.6ea65d.js"
+      "js/editor.448861.js"
     ],
     "css": [
-      "css/editor.54ad70.css"
+      "css/editor.7ab06d.css"
     ],
     "dependencies": [
-      "wp-blocks",
       "wp-block-editor",
+      "wp-blocks",
       "wp-components",
       "wp-data",
-      "wp-i18n",
       "wp-element",
-      "wp-server-side-render",
-      "react"
+      "wp-i18n",
+      "wp-server-side-render"
     ]
   }
 }

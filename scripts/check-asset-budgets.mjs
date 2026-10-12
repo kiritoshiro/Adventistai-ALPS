@@ -9,7 +9,6 @@ const built = (key) => typeof manifest[key] === 'string' ? `public/${manifest[ke
 const budgets = [
   ['Frontend CSS', built('app.css'), 22_000],
   ['Frontend JS', built('app.js'), 4_500],
-  ['Shared runtime JS', built('runtime.js'), 2_500],
   ['Editor CSS', built('editor.css'), 9_000],
   ['Editor JS', built('editor.js'), 24_000],
   ['ALPS denim CSS', 'app/local/alps/css/main-denim.css', 215_000],
