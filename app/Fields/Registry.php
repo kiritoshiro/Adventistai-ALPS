@@ -24,7 +24,8 @@ if (! defined('ABSPATH')) {
  * Field entries: type (text, textarea, rich_text, color, image, checkbox,
  * radio, select, complex, association) plus, where they apply, default,
  * options (choice keys), value (the stored value of a ticked checkbox) and
- * groups (complex: group name => sub-fields; '_' is the unnamed group).
+ * groups (complex: group name => sub-fields; '_' is the unnamed group) and
+ * types (association: the object types it links to).
  */
 class Registry
 {
@@ -76,7 +77,7 @@ class Registry
                 'hide_featured_image' => $check,
                 // Related Pages & Posts (pages)
                 'related' => ['type' => 'radio', 'options' => ['false', 'related_top_level', 'related_all', 'related_custom']],
-                'related_custom_value' => ['type' => 'association'],
+                'related_custom_value' => ['type' => 'association', 'types' => [['type' => 'post', 'post_type' => 'page'], ['type' => 'post', 'post_type' => 'post']]],
                 'related_grid' => $check,
                 'related_grid_3up' => $check,
                 'related_image' => $check,

@@ -72,6 +72,11 @@ $describe = function ($field) use (&$describe) {
     if (! $field instanceof Complex_Field && ! $field instanceof Association_Field) {
         $d['default'] = $default;
     }
+    if ($field instanceof Association_Field) {
+        $d['types'] = array_map(function ($type) {
+            return array_intersect_key($type, ['type' => 1, 'post_type' => 1, 'taxonomy' => 1]);
+        }, $field->get_types());
+    }
     if ($field instanceof Complex_Field) {
         $d['groups'] = [];
         foreach ($field->get_group_names() as $group) {
@@ -96,6 +101,9 @@ $normalise = function ($d) use (&$normalise) {
             $default = $default ? $d['value'] : '';
         }
         $out['default'] = $default;
+    }
+    if (isset($d['types'])) {
+        $out['types'] = $d['types'];
     }
     if (isset($d['groups'])) {
         foreach ($d['groups'] as $group => $subs) {
@@ -236,6 +244,8 @@ $raw_post_states = [
         add_post_meta($id, '_related_custom_value|||0|id', (string) $page_target);
         add_post_meta($id, '_related_custom_value|||1|value', "post:post:$post_target");
         add_post_meta($id, '_related_custom_value|||2|value', (string) $page_target);
+        // A legacy ID of a post (not a page): read as the field's first type.
+        add_post_meta($id, '_related_custom_value|||6|value', (string) $post_target);
         add_post_meta($id, '_related_custom_value|||3|value', '  ');
         add_post_meta($id, '_related_custom_value|||10|type', 'term');
         add_post_meta($id, '_related_custom_value|||10|subtype', 'category');

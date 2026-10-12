@@ -186,7 +186,7 @@ class Store
             case 'complex':
                 return self::complex($field, $tree === null ? [] : $tree);
             case 'association':
-                return self::association($tree === null ? [] : $tree);
+                return self::association($field, $tree === null ? [] : $tree);
             default:
                 return self::format($field, $tree === null ? self::fieldDefault($field) : self::single($tree));
         }
@@ -252,7 +252,23 @@ class Store
         return $out;
     }
 
-    private static function association(array $tree)
+    /**
+     * Legacy association entries hold only a post ID; Carbon Fields reads them
+     * as the field's first post type, whatever the post really is.
+     */
+    private static function legacyAssociation(array $field, $id)
+    {
+        $subtype = 'post';
+        foreach (isset($field['types']) ? $field['types'] : [] as $type) {
+            if ($type['type'] === 'post') {
+                $subtype = $type['post_type'];
+                break;
+            }
+        }
+        return 'post:' . $subtype . ':' . $id;
+    }
+
+    private static function association(array $field, array $tree)
     {
         $out = [];
         foreach ($tree as $entry) {
@@ -270,8 +286,7 @@ class Store
                 continue;
             }
             if (is_numeric($string)) {
-                // Legacy rows hold only a post ID.
-                $string = 'post:' . get_post_type((int) $string) . ':' . $string;
+                $string = self::legacyAssociation($field, $string);
             }
             $pieces = explode(':', $string);
             $out[] = [
