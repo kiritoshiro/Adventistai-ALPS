@@ -353,6 +353,86 @@ $wpdb->insert($wpdb->options, ['option_name' => '_footer_copyright', 'option_val
 Store::flush();
 $compare_options('direct-insert');
 
+// 4. Store::setOption() writes the rows carbon_set_theme_option() writes.
+$option_snapshot = function ($name) {
+    global $wpdb;
+    $rows = [];
+    foreach ($wpdb->get_results($wpdb->prepare("SELECT option_name, option_value, autoload FROM {$wpdb->options} WHERE option_name = %s OR option_name LIKE %s ORDER BY option_name", "_$name", $wpdb->esc_like("_$name|") . '%')) as $row) {
+        $rows[$row->option_name] = [$row->option_value, $row->autoload];
+    }
+    return $rows;
+};
+$write_cases = function ($name, $field) use ($value_for, $images) {
+    switch ($field['type']) {
+        case 'checkbox':
+            return ['true' => true, 'false' => false, 'value' => $field['value'], 'empty' => ''];
+        case 'radio':
+        case 'select':
+            return ['last' => end($field['options']), 'first' => $field['options'][0], 'empty' => '', 'invalid' => 'bogus'];
+        case 'image':
+            return ['int' => $images[1], 'string' => (string) $images[2], 'empty' => ''];
+        case 'complex':
+            $group = (string) array_key_first($field['groups']);
+            $subs = array_keys($field['groups'][$group]);
+            $full = $value_for($name, $field);
+            $typed = $group === '_' ? [] : ['_type' => $group];
+            return [
+                'none' => [],
+                'one' => [$full[0]],
+                'two' => $full,
+                'partial' => [$typed + [$subs[0] => 'Only the first']],
+                'unknown-group' => [['_type' => 'nope', $subs[0] => 'x']],
+            ];
+        default:
+            return ['text' => "Line one $name\nLine <b>two</b>", 'empty' => ''];
+    }
+};
+foreach (Registry::options() as $name => $field) {
+    foreach ($write_cases($name, $field) as $case => $value) {
+        foreach ([false, true] as $stray) {
+            $results = [];
+            foreach (['carbon', 'store'] as $writer) {
+                // Start from a saved value (plus a stray piped row), then overwrite it.
+                carbon_set_theme_option($name, $value_for($name, $field));
+                if ($stray) {
+                    add_option("_$name|||7|value", 'stray', '', false);
+                }
+                if ($writer === 'carbon') {
+                    carbon_set_theme_option($name, $value);
+                } else {
+                    Store::setOption($name, $value);
+                }
+                $results[$writer] = $option_snapshot($name);
+                foreach (array_keys($results[$writer]) as $option) {
+                    delete_option($option);
+                }
+            }
+            $same("setOption[$name:$case" . ($stray ? '+stray' : '') . ']', $results['carbon'], $results['store']);
+        }
+    }
+}
+$same('setOption unknown field', false, Store::setOption('no_such_option', 'x'));
+
+// 5. The settings page turns submitted values into what Store::setOption() takes.
+$page_cases = [
+    'dark_theme' => [['true', 'true'], ['', ''], [null, ''], ['on', '']],
+    'theme_color' => [['forest', 'forest'], ['bogus', ''], [['x'], '']],
+    'logo' => [[(string) $images[0], (string) $images[0]], ['12abc', '12'], ['', ''], ['0', '']],
+    'footer_copyright' => [['Text <b>bold</b>', 'Text <b>bold</b>']],
+];
+foreach ($page_cases as $name => $cases) {
+    foreach ($cases as $i => $case) {
+        $same("SettingsPage::sanitize($name #$i)", $case[1], \App\Fields\SettingsPage::sanitize(Registry::field('option', $name), $case[0]));
+    }
+}
+$same('SettingsPage::sanitize(footer_description)', [
+    ['_type' => 'translatable_footer_description', 'footer_description_en' => 'EN', 'footer_description_de' => '', 'footer_description_fr' => '', 'footer_description_pt-pt' => '', 'footer_description_es' => '', 'footer_description_ko' => '', 'footer_description_ru' => '', 'footer_description_zh-hant' => ''],
+], \App\Fields\SettingsPage::sanitize(Registry::field('option', 'footer_description'), [
+    5 => ['_type' => 'translatable_footer_description', 'footer_description_en' => 'EN', 'junk' => 'x'],
+    6 => ['_type' => 'unknown', 'footer_description_en' => 'dropped'],
+    7 => 'not a row',
+]));
+
 echo 'PHP ' . PHP_VERSION . ', WordPress ' . get_bloginfo('version') . ', Carbon Fields ' . \Carbon_Fields\VERSION . "\n";
 echo "compare: $checks checks, " . count($failures) . " failures\n";
 foreach ($failures as $failure) {

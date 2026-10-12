@@ -1,4 +1,12 @@
 <?php
+/**
+ * Test-only: the Carbon Fields definition of Appearance → ALPS Theme Settings
+ * as it was before the native page (app/Fields/SettingsPage.php) replaced it,
+ * frozen from app/carbon-fields/cf-theme-options.php at fb1c4ef. run.py loads
+ * it (through a Playground mu-plugin) so tests/fields/compare.php can still
+ * compare App\Fields\Registry, Store::option() and Store::setOption() with
+ * Carbon Fields itself. Never loaded by the theme.
+ */
 
 use Carbon_Fields\Container;
 use Carbon_Fields\Field;

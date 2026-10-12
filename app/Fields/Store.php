@@ -66,6 +66,74 @@ class Store
         return self::read($field, $name, $rows);
     }
 
+    /**
+     * Save a theme option, writing the same rows carbon_set_theme_option()
+     * writes (tests/fields/compare.php checks this): all rows of the field are
+     * deleted, then a simple field is stored as `_<name>`; a complex field as
+     * one `_<name>|||<row>|value` group row per row plus one
+     * `_<name>|<sub>|<row>|0|value` row per sub-field (missing sub-fields get
+     * their default), or a single `_<name>|||0|_empty` row when it has none.
+     * Checkboxes accept true/false or the stored strings. Rows are not
+     * autoloaded. Returns false for unknown fields.
+     */
+    public static function setOption($name, $value)
+    {
+        $field = Registry::field('option', $name);
+        if (! $field) {
+            return false;
+        }
+        foreach (array_keys(self::storedOptionRows($name)) as $option) {
+            delete_option($option);
+        }
+        $rows = [];
+        if ($field['type'] === 'complex') {
+            $value = is_array($value) ? array_values($value) : [];
+            if (! $value) {
+                $rows["_{$name}|||0|" . self::KEEPALIVE] = '';
+            }
+            foreach ($value as $index => $row) {
+                $row = is_array($row) ? $row : [];
+                $group = isset($row['_type']) ? (string) $row['_type'] : '_';
+                $rows["_{$name}|||{$index}|value"] = $group;
+                if (isset($field['groups'][$group])) {
+                    foreach ($field['groups'][$group] as $sub => $sub_field) {
+                        $sub_value = array_key_exists($sub, $row) ? $row[$sub] : self::fieldDefault($sub_field);
+                        $rows["_{$name}|{$sub}|{$index}|0|value"] = self::storable($sub_field, $sub_value);
+                    }
+                }
+            }
+        } elseif ($field['type'] === 'association') {
+            return false;
+        } else {
+            $rows["_{$name}"] = self::storable($field, $value);
+        }
+        foreach ($rows as $option => $stored) {
+            add_option($option, $stored, '', false);
+        }
+        return true;
+    }
+
+    /** The value as stored for a single-value field. */
+    private static function storable(array $field, $value)
+    {
+        if ($field['type'] === 'checkbox' && is_bool($value)) {
+            return $value ? $field['value'] : '';
+        }
+        return $value === null ? '' : $value;
+    }
+
+    /** The `_<name>` / `_<name>|…` rows of an option, straight from the table. */
+    private static function storedOptionRows($name)
+    {
+        global $wpdb;
+        $rows = [];
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Prefix match over option names; no WordPress API for it.
+        foreach ($wpdb->get_results($wpdb->prepare("SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name = %s OR option_name LIKE %s", '_' . $name, $wpdb->esc_like('_' . $name . '|') . '%')) as $row) {
+            $rows[$row->option_name] = $row->option_value;
+        }
+        return $rows;
+    }
+
     /** Forget the cached option rows (after options change). */
     public static function flush($option = null)
     {

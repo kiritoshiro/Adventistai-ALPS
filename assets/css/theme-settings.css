@@ -1,0 +1,112 @@
+/* Appearance → ALPS Theme Settings (app/Fields/SettingsPage.php). */
+.alps-settings__panel {
+  margin-top: 16px;
+}
+
+.alps-settings__form--tabs .alps-settings__panel-title {
+  display: none;
+}
+
+.alps-settings__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  max-width: 1100px;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #c3c4c7;
+}
+
+.alps-settings__item {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+.alps-settings__item[hidden] {
+  display: none;
+}
+
+@media (min-width: 783px) {
+  .alps-settings__item--25 { flex-basis: calc(25% - 24px); }
+  .alps-settings__item--33 { flex-basis: calc(33.333% - 24px); }
+  .alps-settings__item--50 { flex-basis: calc(50% - 24px); }
+  .alps-settings__item--55 { flex-basis: calc(55% - 24px); }
+}
+
+.alps-settings__heading {
+  border-top: 1px solid #dcdcde;
+  padding-top: 8px;
+}
+
+.alps-settings__heading:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.alps-settings__heading h3 {
+  margin: 0 0 4px;
+}
+
+.alps-settings__label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.alps-settings__check {
+  font-weight: 600;
+}
+
+.alps-settings__radios label {
+  display: block;
+  margin: 2px 0;
+}
+
+.alps-settings__item select,
+.alps-settings__item .regular-text {
+  max-width: 100%;
+}
+
+.alps-settings__preview:not(:empty) {
+  margin-bottom: 8px;
+}
+
+.alps-settings__preview-img {
+  display: block;
+  max-width: 150px;
+  height: auto;
+  border: 1px solid #dcdcde;
+}
+
+.alps-settings__complex {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.alps-settings__rows {
+  display: grid;
+  gap: 12px;
+}
+
+.alps-settings__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  padding: 12px;
+  background: #f6f7f7;
+  border: 1px solid #dcdcde;
+}
+
+.alps-settings__row .regular-text {
+  width: 100%;
+}
+
+.alps-settings__image .button,
+.alps-settings__image .button-link {
+  vertical-align: middle;
+}
+
+.alps-settings__image .button-link {
+  margin-left: 8px;
+}

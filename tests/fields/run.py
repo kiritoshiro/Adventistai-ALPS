@@ -40,6 +40,17 @@ def main():
 
     steps = [{"step": "defineWpConfigConsts", "consts": {"WP_DEBUG": True, "WP_DEBUG_DISPLAY": True}}]
     steps += config.get("setup", [])
+    if args.script == "compare":
+        # The theme no longer defines Carbon Fields theme options; load the
+        # frozen definition so options can still be compared with Carbon Fields.
+        steps.append({"step": "writeFile", "path": "/wordpress/wp-content/mu-plugins/alps-legacy-theme-options.php", "data": (
+            "<?php\n// Test site only: Carbon Fields theme options as defined before the native page.\n"
+            "add_action('after_setup_theme', function () {\n"
+            "    $file = get_template_directory() . '/tests/fields/legacy/cf-theme-options.php';\n"
+            "    if (is_readable($file)) {\n"
+            "        require_once $file;\n"
+            "    }\n"
+            "}, 5);\n")})
     steps.append({"step": "activateTheme", "themeFolderName": "adventistai"})
     # Playground does not print runPHP output or errors, so they go to a file.
     log_rel = os.path.join("tests", "fields", "fixtures", args.script + ".log")
@@ -85,6 +96,9 @@ def main():
         sys.exit("theme.json was rewritten during the run (restored); the palette belongs in app/ThemePalette.php")
 
     output = ""
+    # The log holds non-Latin text (footer descriptions); Windows consoles
+    # default to a code page that cannot print it.
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     if os.path.exists(log_host):
         with open(log_host, encoding="utf-8") as fh:
             output = fh.read()

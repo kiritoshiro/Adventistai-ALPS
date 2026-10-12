@@ -68,7 +68,12 @@ function alps_render_options($set)
         ],
     ];
     foreach (array_merge($common, $sets[$set]) as $name => $value) {
-        carbon_set_theme_option($name, $value);
+        // Same rows either way; Carbon Fields no longer defines theme options.
+        if (method_exists('App\Fields\Store', 'setOption')) {
+            \App\Fields\Store::setOption($name, $value);
+        } else {
+            carbon_set_theme_option($name, $value);
+        }
     }
 }
 

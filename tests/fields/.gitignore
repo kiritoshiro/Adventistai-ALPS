@@ -1,5 +1,6 @@
 # Written by the runners on every run; the JSON fixture is what is kept.
 fixtures/*.log
+fixtures/*.png
 fixtures/render/
 fixtures/render-urls.json
 __pycache__/

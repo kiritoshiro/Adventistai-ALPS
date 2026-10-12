@@ -87,6 +87,7 @@ add_action('wp_footer', [\App\LatestPostSlider::class, 'printDeferScript'], 20);
 \App\SidebarImages::register();
 \App\Fields\Store::register();
 \App\ThemePalette::register();
+\App\Fields\SettingsPage::register();
 add_action('init', [\App\WrappedImageTextBlock::class, 'register']);
 add_action('init', [\App\CardScrollerBlock::class, 'register']);
 \App\PostMediaPriority::register();

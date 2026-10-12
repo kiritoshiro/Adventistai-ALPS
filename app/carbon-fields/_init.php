@@ -1,5 +1,4 @@
 <?php
-require_once('cf-theme-options.php');
 require_once('cf-global.php');
 require_once('cf-front-page.php');
 require_once('cf-post-options.php');
