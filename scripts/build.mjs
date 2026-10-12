@@ -49,16 +49,35 @@ for (const browser of browsers) {
   const [name, range] = browser.split(' ');
   const engine = esbuildEngines[name];
   const version = range.split('-')[0];
-  if (engine && (!oldest[engine] || older(version, oldest[engine]))) oldest[engine] = version;
+  if (!engine) continue;
+  if (!/^\d+(\.\d+)*$/.test(version)) throw new Error(`Unexpected browserslist version "${browser}"`);
+  if (!oldest[engine] || older(version, oldest[engine])) oldest[engine] = version;
 }
 const jsTarget = Object.entries(oldest).map(([engine, version]) => `${engine}${version}`);
 
 // @wordpress/* imports are WordPress's own scripts (window.wp.*): keep them
 // out of the bundle and list their handles as the bundle's dependencies.
+// Not every @wordpress package has a script (e.g. icons, primitives), and a
+// dependency WordPress never registers makes it skip the whole bundle, so
+// only packages checked to exist as `wp-<name>` scripts are allowed.
+const wordpressScripts = new Set([
+  'block-editor',
+  'blocks',
+  'components',
+  'data',
+  'element',
+  'i18n',
+  'server-side-render',
+]);
 const wordpressGlobals = (handles) => ({
   name: 'wordpress-globals',
   setup(build) {
-    build.onResolve({ filter: /^@wordpress\// }, ({ path }) => ({ path, namespace: 'wordpress' }));
+    build.onResolve({ filter: /^@wordpress\// }, ({ path, importer }) => {
+      if (!wordpressScripts.has(path.slice('@wordpress/'.length))) {
+        return { errors: [{ text: `${path} (in ${importer}) is not in scripts/build.mjs's wordpressScripts. Add it only if WordPress registers a "wp-${path.slice('@wordpress/'.length)}" script; otherwise install and bundle the package.` }] };
+      }
+      return { path, namespace: 'wordpress' };
+    });
     build.onLoad({ filter: /.*/, namespace: 'wordpress' }, ({ path }) => {
       const name = path.slice('@wordpress/'.length);
       const global = name.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
