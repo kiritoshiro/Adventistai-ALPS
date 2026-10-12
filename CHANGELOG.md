@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - The theme's scripts and styles in `public/` are built by `scripts/build.mjs` (esbuild and Lightning CSS) instead of bud, Tailwind and PostCSS. The CSS gives every selector the same values as before; only browser prefixes and equivalent spellings differ. The front-end and editor scripts no longer need webpack's runtime, which Acorn printed inline before the theme script (1.2 KB). Front-end script 2.6 KB (was 3.1 KB plus the runtime). Editor block code uses WordPress's `wp.element` instead of bundling React's JSX runtime.
 - Tailwind's last output (its reset and the utility classes the theme had) is kept as plain CSS in `resources/styles/tailwind-frozen.css`, so pages look the same. Tailwind is no longer installed: a new utility class needs hand-written CSS.
-- Build tooling: `npm ci` installs 25 packages instead of about 945, and `npm audit` reports no vulnerabilities (all 33 previous findings came from braces, which has no fixed release, through bud and Tailwind). The npm overrides and the braces audit exception are gone. `npm run dev` (bud's dev server) is removed.
+- Build tooling: `npm ci` installs about 25 packages instead of about 945, and `npm audit` reports no vulnerabilities (all 33 previous findings came from braces, which has no fixed release, through bud and Tailwind). The npm overrides and the braces audit exception are gone. `npm run dev` (bud's dev server) is removed.
 
 ## [3.32.6]
 ### Changed
