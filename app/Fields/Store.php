@@ -68,29 +68,67 @@ class Store
 
     /**
      * Save a theme option, writing the same rows carbon_set_theme_option()
-     * writes (tests/fields/compare.php checks this): all rows of the field are
-     * deleted, then a simple field is stored as `_<name>`; a complex field as
-     * one `_<name>|||<row>|value` group row per row plus one
-     * `_<name>|<sub>|<row>|0|value` row per sub-field (missing sub-fields get
-     * their default), or a single `_<name>|||0|_empty` row when it has none.
-     * Checkboxes accept true/false or the stored strings. Rows are not
+     * writes (tests/fields/compare.php checks this). See rows(). Rows are not
      * autoloaded. Returns false for unknown fields.
      */
     public static function setOption($name, $value)
     {
         $field = Registry::field('option', $name);
-        if (! $field) {
+        $rows = $field ? self::rows($field, $name, $value) : null;
+        if ($rows === null) {
             return false;
         }
         foreach (array_keys(self::storedOptionRows($name)) as $option) {
             delete_option($option);
         }
+        foreach ($rows as $option => $stored) {
+            add_option($option, $stored, '', false);
+        }
+        return true;
+    }
+
+    /**
+     * Save a post field, writing the same rows carbon_set_post_meta() writes
+     * (tests/fields/compare.php checks this). See rows(). Returns false for
+     * unknown fields.
+     */
+    public static function setPost($id, $name, $value)
+    {
+        $id = (int) $id;
+        $field = Registry::field('post', $name);
+        $rows = $field && $id > 0 ? self::rows($field, $name, $value) : null;
+        if ($rows === null) {
+            return false;
+        }
+        foreach (array_keys(self::postRows($id, $name)) as $key) {
+            delete_post_meta($id, $key);
+        }
+        foreach ($rows as $key => $stored) {
+            add_post_meta($id, $key, wp_slash($stored));
+        }
+        return true;
+    }
+
+    /**
+     * The rows Carbon Fields stores for a value: a simple field is the row
+     * `_<name>`; a complex field one `_<name>|||<row>|value` group row per row
+     * plus one `_<name>|<sub>|<row>|0|value` row per sub-field (missing
+     * sub-fields get their default); an association `_<name>|||<n>|value`,
+     * `|type`, `|subtype` and `|id` per entry ([type, subtype, id] arrays, or
+     * "type:subtype:id" strings). An empty list is a single
+     * `_<name>|||0|_empty` row. Checkboxes accept true/false or the stored
+     * strings.
+     */
+    private static function rows(array $field, $name, $value)
+    {
         $rows = [];
-        if ($field['type'] === 'complex') {
+        if ($field['type'] === 'complex' || $field['type'] === 'association') {
             $value = is_array($value) ? array_values($value) : [];
             if (! $value) {
                 $rows["_{$name}|||0|" . self::KEEPALIVE] = '';
             }
+        }
+        if ($field['type'] === 'complex') {
             foreach ($value as $index => $row) {
                 $row = is_array($row) ? $row : [];
                 $group = isset($row['_type']) ? (string) $row['_type'] : '_';
@@ -103,14 +141,32 @@ class Store
                 }
             }
         } elseif ($field['type'] === 'association') {
-            return false;
+            $index = 0;
+            foreach ($value as $entry) {
+                if (! is_array($entry) || ! isset($entry['type'])) {
+                    $string = trim((string) (is_array($entry) ? ($entry['value'] ?? '') : $entry));
+                    if (empty($string)) {
+                        continue;
+                    }
+                    if (is_numeric($string)) {
+                        $string = self::legacyAssociation($field, $string);
+                    }
+                    $pieces = explode(':', $string);
+                    $entry = ['value' => $string, 'type' => $pieces[0], 'subtype' => $pieces[1] ?? 'post', 'id' => intval($pieces[2] ?? 0)];
+                }
+                $entry += ['value' => '', 'subtype' => '', 'id' => 0];
+                foreach (['value', 'type', 'subtype', 'id'] as $property) {
+                    $rows["_{$name}|||{$index}|{$property}"] = $entry[$property];
+                }
+                $index++;
+            }
+            if (! $index && $value) {
+                $rows["_{$name}|||0|" . self::KEEPALIVE] = '';
+            }
         } else {
             $rows["_{$name}"] = self::storable($field, $value);
         }
-        foreach ($rows as $option => $stored) {
-            add_option($option, $stored, '', false);
-        }
-        return true;
+        return $rows;
     }
 
     /** The value as stored for a single-value field. */
