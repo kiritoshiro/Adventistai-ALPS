@@ -3,6 +3,12 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.32.7]
+### Changed
+- The theme's scripts and styles in `public/` are built by `scripts/build.mjs` (esbuild and Lightning CSS) instead of bud, Tailwind and PostCSS. The CSS gives every selector the same values as before; only browser prefixes and equivalent spellings differ. The front-end and editor scripts no longer need webpack's runtime, which Acorn printed inline before the theme script (1.2 KB). Front-end script 2.6 KB (was 3.1 KB plus the runtime). Editor block code uses WordPress's `wp.element` instead of bundling React's JSX runtime.
+- Tailwind's last output (its reset and the utility classes the theme had) is kept as plain CSS in `resources/styles/tailwind-frozen.css`, so pages look the same. Tailwind is no longer installed: a new utility class needs hand-written CSS.
+- Build tooling: `npm ci` installs 25 packages instead of about 945, and `npm audit` reports no vulnerabilities (all 33 previous findings came from braces, which has no fixed release, through bud and Tailwind). The npm overrides and the braces audit exception are gone. `npm run dev` (bud's dev server) is removed.
+
 ## [3.32.6]
 ### Changed
 - Latest Post Slider: hidden slides no longer download their image with the page. Slides fade in place, so `loading="lazy"` still fetched every slide of a slider near the first screen (about 0.6 MB on the front page before anything was shown, which Lighthouse's slow-4G simulation counted towards the mobile LCP). Their `src`/`srcset` move to `data-alps-src`/`data-alps-srcset` (`LatestPostSlider::deferImage()`), with a 1×1 transparent placeholder; feeds, REST responses (and so the editor preview) and wp-admin keep the real files. `assets/js/slider-images.js` (embedded minified, 1.4 KB, only when a slide was deferred) restores the active slide and its two neighbours once the slider is within 600px of the screen, again on every slide change (arrows, dots, swipes, autoplay), and the whole slider on the first hover, touch or focus, so a dot jump to any slide has its image; it disconnects once every slide is restored. CI runs `node --check` on it, and `tests/scripts/run.php` checks it keeps to the slider script's selectors.
