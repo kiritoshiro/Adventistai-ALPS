@@ -131,39 +131,70 @@ check('nothing left for <head> then', '' === ob_get_clean());
 $template = (string) file_get_contents(dirname(__DIR__, 2) . '/resources/views/patterns/02-organisms/sections/latest-post-sliders.blade.php');
 check('slide images never say fetchpriority="high" themselves', false === strpos($template, "'high'") && false !== strpos($template, 'queuePreload($thumbnailHtml)'));
 check('the template no longer calls the removed per-image claim', false === strpos($template, 'claimEagerImage'));
-check('only first-row images get a fetchpriority attribute', false !== strpos($template, "(\$firstRow ? ['fetchpriority' => 'auto'] : [])"));
+check('slide images carry no fetchpriority attribute (lazy images never get high)', false === strpos($template, "'fetchpriority'"));
 check('every slide image is lazy, none eager', false !== strpos($template, "'loading' => 'lazy',") && false === strpos($template, "'eager'"));
 check('hidden slides are deferred', false !== strpos($template, "if (!\$isActive) {\n                        \$thumbnailHtml = \\App\\LatestPostSlider::deferImage(\$thumbnailHtml);"));
 
 // Hidden slides: no file address until the slide is next in line.
+$GLOBALS['feed'] = false;
+$GLOBALS['rest'] = false;
+function is_feed() { return $GLOBALS['feed']; }
+function wp_is_serving_rest_request() { return $GLOBALS['rest']; }
+function get_template_directory() { return dirname(__DIR__, 2); }
+$GLOBALS['feed'] = true;
+check('feeds keep the real files (nothing restores them there)', $picture === LatestPostSlider::deferImage($picture));
+$GLOBALS['feed'] = false;
+$GLOBALS['rest'] = true;
+check('REST responses and the editor preview keep the real files', $picture === LatestPostSlider::deferImage($picture));
+$GLOBALS['rest'] = false;
+$GLOBALS['inline'] = [];
+function wp_print_inline_script_tag($js) { $GLOBALS['inline'][] = $js; }
+LatestPostSlider::printDeferScript();
+check('nothing deferred yet: no restore script', [] === $GLOBALS['inline']);
 $deferred = LatestPostSlider::deferImage($picture);
 check('deferred <source>: srcset moved to data-alps-srcset', false !== strpos($deferred, '<source type="image/avif" data-alps-srcset="https://e.test/d-768.avif 768w, https://e.test/d.avif 1200w" sizes='));
 check('deferred <img>: src and srcset moved, blank placeholder first', 0 === strpos(substr($deferred, strpos($deferred, '<img')), '<img src="' . LatestPostSlider::BLANK . '" width="1200"') && false !== strpos($deferred, ' data-alps-src="https://e.test/d-fallback.jpg" data-alps-srcset="https://e.test/d-fallback.jpg 1200w"'));
 check('deferred: no real file address left', 1 === preg_match_all('/\s(src|srcset)="/', $deferred) && false !== strpos($deferred, 'sizes="(max-width: 700px) calc(100vw - 34px), 420px" loading="eager"'));
 check('deferred: data-src of a lazy-load plugin is left alone', '<img src="' . LatestPostSlider::BLANK . '" data-src="a.jpg" data-alps-src="b.jpg">' === LatestPostSlider::deferImage('<img data-src="a.jpg" src="b.jpg">'));
 check('text without an image is unchanged', '<span>text</span>' === LatestPostSlider::deferImage('<span>text</span>'));
-$GLOBALS['inline'] = [];
-function wp_print_inline_script_tag($js) { $GLOBALS['inline'][] = $js; }
 LatestPostSlider::printDeferScript();
-check('a deferred image prints the restore script once', 1 === count($GLOBALS['inline']) && false !== strpos($GLOBALS['inline'][0], 'data-alps-srcset') && false !== strpos($GLOBALS['inline'][0], "rootMargin: '600px 0px'"));
+$minified = (string) file_get_contents(dirname(__DIR__, 2) . '/assets/js/slider-images.min.js');
+check('a deferred image embeds the minified restore script once', 1 === count($GLOBALS['inline']) && trim($minified) === $GLOBALS['inline'][0] && '' !== trim($minified));
 LatestPostSlider::printDeferScript();
 check('and not twice', 1 === count($GLOBALS['inline']));
-check('the restore script parses', 0 === strpos(LatestPostSlider::deferScript(), '(() => {') && substr_count(LatestPostSlider::deferScript(), '{') === substr_count(LatestPostSlider::deferScript(), '}'));
+// node --check (ci.yml) parses it; here: it keeps to the slider's markup.
+$restore = (string) file_get_contents(dirname(__DIR__, 2) . '/assets/js/slider-images.js');
+$sliderJs = (string) file_get_contents(dirname(__DIR__, 2) . '/resources/scripts/latest-post-sliders.js');
+foreach (['[data-alps-latest-slider]', '[data-alps-slider-slide]', "'is-active'"] as $hook) {
+    check("restore script and slider script share $hook", false !== strpos($restore, $hook) && false !== strpos($sliderJs, $hook));
+}
+check('restore script: no syntax newer than the browsers it must run in (no => or ?.)', false === strpos($restore, '=>') && false === strpos($restore, '?.') && 0 === preg_match('/\b(const|let)\s/', $restore));
 
-// Sidebar images: lazy, never high priority; elsewhere WordPress decides.
+// Sidebar images: lazy, never high priority, decided before WordPress counts them.
 if (! function_exists('add_filter')) { function add_filter($hook, $callback, $priority = 10, $args = 1) { $GLOBALS['actions'][] = [$hook, $priority, $callback[1]]; } }
 require dirname(__DIR__, 2) . '/app/SidebarImages.php';
 use App\SidebarImages;
 SidebarImages::register();
-check('sidebar hooks registered', in_array(['dynamic_sidebar_before', 10, 'enter'], $GLOBALS['actions'], true) && in_array(['dynamic_sidebar_after', 10, 'leave'], $GLOBALS['actions'], true) && in_array(['wp_get_loading_optimization_attributes', 10, 'attributes'], $GLOBALS['actions'], true));
-check('outside the sidebar: unchanged', ['fetchpriority' => 'high'] === SidebarImages::attributes(['fetchpriority' => 'high'], 'img'));
-SidebarImages::enter();
-check('inside the sidebar: lazy, no high priority', ['loading' => 'lazy'] === SidebarImages::attributes(['fetchpriority' => 'high'], 'img'));
-check('inside the sidebar: iframes unchanged', [] === SidebarImages::attributes([], 'iframe'));
+$lazy = ['decoding' => 'async', 'loading' => 'lazy'];
+check('sidebar hooks registered (pre_ filter, so no high-priority slot or eager count is used)', in_array(['dynamic_sidebar_before', 10, 'enter'], $GLOBALS['actions'], true) && in_array(['dynamic_sidebar_after', 10, 'leave'], $GLOBALS['actions'], true) && in_array(['pre_wp_get_loading_optimization_attributes', 10, 'attributes'], $GLOBALS['actions'], true));
+check('outside a sidebar: WordPress decides', false === SidebarImages::attributes(false, 'img'));
+SidebarImages::enter('sidebar-page');
+check('side column: lazy', $lazy === SidebarImages::attributes(false, 'img'));
+check('side column: iframes left to WordPress', false === SidebarImages::attributes(false, 'iframe'));
+SidebarImages::enter('section-page-top');
+check('a widget area above the content (nested): WordPress decides', false === SidebarImages::attributes(false, 'img'));
 SidebarImages::leave();
-check('after the sidebar: unchanged again', [] === SidebarImages::attributes([], 'img'));
+check('back in the side column: lazy again', $lazy === SidebarImages::attributes(false, 'img'));
 SidebarImages::leave();
-check('an extra leave cannot go below zero', [] === SidebarImages::attributes([], 'img'));
+SidebarImages::enter('category-top');
+check('category header area: WordPress decides', false === SidebarImages::attributes(false, 'img'));
+SidebarImages::leave();
+check('after the sidebar: WordPress decides', false === SidebarImages::attributes(false, 'img'));
+SidebarImages::leave();
+check('an extra leave is harmless', false === SidebarImages::attributes(false, 'img'));
+SidebarImages::enter('footer-region');
+check('footer widgets: lazy', $lazy === SidebarImages::attributes(false, 'img'));
+SidebarImages::leave();
 
 $functions = (string) file_get_contents(dirname(__DIR__, 2) . '/functions.php');
 check('functions.php loads and registers ScriptLoading', false !== strpos($functions, "'ScriptLoading'") && false !== strpos($functions, '\App\ScriptLoading::register();'));

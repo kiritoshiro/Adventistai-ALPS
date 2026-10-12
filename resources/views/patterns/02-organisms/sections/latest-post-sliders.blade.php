@@ -138,7 +138,7 @@
                         'loading' => 'lazy',
                         'decoding' => 'async',
                         'sizes' => \App\LatestPostSlider::imageSizes((int) $sliderColumns, (int) ($thumbnailFile[1] ?? 0), (int) ($thumbnailFile[2] ?? 0)),
-                      ] + ($firstRow ? ['fetchpriority' => 'auto'] : []));
+                      ]);
                       // Hidden slides get their image when they are next in line.
                       if (!$isActive) {
                         $thumbnailHtml = \App\LatestPostSlider::deferImage($thumbnailHtml);

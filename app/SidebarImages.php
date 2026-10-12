@@ -3,49 +3,56 @@
 namespace App;
 
 /**
- * Sidebar images load lazily.
+ * Side-column and footer widget images load lazily.
  *
  * WordPress leaves the first images it meets on a page without
- * loading="lazy", counting them as above the fold. The sidebar is printed
- * before the article ends, so its image widgets and the images in its block
- * widgets were among them, yet on phones the sidebar comes after the whole
+ * loading="lazy", counting them as above the fold. The side column is
+ * printed before the article ends, so its image widgets and the images in its
+ * block widgets were among them, yet on phones it comes after the whole
  * article (on the front page 7,800-9,300px down) and they were downloaded
- * with the first screen. Inside dynamic_sidebar() every image is lazy and
- * none gets high priority.
+ * with the first screen.
+ *
+ * Inside dynamic_sidebar() every image is lazy, except in the widget areas
+ * printed above the content (TOP_AREAS), whose images can be the first thing
+ * on screen. The answer is given through the pre_ filter, so these images
+ * neither take the page's one fetchpriority="high" nor count towards the
+ * images WordPress keeps eager.
  */
 class SidebarImages
 {
-    private static int $depth = 0;
+    /** Widget areas printed above the content: WordPress decides there. */
+    public const TOP_AREAS = ['section-page-top', 'category-top'];
+
+    /** @var array<int, bool> One entry per open dynamic_sidebar(): lazy or not. */
+    private static array $stack = [];
 
     public static function register(): void
     {
-        add_action('dynamic_sidebar_before', [self::class, 'enter'], 10, 0);
+        add_action('dynamic_sidebar_before', [self::class, 'enter'], 10, 1);
         add_action('dynamic_sidebar_after', [self::class, 'leave'], 10, 0);
-        add_filter('wp_get_loading_optimization_attributes', [self::class, 'attributes'], 10, 2);
+        add_filter('pre_wp_get_loading_optimization_attributes', [self::class, 'attributes'], 10, 2);
     }
 
-    public static function enter(): void
+    /** @param int|string $index The sidebar id dynamic_sidebar() was called with. */
+    public static function enter($index = ''): void
     {
-        self::$depth++;
+        self::$stack[] = ! in_array((string) $index, self::TOP_AREAS, true);
     }
 
     public static function leave(): void
     {
-        self::$depth = max(0, self::$depth - 1);
+        array_pop(self::$stack);
     }
 
     /**
-     * @param array<string, string> $attributes
-     * @return array<string, string>
+     * @param array<string, string>|false $value False lets WordPress decide.
+     * @return array<string, string>|false
      */
-    public static function attributes($attributes, $tagName): array
+    public static function attributes($value, $tagName)
     {
-        $attributes = is_array($attributes) ? $attributes : [];
-        if (self::$depth === 0 || 'img' !== $tagName) {
-            return $attributes;
+        if ('img' !== $tagName || ! end(self::$stack)) {
+            return $value;
         }
-        unset($attributes['fetchpriority']);
-        $attributes['loading'] = 'lazy';
-        return $attributes;
+        return ['decoding' => 'async', 'loading' => 'lazy'];
     }
 }

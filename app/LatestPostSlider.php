@@ -149,12 +149,17 @@ class LatestPostSlider
     /**
      * A hidden slide's image without its address: the files move to
      * data-alps-src / data-alps-srcset, which deferScript() restores once the
-     * slide is next in line. Hidden slides are laid out (they fade in place),
+     * slide is next in line (front-end pages only). Hidden slides are laid out (they fade in place),
      * so loading="lazy" alone fetched every slide of a slider near the top:
      * about 0.6 MB on the front page before anything was shown.
      */
     public static function deferImage(string $html): string
     {
+        // Feeds, the REST API (and so the editor's block preview) and wp-admin
+        // never print the footer script that restores the files.
+        if (is_admin() || is_feed() || (function_exists('wp_is_serving_rest_request') && wp_is_serving_rest_request())) {
+            return $html;
+        }
         $deferred = (string) preg_replace_callback('/<(img|source)\b[^>]*>/i', static function (array $tag): string {
             $out = (string) preg_replace('/(\s)(src|srcset)\s*=\s*"/i', '$1data-alps-$2="', $tag[0]);
             if (0 === strcasecmp($tag[1], 'img')) {
@@ -169,47 +174,28 @@ class LatestPostSlider
     }
 
     /**
-     * Restores deferred slide images: the active slide and its neighbours,
-     * once the slider is within 600px of the screen and again whenever the
-     * active slide changes there (dots, arrows, swipes, autoplay).
+     * The script that restores deferred slide images (assets/js/slider-images.js):
+     * the minified copy, or the readable file under SCRIPT_DEBUG or when the
+     * copy is missing.
      */
     public static function deferScript(): string
     {
-        return <<<'JS'
-(() => {
-  const load = (slide) => {
-    slide?.querySelectorAll('[data-alps-src], [data-alps-srcset]').forEach((el) => {
-      if (el.dataset.alpsSrcset) { el.srcset = el.dataset.alpsSrcset; delete el.dataset.alpsSrcset; }
-      if (el.dataset.alpsSrc) { el.src = el.dataset.alpsSrc; delete el.dataset.alpsSrc; }
-    });
-  };
-  document.querySelectorAll('[data-alps-latest-slider]').forEach((slider) => {
-    const slides = Array.from(slider.querySelectorAll('[data-alps-slider-slide]'));
-    let near = false;
-    const update = () => {
-      if (!near) return;
-      const i = slides.findIndex((slide) => slide.classList.contains('is-active'));
-      if (i < 0) return;
-      [i, i + 1, i - 1].forEach((n) => load(slides[(n + slides.length) % slides.length]));
-    };
-    new MutationObserver(update).observe(slider, { subtree: true, attributes: true, attributeFilter: ['class'] });
-    if (!('IntersectionObserver' in window)) { near = true; update(); return; }
-    new IntersectionObserver((entries) => {
-      near = entries.some((entry) => entry.isIntersecting);
-      update();
-    }, { rootMargin: '600px 0px' }).observe(slider);
-  });
-})();
-JS;
+        $dir = get_template_directory() . '/assets/js/';
+        $file = $dir . 'slider-images.min.js';
+        if ((defined('SCRIPT_DEBUG') && SCRIPT_DEBUG) || !is_readable($file)) {
+            $file = $dir . 'slider-images.js';
+        }
+        return is_readable($file) ? trim((string) file_get_contents($file)) : '';
     }
 
     /** Print deferScript() in the footer when a slide image was deferred. */
     public static function printDeferScript(): void
     {
-        if (self::$deferred) {
-            wp_print_inline_script_tag(self::deferScript());
-            self::$deferred = false;
+        $script = self::$deferred ? self::deferScript() : '';
+        if ('' !== $script) {
+            wp_print_inline_script_tag($script);
         }
+        self::$deferred = false;
     }
 
     /**
