@@ -60,6 +60,13 @@ class ThemeCache
                 $removed += is_file($file) ? 0 : 1;
             }
         }
+        // The minified stylesheet copies (InlineStyles::minifiedPath()) are
+        // rebuilt on the next page view too. Not counted: the count is views.
+        foreach (glob(WP_CONTENT_DIR . InlineStyles::CACHE_DIR . '/*.css') ?: [] as $file) {
+            if (is_file($file) && ! is_link($file)) {
+                wp_delete_file($file);
+            }
+        }
         return $removed;
     }
 

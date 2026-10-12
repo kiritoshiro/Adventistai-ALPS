@@ -139,3 +139,20 @@ function display_sidebar()
     isset($display) || $display = apply_filters('sage/display_sidebar', false);
     return $display;
 }
+
+/**
+ * A theme stylesheet's CSS for printing inside the page: its minified copy
+ * (name.min.css, written by scripts/minify-assets.mjs), or the readable file
+ * under SCRIPT_DEBUG or when the copy is missing. '' when neither exists.
+ *
+ * @param string $file Absolute path of the readable .css file.
+ * @return string
+ */
+function embedded_css(string $file): string
+{
+    $min = substr($file, 0, -4) . '.min.css';
+    if (!(defined('SCRIPT_DEBUG') && SCRIPT_DEBUG) && is_readable($min)) {
+        $file = $min;
+    }
+    return is_readable($file) ? (string) file_get_contents($file) : '';
+}

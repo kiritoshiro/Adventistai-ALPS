@@ -26,13 +26,14 @@ add_action('wp_enqueue_scripts', function () {
  * Printed straight after site-overrides.css (as an embedded style) so the responsive
  * corrections remain authoritative without modifying the accumulated override
  * stylesheet itself. Embedded because the file is small and a separate
- * stylesheet would be one more render-blocking request.
+ * stylesheet would be one more render-blocking request. The minified copy is
+ * printed (see embedded_css()).
  */
 add_action('wp_enqueue_scripts', function () {
-    $file = get_template_directory() . '/assets/css/responsive-zoom-fixes.css';
+    $css = embedded_css(get_template_directory() . '/assets/css/responsive-zoom-fixes.css');
 
-    if (wp_style_is('adventistai-overrides') && is_readable($file)) {
-        wp_add_inline_style('adventistai-overrides', (string) file_get_contents($file));
+    if (wp_style_is('adventistai-overrides') && $css !== '') {
+        wp_add_inline_style('adventistai-overrides', $css);
     }
 }, 1000);
 
@@ -73,9 +74,9 @@ add_action('wp_enqueue_scripts', function () {
         'strategy' => 'async',
     ]);
 
-    $timer = get_template_directory() . '/assets/css/sabbath-timer.css';
-    if (is_front_page() && is_readable($timer)) {
-        wp_add_inline_style('alps-main', (string) file_get_contents($timer));
+    $timer = is_front_page() ? embedded_css(get_template_directory() . '/assets/css/sabbath-timer.css') : '';
+    if ($timer !== '') {
+        wp_add_inline_style('alps-main', $timer);
     }
 }, 9999);
 
