@@ -121,7 +121,6 @@ jobs:
             --exclude='/scripts/' \
             --exclude='/package-lock.json' \
             --exclude='/composer.lock' \
-            --exclude='/jsconfig.json' \
             --exclude='/phpcs-security.xml.dist' \
             --exclude='/webnus/modern-events-calendar/' \
             --exclude='/webnus/modern-events-calendar-lite/' \

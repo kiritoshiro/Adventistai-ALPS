@@ -80,10 +80,7 @@ Sage is a WordPress starter theme with a modern development workflow.
 
 ### Features
 
-* Sass for stylesheets
-* Modern JavaScript
-* [Webpack](https://webpack.github.io/) for compiling assets, optimizing images, and concatenating and minifying files
-* [Browsersync](http://www.browsersync.io/) for synchronized browser testing
+* Plain CSS (with nesting) and modern JavaScript, built by `scripts/build.mjs` with [esbuild](https://esbuild.github.io/) and [Lightning CSS](https://lightningcss.dev/)
 * [Blade](https://laravel.com/docs/5.5/blade) as a templating engine
 * [Controller](https://github.com/soberwp/controller) for passing data to Blade templates
 * CSS framework (optional): [Bootstrap 4](https://getbootstrap.com/), [Bulma](https://bulma.io/), [Foundation](https://foundation.zurb.com/), [Tachyons](http://tachyons.io/)
@@ -129,8 +126,8 @@ themes/your-theme-name/   # → Root of your Sage based theme
 │       └── partials/     # → Partial templates
 ├── screenshot.png        # → Theme screenshot for WP admin
 ├── style.css             # → Theme meta information
-├── vendor/               # → Composer packages (never edit)
-└── bud.config.js         # → Bud configuration
+├── scripts/build.mjs     # → Asset build (writes public/)
+└── vendor/               # → Composer packages (never edit)
 ```
 
 ### Theme setup
@@ -139,10 +136,10 @@ Edit `app/setup.php` to enable or disable theme features, setup navigation menus
 
 ### Theme development
 
-* Run `npm` from the theme directory to install dependencies
-* Update `resources/assets/config.json` settings:
-  * `devUrl` should reflect your local development hostname
-  * `publicPath` should reflect your WordPress folder structure (`/wp-content/themes/sage` for non-[Bedrock](https://roots.io/bedrock/) installs)
+* Run `npm ci` from the theme directory to install the build tools
+* Edit `resources/scripts` and `resources/styles`, then run `npm run build` and commit `public/` with the change (CI rebuilds and fails if it differs)
+* `@wordpress/*` imports become WordPress's own `wp.*` scripts and are listed as the bundle's dependencies; JSX compiles to `wp.element.createElement`
+* `resources/styles/tailwind-frozen.css` is Tailwind's last output (reset plus a few utility classes); Tailwind itself is no longer installed, so new utility classes need hand-written CSS
 
 ### Localization
 Theme uses WordPress recommended way to localize with *.po files. Localization template located in `lang/alps.pot`.
@@ -161,9 +158,7 @@ The translation in `ALPS for Wordpress` was done thanks to the following individ
 
 ### Build commands
 
-* `npm run dev` — Compile assets when file changes are made, start Browsersync session
-* `npm run build` — Compile and optimize the files in your assets directory
-* [DEPRECATED] `npm run build:production` — ~~Compile assets for production~~
+* `npm run build` — Build and minify `resources/` into content-hashed files in `public/`, with `manifest.json` and `entrypoints.json` for Acorn's `bundle()`
 
 ### Documentation
 

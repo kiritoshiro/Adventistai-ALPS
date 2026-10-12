@@ -99,3 +99,11 @@ enforce required checks, so review the gate result before merging there.
 
   The site, its database and its admin account exist only inside the job. To run it locally (needs Node 24 with npx, and Python 3): `python3 .github/playground/smoke.py --php 8.4`. Settings are in `.github/playground/config.json`.
 - **Links**: `links.yml` checks the links in Markdown and `readme.txt` files with [lychee](https://github.com/lycheeverse/lychee). It runs on pull requests that change them, monthly and on demand. It is not part of the security gate, because a third-party site being down should not block a merge. Exclusions are in `.lychee.toml`; adventistai.lt is excluded because its Cloudflare bot protection answers GitHub runners with 403.
+
+## npm build tooling (2026-10-12)
+
+The asset build was bud (webpack) with Tailwind 3 and PostCSS: about 945 npm packages. Their file watchers and globbing pulled in braces (GHSA-vfj7-8cjw-p6xm, high, no fixed release), which `npm_audit.py` let through only by a dated exception, plus Dependabot alerts for postcss-selector-parser and sprintf-js. `scripts/build.mjs` now builds the same bundles with esbuild and Lightning CSS. `npm ci` installs 25 packages (browserslist, esbuild, lightningcss, terser and their dependencies), `npm audit` reports none, and `npm-audit-exceptions.json` is empty.
+
+- Tailwind's last output is kept as `resources/styles/tailwind-frozen.css`. The site depends on its reset (headings, lists, images), and posts may use its utility classes.
+- lightningcss and terser are pinned exactly: `scripts/minify-assets.mjs` and `trim-alps-css.mjs` must reproduce the committed minified copies. When updating either, rerun both scripts and commit the new copies.
+- Nesting is flattened (`include: Features.Nesting`); a selector list as the parent becomes `:is(...)`, whose specificity is the highest in the list. Keep the selectors in such a list at equal specificity, or write them out.

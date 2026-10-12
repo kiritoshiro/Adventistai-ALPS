@@ -95,11 +95,9 @@ jobs:
       - name: Install JavaScript dependencies
         run: npm ci
 
+      # Browser targets come from caniuse-lite in package-lock.json, so the
+      # output only changes when the lockfile does.
       - name: Build production assets
-        env:
-          # Keep the build deterministic: the weekly browserslist data refresh
-          # would otherwise change compiled CSS and break the check below.
-          BUD_BROWSERSLIST_UPDATE: 'false'
         run: npm run build
 
       # public/ is committed and shipped as-is by release-theme.yml, which never
