@@ -38,12 +38,16 @@
     "glob@^10": {
       "minimatch": "^9.0.9"
     },
+    "js-yaml@^3": {
+      "argparse": "^2.0.1"
+    },
     "js-yaml@^4": "^4.3.2",
     "body-parser": "^1.20.6",
     "browserslist": "^4.28.9",
     "lodash-es": "^4.17.24",
     "path-to-regexp": "^0.1.13",
     "postcss": "^8.5.28",
+    "postcss-selector-parser": "^7.1.6",
     "qs": "^6.16.0",
     "serialize-javascript": "^7.1.1",
     "toml": "^4.3.0",
