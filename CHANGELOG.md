@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [3.32.8]
 ### Fixed
-- Pages cached before a theme update no longer lose their scripts. Each build gives the theme's scripts and styles new file names and used to delete the old files, but Cloudflare keeps cached pages (the homepage for hours) that still point to them. After 3.32.7 the cached homepage requested `app.f500e6.js`, got a 404 page instead of JavaScript, and its sliders stopped working. `scripts/build.mjs` now keeps the files of the last three different builds in `public/`, listed in `public/previous-assets.json`. This release restores the files from 3.32.0–3.32.6. Purging the Cloudflare cache after an update is still the way to show the new version at once.
+- Pages cached before a theme update no longer lose their scripts. Each build gives the theme's scripts and styles new file names and used to delete the old files, but Cloudflare keeps cached pages (the homepage for hours) that still point to them. After 3.32.7 the cached homepage requested `app.f500e6.js`, got a 404 page instead of JavaScript, and its sliders stopped working. `scripts/build.mjs` now keeps the files of the last five different committed builds in `public/`, listed in `public/previous-assets.json`. This release restores the files from 3.32.0–3.32.6. Purging the Cloudflare cache after an update is still the way to show the new version at once.
 
 ## [3.32.7]
 ### Changed
