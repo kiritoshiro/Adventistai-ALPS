@@ -14,8 +14,8 @@ class LatestPostSlider
 
     /**
      * True only for the first slider section rendered on the page. Its first
-     * row of sliders (one per column) can be near the top, so their first
-     * slide images load at once; every other slide image loads lazily.
+     * row of sliders (one per column) can be near the top on wide screens, so
+     * the largest of their first slide images is preloaded there.
      */
     public static function claimEagerSection(): bool
     {
@@ -138,6 +138,64 @@ class LatestPostSlider
             echo self::$headPreload . "\n";
             self::$headPreload = '';
         }
+    }
+
+    /** Whether a slide image was deferred, so the page needs deferScript(). */
+    private static bool $deferred = false;
+
+    /** A 1x1 transparent GIF: a hidden slide shows nothing, not its alt text. */
+    public const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+    /**
+     * A hidden slide's image without its address: the files move to
+     * data-alps-src / data-alps-srcset, which deferScript() restores once the
+     * slide is next in line (front-end pages only). Hidden slides are laid out (they fade in place),
+     * so loading="lazy" alone fetched every slide of a slider near the top:
+     * about 0.6 MB on the front page before anything was shown.
+     */
+    public static function deferImage(string $html): string
+    {
+        // Feeds, the REST API (and so the editor's block preview) and wp-admin
+        // never print the footer script that restores the files.
+        if (is_admin() || is_feed() || (function_exists('wp_is_serving_rest_request') && wp_is_serving_rest_request())) {
+            return $html;
+        }
+        $deferred = (string) preg_replace_callback('/<(img|source)\b[^>]*>/i', static function (array $tag): string {
+            $out = (string) preg_replace('/(\s)(src|srcset)\s*=\s*"/i', '$1data-alps-$2="', $tag[0]);
+            if (0 === strcasecmp($tag[1], 'img')) {
+                $out = (string) preg_replace('/^<img\b/i', '<img src="' . self::BLANK . '"', $out);
+            }
+            return $out;
+        }, $html);
+        if ($deferred !== $html) {
+            self::$deferred = true;
+        }
+        return $deferred;
+    }
+
+    /**
+     * The script that restores deferred slide images (assets/js/slider-images.js):
+     * the minified copy, or the readable file under SCRIPT_DEBUG or when the
+     * copy is missing.
+     */
+    public static function deferScript(): string
+    {
+        $dir = get_template_directory() . '/assets/js/';
+        $file = $dir . 'slider-images.min.js';
+        if ((defined('SCRIPT_DEBUG') && SCRIPT_DEBUG) || !is_readable($file)) {
+            $file = $dir . 'slider-images.js';
+        }
+        return is_readable($file) ? trim((string) file_get_contents($file)) : '';
+    }
+
+    /** Print deferScript() in the footer when a slide image was deferred. */
+    public static function printDeferScript(): void
+    {
+        $script = self::$deferred ? self::deferScript() : '';
+        if ('' !== $script) {
+            wp_print_inline_script_tag($script);
+        }
+        self::$deferred = false;
     }
 
     /**

@@ -13,6 +13,7 @@ const assets = [
   ['assets/css/card-scroller.css', 'assets/css/card-scroller.min.css'],
   ['assets/css/page-hero.css', 'assets/css/page-hero.min.css'],
   ['assets/js/sabbath-timer.js', 'assets/js/sabbath-timer.min.js'],
+  ['assets/js/slider-images.js', 'assets/js/slider-images.min.js'],
 ];
 
 const check = process.argv.includes('--check');

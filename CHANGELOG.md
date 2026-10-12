@@ -3,6 +3,12 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.32.6]
+### Changed
+- Latest Post Slider: hidden slides no longer download their image with the page. Slides fade in place, so `loading="lazy"` still fetched every slide of a slider near the first screen (about 0.6 MB on the front page before anything was shown, which Lighthouse's slow-4G simulation counted towards the mobile LCP). Their `src`/`srcset` move to `data-alps-src`/`data-alps-srcset` (`LatestPostSlider::deferImage()`), with a 1×1 transparent placeholder; feeds, REST responses (and so the editor preview) and wp-admin keep the real files. `assets/js/slider-images.js` (embedded minified, 1.4 KB, only when a slide was deferred) restores the active slide and its two neighbours once the slider is within 600px of the screen, again on every slide change (arrows, dots, swipes, autoplay), and the whole slider on the first hover, touch or focus, so a dot jump to any slide has its image; it disconnects once every slide is restored. CI runs `node --check` on it, and `tests/scripts/run.php` checks it keeps to the slider script's selectors.
+- Latest Post Slider: no slide image is `loading="eager"` any more. The first row's largest first image was eager on every screen, although on phones the slider sits below the first screen; wide screens still fetch it early through the existing `(min-width: 1001px)` preload in `<head>`.
+- Side-column and footer widget images (`dynamic_sidebar()`: image widgets and images in block widgets) are always `loading="lazy"` (`App\SidebarImages`), decided through `pre_wp_get_loading_optimization_attributes` so they neither take the page's one `fetchpriority="high"` nor count towards the images WordPress keeps eager. WordPress counted them as above the fold because the side column is printed before the article ends, but on phones it comes after the whole article. The widget areas above the content (`section-page-top`, `category-top`) are left to WordPress.
+
 ## [3.32.5]
 ### Changed
 - The Source Serif ("Noto Serif", 56 KB) preload carries `media="(min-width: 501px)"`: the primary navigation that uses it shows from 501px, and on phones it competed with the main stylesheet and Noto Sans for bandwidth before the first paint.

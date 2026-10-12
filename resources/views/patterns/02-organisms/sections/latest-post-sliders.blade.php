@@ -15,8 +15,8 @@
     }
   }
 
-  // The first row of sliders in the page's first section is near the top:
-  // their first images load at once, the largest one with high priority.
+  // The first row of sliders in the page's first section is near the top on
+  // wide screens: the largest first image there is preloaded for them.
   $eagerSliders = 0;
   $priorityIndex = -1;
   if (!empty($renderableSliderModules) && \App\LatestPostSlider::claimEagerSection()) {
@@ -111,7 +111,7 @@
               $thumbnailAlt = $thumbnailAlt ?: $postTitle;
               $categoryName = html_entity_decode(\App\ContentHelpers::categoryName((int) $postId), ENT_QUOTES | ENT_HTML5, 'UTF-8');
               $isActive = $slideIndex === 0;
-              $loadEager = $isActive && $thumbnailId && $moduleIndex < $eagerSliders;
+              $firstRow = $isActive && $thumbnailId && $moduleIndex < $eagerSliders;
             @endphp
 
             <article
@@ -127,20 +127,24 @@
                   <div class="alps-latest-slider__image-frame">
                     @php
                       $thumbnailFile = wp_get_attachment_image_src($thumbnailId, 'full');
-                      // WordPress gives "high" to the first eager image it meets, so the
-                      // eager images say "auto". The largest one in the first row
-                      // (priorityIndex above) gets high priority through a preload
-                      // in <head>, limited to wide screens; on phones the slider is
-                      // further down.
+                      // Every slide image is lazy: on phones the sliders sit below
+                      // the first screen. The largest first image in the first row
+                      // (priorityIndex above) is still fetched early on wide
+                      // screens, where it is the likely LCP, through a preload in
+                      // <head> limited to those screens.
                       $thumbnailHtml = (string) get_the_post_thumbnail($postId, 'full', [
                         'class' => 'alps-latest-slider__image',
                         'alt' => $thumbnailAlt,
-                        'loading' => $loadEager ? 'eager' : 'lazy',
+                        'loading' => 'lazy',
                         'decoding' => 'async',
                         'sizes' => \App\LatestPostSlider::imageSizes((int) $sliderColumns, (int) ($thumbnailFile[1] ?? 0), (int) ($thumbnailFile[2] ?? 0)),
-                      ] + ($loadEager ? ['fetchpriority' => 'auto'] : []));
+                      ]);
+                      // Hidden slides get their image when they are next in line.
+                      if (!$isActive) {
+                        $thumbnailHtml = \App\LatestPostSlider::deferImage($thumbnailHtml);
+                      }
                     @endphp
-                    @if ($loadEager && $moduleIndex === $priorityIndex)
+                    @if ($firstRow && $moduleIndex === $priorityIndex)
                       {!! \App\LatestPostSlider::queuePreload($thumbnailHtml) !!}
                     @endif
                     {!! $thumbnailHtml !!}
