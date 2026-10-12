@@ -303,6 +303,29 @@ class Store
         }
     }
 
+    /**
+     * The values of a widget instance as Carbon Fields' widgets passed them
+     * to their templates: the instance holds the same `_<name>` rows as post
+     * meta, keyed by field name.
+     *
+     * @param array $fields name => field definition (Registry format)
+     */
+    public static function fromInstance(array $fields, $instance)
+    {
+        $instance = is_array($instance) ? $instance : [];
+        $values = [];
+        foreach ($fields as $name => $field) {
+            $rows = [];
+            foreach ($instance as $key => $value) {
+                if (self::belongsTo((string) $key, $name)) {
+                    $rows[(string) $key] = $value;
+                }
+            }
+            $values[$name] = self::read($field, $name, $rows);
+        }
+        return $values;
+    }
+
     private static function read(array $field, $name, array $rows)
     {
         $tree = self::tree($name, $rows);

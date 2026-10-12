@@ -592,6 +592,105 @@ $rest('POST', "/wp/v2/posts/$legacy_post", ['alps_fields' => $alps($rest('GET', 
 $same('saving the panels keeps it', 'false', \App\Fields\Store::post($legacy_post, 'featured_image_hero_layout'));
 $same('Carbon Fields reads it the same', @carbon_get_post_meta($legacy_post, 'featured_image_hero_layout'), \App\Fields\Store::post($legacy_post, 'featured_image_hero_layout'));
 
+// 8. Native widgets = the Carbon Fields widgets they replaced (frozen in legacy/cf-widget.php).
+require_once get_template_directory() . '/tests/fields/legacy/cf-widget.php';
+// Capture what each template would get instead of rendering it (the
+// templates are include_once'd, so they can only run once per request).
+class Compare_CF_Author extends ALPS_Author_Box_Widget { public $captured; public function front_end($args, $settings) { $this->captured = $settings; } }
+class Compare_CF_Text extends ALPS_Text_With_Link_Widget { public $captured; public function front_end($args, $settings) { $this->captured = $settings; } }
+class Compare_CF_Feed extends ALPS_Post_Feed_Widget { public $captured; public function front_end($args, $settings) { $this->captured = $settings; } }
+class Compare_CF_Related extends ALPS_Related_Stories_Widget { public $captured; public function front_end($args, $settings) { $this->captured = $settings; } }
+class Compare_Native_Author extends \App\Widgets\AuthorBox { public $captured; protected function render($args, $settings) { $this->captured = $settings; } }
+class Compare_Native_Text extends \App\Widgets\TextWithLink { public $captured; protected function render($args, $settings) { $this->captured = $settings; } }
+class Compare_Native_Feed extends \App\Widgets\PostFeed { public $captured; protected function render($args, $settings) { $this->captured = $settings; } }
+class Compare_Native_Related extends \App\Widgets\RelatedStories { public $captured; protected function render($args, $settings) { $this->captured = $settings; } }
+
+foreach (['Widget cat A', 'Widget cat B'] as $cat_name) {
+    wp_insert_term($cat_name, 'category');
+}
+$cat_ids = array_map('strval', get_categories(['orderby' => 'name', 'hide_empty' => false, 'fields' => 'ids']));
+$widget_args = ['before_widget' => '<section class="%2$s">', 'after_widget' => '</section>', 'before_title' => '', 'after_title' => ''];
+wp_set_current_user($admin->ID);
+foreach ([
+    'author' => [new Compare_CF_Author(), new Compare_Native_Author()],
+    'text' => [new Compare_CF_Text(), new Compare_Native_Text()],
+    'feed' => [new Compare_CF_Feed(), new Compare_Native_Feed()],
+    'related' => [new Compare_CF_Related(), new Compare_Native_Related()],
+] as $kind => $pair) {
+    list($cf, $native) = $pair;
+    $same("widget[$kind] id_base", $cf->id_base, $native->id_base);
+    $same("widget[$kind] option name", $cf->option_name, $native->option_name);
+    $same("widget[$kind] classname", $cf->widget_options['classname'], $native->widget_options['classname']);
+    $same("widget[$kind] title", $cf->name, $native->name);
+    $definitions = $native->definitions();
+    $filled = $blank = $odd = $input = $odd_input = [];
+    foreach ($definitions as $name => $field) {
+        $filled["_$name"] = $field['type'] === 'checkbox' ? 'true' : ($field['type'] === 'select' ? end($cat_ids) : "Text $name\nline <b>2</b>");
+        $blank["_$name"] = '';
+        $odd["_$name"] = $field['type'] === 'checkbox' ? 'TRUE' : ($field['type'] === 'select' ? 'bogus' : ' spaced ');
+        $input[$name] = $field['type'] === 'checkbox' ? 'true' : ($field['type'] === 'select' ? reset($cat_ids) : "Input $name <i>x</i>");
+        $odd_input[$name] = $field['type'] === 'checkbox' ? 'on' : ($field['type'] === 'select' ? 'bogus' : '');
+    }
+    $instances = [
+        'filled' => $filled,
+        'empty' => [],
+        'blank' => $blank,
+        'odd' => $odd,
+        'extra' => $filled + ['title' => 'x', '_unrelated' => 'y', '_' . array_key_first($definitions) . '|||0|value' => 'piped'],
+    ];
+    foreach ($instances as $case => $instance) {
+        $outputs = [];
+        foreach (['cf' => $cf, 'native' => $native] as $which => $widget) {
+            $widget->captured = null;
+            ob_start();
+            $widget->widget($widget_args, $instance);
+            $outputs[$which] = [ob_get_clean(), $widget->captured];
+        }
+        $same("widget[$kind:$case] template values and wrapper", $outputs['cf'], $outputs['native']);
+    }
+    $inputs = ['full' => $input, 'odd' => $odd_input, 'missing' => [], 'one' => [array_key_first($definitions) => 'Only one']];
+    foreach ($inputs as $in_case => $new) {
+        foreach (['empty' => [], 'filled' => $instances['extra']] as $old_case => $old) {
+            $same("widget[$kind] update($in_case, $old_case)", $cf->update($new, $old), $native->update($new, $old));
+        }
+    }
+    ob_start();
+    $native->form($filled);
+    $form = ob_get_clean();
+    $same("widget[$kind] form shows the stored values", true, strpos($form, 'name="' . $native->get_field_name(array_key_first($definitions)) . '"') !== false
+        && (strpos($form, esc_attr("Text " . array_key_first($definitions))) !== false || strpos($form, 'selected') !== false || strpos($form, 'checked') !== false));
+}
+wp_set_current_user(0);
+// Carbon Fields' loader (on rest_api_init) calls register_container() on
+// every sidebar widget whose ID starts with carbon_fields_.
+$saved_sidebars = get_option('sidebars_widgets');
+update_option('widget_carbon_fields_alps_widget_text_with_link', [2 => ['_text_link_title' => 'In a sidebar'], '_multiwidget' => 1]);
+wp_set_sidebars_widgets(['sidebar-posts' => ['carbon_fields_alps_widget_text_with_link-2'], 'wp_inactive_widgets' => []]);
+$GLOBALS['wp_registered_widgets'] = [];
+remove_action('widgets_init', 'alps_widgets_init');
+$GLOBALS['wp_widget_factory']->_register_widgets();
+try {
+    \Carbon_Fields\Carbon_Fields::resolve('loader')->initialize_widgets();
+    $loader_ok = true;
+} catch (Throwable $e) {
+    $loader_ok = $e->getMessage();
+}
+$same("Carbon Fields' loader accepts the native widgets", true, $loader_ok);
+update_option('sidebars_widgets', $saved_sidebars);
+global $wp_widget_factory;
+$registered = array_map(function ($widget) {
+    return get_class($widget) . '=' . $widget->id_base;
+}, array_values(array_filter($wp_widget_factory->widgets, function ($widget) {
+    return strpos($widget->id_base, 'carbon_fields_') === 0;
+})));
+sort($registered);
+$same('registered theme widgets', [
+    'App\\Widgets\\AuthorBox=carbon_fields_alps_widget_author',
+    'App\\Widgets\\PostFeed=carbon_fields_alps_widget_post_feed',
+    'App\\Widgets\\RelatedStories=carbon_fields_alps_widget_related_storied',
+    'App\\Widgets\\TextWithLink=carbon_fields_alps_widget_text_with_link',
+], $registered);
+
 echo 'PHP ' . PHP_VERSION . ', WordPress ' . get_bloginfo('version') . ', Carbon Fields ' . \Carbon_Fields\VERSION . "\n";
 echo "compare: $checks checks, " . count($failures) . " failures\n";
 foreach ($failures as $failure) {

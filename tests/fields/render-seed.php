@@ -157,12 +157,15 @@ if (! empty($alps_render_seed)) {
     set_post_thumbnail($posts['options'], $images[1]);
     $posts['hero'] = $make('post', 'post-hero', 'Post with hero', ['hero_type' => 'carousel', 'hero_carousel' => $slides(2), 'featured_image_hero_layout' => 'header-block-featured'], ['post_category' => [$category]]);
 
-    // A Related Stories widget in both sidebars (reads an option).
+    // The theme's widgets in both sidebars, saved the way Carbon Fields saved
+    // them. Related Stories reads an option; each template shows once a page.
     update_option('widget_carbon_fields_alps_widget_related_storied', [2 => ['_related_stories_title' => 'Related stories'], '_multiwidget' => 1]);
+    update_option('widget_carbon_fields_alps_widget_text_with_link', [2 => ['_text_link_title' => 'Widget title', '_text_link_content' => 'Widget text', '_text_link_url' => 'https://example.org/widget', '_text_link_url_text' => 'Widget link'], '_multiwidget' => 1]);
+    update_option('widget_carbon_fields_alps_widget_post_feed', [2 => ['_post_feed_category' => $category, '_post_feed_title' => 'Widget feed', '_post_feed_url' => '', '_post_feed_count' => '2', '_post_feed_offset' => '', '_post_feed_featured' => 'true', '_post_feed_layout' => ''], '_multiwidget' => 1]);
+    update_option('widget_carbon_fields_alps_widget_author', [2 => ['_text_link_author' => 'Written by'], '_multiwidget' => 1]);
     $sidebars = get_option('sidebars_widgets', []);
-    foreach (['sidebar-posts', 'sidebar-page'] as $sidebar) {
-        $sidebars[$sidebar] = ['carbon_fields_alps_widget_related_storied-2'];
-    }
+    $sidebars['sidebar-posts'] = ['carbon_fields_alps_widget_related_storied-2', 'carbon_fields_alps_widget_author-2', 'carbon_fields_alps_widget_text_with_link-2'];
+    $sidebars['sidebar-page'] = ['carbon_fields_alps_widget_related_storied-2', 'carbon_fields_alps_widget_text_with_link-2', 'carbon_fields_alps_widget_post_feed-2'];
     update_option('sidebars_widgets', $sidebars);
 
     update_option('permalink_structure', '');

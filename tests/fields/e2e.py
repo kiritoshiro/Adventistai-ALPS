@@ -2,16 +2,17 @@
 """Browser tests of the theme's field screens in WordPress Playground.
 
 Boots a Playground site with this theme, the render-seed.php content, a test
-Editor account and a test-only REST route that shows a post's raw meta to
-admins, then runs one Playwright script against it:
+Editor account and test-only REST routes that show raw values to
+admins (post meta and options), then runs one Playwright script against it:
 
   settings-page  settings-page.mjs: Appearance → ALPS Theme Settings
   editor-panels  editor-panels.mjs: the block editor sidebar panels
+  widgets        widgets.mjs: the theme's widgets on Appearance → Widgets
 
 Needs Node.js, `composer install` and Playwright (`npm i -g playwright` and
 `npx playwright install chromium`; found through NODE_PATH = npm root -g).
 
-Usage: python3 tests/fields/e2e.py settings-page|editor-panels [--php 8.4]
+Usage: python3 tests/fields/e2e.py settings-page|editor-panels|widgets [--php 8.4]
 """
 import argparse
 import json
@@ -32,7 +33,7 @@ THEME_VFS = "/wordpress/wp-content/themes/adventistai"
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("script", choices=["settings-page", "editor-panels"])
+    parser.add_argument("script", choices=["settings-page", "editor-panels", "widgets"])
     parser.add_argument("--php", default="8.4")
     parser.add_argument("--wp", default="latest")
     args = parser.parse_args()
@@ -54,6 +55,11 @@ def main():
         "        'methods' => 'GET',",
         "        'permission_callback' => function () { return current_user_can('manage_options'); },",
         "        'callback' => function ($request) { return get_post_meta((int) $request['id']); },",
+        '    ]);',
+        "    register_rest_route('alps-test/v1', '/option/(?P<name>[a-z0-9_]+)', [",
+        "        'methods' => 'GET',",
+        "        'permission_callback' => function () { return current_user_can('manage_options'); },",
+        "        'callback' => function ($request) { return get_option($request['name']); },",
         '    ]);',
         '});',
     ]
@@ -114,7 +120,10 @@ def main():
         log = os.path.join(logs, "debug.log")
         if os.path.exists(log):
             with open(log, encoding="utf-8", errors="replace") as fh:
-                theme_lines = [line.rstrip() for line in fh if "PHP " in line and "/themes/adventistai/app/Fields" in line]
+                theme_lines = [line.rstrip() for line in fh if "PHP " in line and (
+                    "/themes/adventistai/app/Fields" in line or "PHP Fatal" in line
+                    # The widget classes, not their (unchanged, already noisy) templates.
+                    or ("/themes/adventistai/app/Widgets/" in line and "/templates/" not in line))]
             for line in theme_lines:
                 print("LOG   " + line)
             if theme_lines:

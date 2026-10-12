@@ -77,7 +77,9 @@ def log_lines(path, start):
         if "PHP " not in line or "_load_textdomain_just_in_time" in line:
             continue
         line = re.sub(r"^\[[^]]+\] ", "", line).replace("adventistai-old", "adventistai")
-        lines.append(re.sub(r"views/[0-9a-f]{32}\.php", "views/<compiled>.php", line))
+        line = re.sub(r"views/[0-9a-f]{32}\.php", "views/<compiled>.php", line)
+        # Theme files may move between versions; keep only the file name.
+        lines.append(re.sub(r"/wordpress/wp-content/themes/adventistai/\S*/([^/\s]+\.php)", r"<theme>/\1", line))
     return lines, end
 
 

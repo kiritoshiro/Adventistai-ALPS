@@ -89,6 +89,7 @@ add_action('wp_footer', [\App\LatestPostSlider::class, 'printDeferScript'], 20);
 \App\ThemePalette::register();
 \App\Fields\SettingsPage::register();
 \App\Fields\PostPanels::register();
+add_action('widgets_init', [\App\Widgets\AlpsWidget::class, 'registerAll']);
 add_action('init', [\App\WrappedImageTextBlock::class, 'register']);
 add_action('init', [\App\CardScrollerBlock::class, 'register']);
 \App\PostMediaPriority::register();

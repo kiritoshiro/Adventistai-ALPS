@@ -8,9 +8,6 @@ function crb_load()
 {
     require_once __DIR__ . '/../../vendor/autoload.php';
     \Carbon_Fields\Carbon_Fields::boot();
-    // IN SAGE THEMES ///////////////
-    // WIDGETS HAVE TO BE LOADED HERE
-    require_once('cf-widget.php');
 }
 
 // RELEASE ZIPS SHIP ONLY THE MINIFIED CF BUILDS. WHEN SCRIPT_DEBUG ASKS FOR
@@ -54,3 +51,15 @@ function cf_admin_style()
 
 add_action('admin_enqueue_scripts', 'cf_admin_style');
 
+
+// The theme's widgets keep Carbon Fields' "carbon_fields_" IDs so saved
+// widgets carry over (app/Widgets/AlpsWidget.php). Carbon Fields' widget
+// script takes such widgets for its own and fails on them, and no Carbon
+// Fields fields are left on these screens, so its UI is not loaded there.
+add_action('current_screen', function ($screen) {
+    if ($screen && in_array($screen->id, ['widgets', 'customize'], true)) {
+        $loader = \Carbon_Fields\Carbon_Fields::resolve('loader');
+        remove_action('admin_print_footer_scripts', [$loader, 'enqueue_assets'], 9);
+        remove_action('admin_print_footer_scripts', [$loader, 'initialize_ui'], 9999);
+    }
+});
