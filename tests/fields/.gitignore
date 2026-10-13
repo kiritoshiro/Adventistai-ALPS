@@ -1,0 +1,3 @@
+# Written by run-capture.py on every run; the JSON fixture is what is kept.
+fixtures/capture.log
+__pycache__/
