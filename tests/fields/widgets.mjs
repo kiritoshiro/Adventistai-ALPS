@@ -149,6 +149,14 @@ const related = newest.locator('.c-related-posts__blocks');
 const relatedText = (await related.count()) ? await related.first().innerText() : '';
 check('front end: Related Stories lists the other posts', relatedText.includes('Post with options') && relatedText.includes('Plain post'), relatedText.slice(0, 200));
 check('front end: Related Stories leaves out the post itself', !relatedText.includes('Post with hero'), relatedText.slice(0, 200));
+// On the oldest post the list is a text-only item (Post with hero, has an
+// excerpt) and then a picture item: the excerpt must not show again there.
+const items = front.locator('.c-related-posts__blocks > .c-block');
+const itemTexts = await items.allInnerTexts();
+const textItem = itemTexts.find((t) => t.includes('Post with hero')) || '';
+const pictureItem = itemTexts.find((t) => t.includes('Post with options')) || '';
+check('front end: text-only related item shows its excerpt', textItem.includes('Excerpt of Post with hero'), textItem.slice(0, 120));
+check('front end: next related item does not repeat it', pictureItem !== '' && !pictureItem.includes('Excerpt of'), pictureItem.slice(0, 160));
 // The rest of the page still belongs to this post (the widget's loop is reset).
 check('front end: author box still about this post', (await front.locator('.c-widget').filter({hasText: 'Written by'}).count()) === 1);
 

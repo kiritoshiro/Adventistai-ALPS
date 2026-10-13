@@ -30,6 +30,9 @@
             <?php while  ($related->have_posts()): ?>
                 <?php
                     $related->the_post();
+                    // Only the text-only items set these; media-block.php prints
+                    // them too, so an earlier item's excerpt would show again.
+                    unset($excerpt, $body, $excerpt_length);
                     $id = get_the_ID();
                     $title = get_the_title();
                     $link = get_permalink();
