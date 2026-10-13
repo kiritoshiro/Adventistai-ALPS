@@ -16,8 +16,8 @@ if (! defined('ABSPATH')) {
  * save. The templates get the same $args and $settings as before
  * (tests/fields/compare.php compares both with Carbon Fields).
  *
- * As before, each template is loaded with include_once, so only the first
- * widget of a kind on a page shows.
+ * The Carbon Fields widgets loaded their templates with include_once, so only
+ * the first widget of a kind on a page showed; these show every one.
  */
 abstract class AlpsWidget extends \WP_Widget
 {
@@ -88,7 +88,7 @@ abstract class AlpsWidget extends \WP_Widget
     /** Only $args and $settings are in the template's scope, as with Carbon Fields. */
     protected function render($args, $settings)
     {
-        include_once __DIR__ . '/templates/' . $this->template();
+        include __DIR__ . '/templates/' . $this->template();
     }
 
     /**

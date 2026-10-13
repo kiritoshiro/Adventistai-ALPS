@@ -2,15 +2,19 @@
     $title = empty($settings['related_stories_title']) ? '' : $settings['related_stories_title'];
     $isVisibleImage = !get_alps_option('is_related_stories_image_hidden');
 
-    $post_type = get_post_type($post->ID);
-    $category_term = \App\ContentHelpers::primaryCategory((int) $post->ID);
+    // The entry being viewed (the widget's own scope has no $post).
+    $current = is_singular() ? get_queried_object() : get_post();
+    $current_id = $current instanceof WP_Post ? $current->ID : 0;
+
+    $post_type = $current_id ? get_post_type($current_id) : 'post';
+    $category_term = $current_id ? \App\ContentHelpers::primaryCategory($current_id) : null;
     $category = $category_term ? $category_term->name : '';
     $category_slug = $category_term ? $category_term->slug : '';
     $args = array(
         'post_type' => $post_type,
         'category_name' => $category_slug,
         'posts_per_page' => 2,
-        'post__not_in' => array($post->ID)
+        'post__not_in' => array($current_id)
     );
     $related = new WP_Query($category_slug !== '' ? $args : array('post__in' => array(0)));
 

@@ -109,7 +109,27 @@ check('after reload: feed title', await reloaded.locator('input[name$="[post_fee
 check('after reload: feed checkbox', await reloaded.locator('input[name$="[post_feed_featured]"]').isChecked());
 check('after reload: feed category', (await reloaded.locator('select[name$="[post_feed_category]"] option:checked').innerText()) === 'Render news');
 
-// Front end: a post shows the edited and the added widget.
+// A second Text with Link in the same sidebar (Carbon Fields showed only the first).
+const textTitle = page.locator('#widget-list .widget', {hasText: 'ALPS - Text with Link'}).locator('.widget-title');
+await textTitle.click();
+await page.locator('.widgets-chooser-sidebars li', {hasText: 'Posts Sidebar'}).click();
+const secondSave = page.waitForResponse((r) => r.url().includes('admin-ajax.php') && (r.request().postData() || '').includes('action=save-widget'));
+await page.locator('.widgets-chooser-add').click();
+await secondSave;
+await page.waitForFunction(() => !document.querySelector('#sidebar-posts .spinner.is-active'), null, {timeout: 30000});
+const second = posts.locator('.widget[id*="carbon_fields_alps_widget_text_with_link"]').last();
+const secondTitle = second.locator('input[name$="[text_link_title]"]');
+if (!(await secondTitle.waitFor({state: 'visible', timeout: 5000}).then(() => true, () => false))) {
+  await second.locator('.widget-action').click();
+  await secondTitle.waitFor({state: 'visible'});
+}
+await page.waitForTimeout(500);
+await secondTitle.fill('Second text widget');
+await second.locator('textarea[name$="[text_link_content]"]').fill('Second widget text');
+await second.locator('.widget-control-save').click();
+await page.waitForFunction(() => !document.querySelector('#sidebar-posts .spinner.is-active'), null, {timeout: 30000});
+
+// Front end: a post shows the edited and the added widgets.
 const postId = (await api('/wp/v2/posts?slug=post-plain&_fields=id'))[0].id;
 const front = await context.newPage();
 await front.goto(`${base}/?p=${postId}`);
@@ -117,6 +137,20 @@ const html = await front.content();
 check('front end: edited widget title', html.includes('Edited widget title'));
 check('front end: added feed title', html.includes('Added feed'));
 check('front end: widget class kept', html.includes('carbon_fields_alps_widget_post_feed'));
+check('front end: both Text with Link widgets show', html.includes('Edited widget title') && html.includes('Second text widget') && html.includes('Second widget text'));
+
+// Related Stories lists other posts of the category. Carbon Fields' version had
+// no $post: it fell back to the global post for the category but excluded
+// nothing, so the newest post listed itself.
+const newestId = (await api('/wp/v2/posts?slug=post-hero&_fields=id'))[0].id;
+const newest = await context.newPage();
+await newest.goto(`${base}/?p=${newestId}`);
+const related = newest.locator('.c-related-posts__blocks');
+const relatedText = (await related.count()) ? await related.first().innerText() : '';
+check('front end: Related Stories lists the other posts', relatedText.includes('Post with options') && relatedText.includes('Plain post'), relatedText.slice(0, 200));
+check('front end: Related Stories leaves out the post itself', !relatedText.includes('Post with hero'), relatedText.slice(0, 200));
+// The rest of the page still belongs to this post (the widget's loop is reset).
+check('front end: author box still about this post', (await front.locator('.c-widget').filter({hasText: 'Written by'}).count()) === 1);
 
 check('no JavaScript errors', errors.length === 0, errors.join(' | '));
 await browser.close();

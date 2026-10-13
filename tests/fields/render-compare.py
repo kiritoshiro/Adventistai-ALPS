@@ -102,6 +102,9 @@ def stop(proc):
 
 
 def main():
+    # Diffs contain Lithuanian text; Windows consoles default to a code page
+    # that cannot print it.
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser()
     parser.add_argument("--old", required=True, help="checkout of the version to compare against")
     parser.add_argument("--php", default="8.4")
