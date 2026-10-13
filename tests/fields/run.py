@@ -8,7 +8,8 @@ Playground smoke test) and runs one script inside it:
   compare  compare.php: App\\Fields\\Store and Registry against Carbon Fields;
            exits 1 on any difference
 
-Needs Node.js (npx) and `composer install`. The theme must not write
+Needs Node.js (npx) and `composer install` with dev dependencies (Carbon
+Fields, for the comparison). The theme must not write
 theme.json (older theme versions rewrote its palette on every
 request); if the file changes it is restored and the run fails.
 
@@ -40,17 +41,22 @@ def main():
 
     steps = [{"step": "defineWpConfigConsts", "consts": {"WP_DEBUG": True, "WP_DEBUG_DISPLAY": True}}]
     steps += config.get("setup", [])
-    if args.script == "compare":
-        # The theme no longer defines Carbon Fields theme options; load the
-        # frozen definition so options can still be compared with Carbon Fields.
-        steps.append({"step": "writeFile", "path": "/wordpress/wp-content/mu-plugins/alps-legacy-theme-options.php", "data": (
-            "<?php\n// Test site only: Carbon Fields theme options as defined before the native page.\n"
-            "add_action('after_setup_theme', function () {\n"
-            "    $file = get_template_directory() . '/tests/fields/legacy/cf-theme-options.php';\n"
-            "    if (is_readable($file)) {\n"
-            "        require_once $file;\n"
-            "    }\n"
-            "}, 5);\n")})
+    if args.script in ("compare", "capture"):
+        # The theme no longer loads Carbon Fields; the tests load it (a Composer
+        # dev dependency) with the theme's old definitions.
+        legacy = [
+            '<?php',
+            "// Test site only: Carbon Fields and the theme's old definitions (tests/fields/legacy/boot.php).",
+            "add_action('after_setup_theme', function () {",
+            "    $file = get_template_directory() . '/tests/fields/legacy/boot.php';",
+            '    if (is_readable($file)) {',
+            '        require_once $file;',
+            '        alps_legacy_boot();',
+            '    }',
+            '}, 5);',
+        ]
+        steps.append({"step": "writeFile", "path": "/wordpress/wp-content/mu-plugins/alps-legacy-carbon-fields.php",
+                      "data": chr(10).join(legacy) + chr(10)})
     steps.append({"step": "activateTheme", "themeFolderName": "adventistai"})
     # Playground does not print runPHP output or errors, so they go to a file.
     log_rel = os.path.join("tests", "fields", "fixtures", args.script + ".log")

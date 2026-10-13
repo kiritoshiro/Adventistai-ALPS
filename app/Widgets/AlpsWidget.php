@@ -50,16 +50,6 @@ abstract class AlpsWidget extends \WP_Widget
         ], ['width' => 295]);
     }
 
-    /**
-     * Carbon Fields' loader calls this, on every REST request, for each widget
-     * in a sidebar whose ID starts with "carbon_fields_" (as these keep). Its
-     * widgets used it to expose their fields; these have nothing to expose.
-     * Can go together with Carbon Fields.
-     */
-    public function register_container()
-    {
-    }
-
     /** Field definitions in the format App\Fields\Store reads. */
     public function definitions()
     {

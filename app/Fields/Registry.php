@@ -11,9 +11,9 @@ if (! defined('ABSPATH')) {
  * option, with what is needed to read them back exactly as Carbon Fields
  * 3.6.11 does (type, default, choices, checkbox value, complex groups).
  *
- * Carbon Fields still defines and saves these (app/carbon-fields/); this list
- * mirrors those definitions and tests/fields/run.php checks that it still
- * does. The six edit-screen boxes tied to templates that no longer exist
+ * The list mirrors the Carbon Fields definitions the theme used until 3.36
+ * (kept for the tests in tests/fields/legacy/); tests/fields/compare.php checks
+ * it against them. The six edit-screen boxes tied to templates that no longer exist
  * (Home row/story blocks, Hero Featured Post, Post Feed …) are left out: no
  * template reads them, and an unknown field reads as '' as in Carbon Fields.
  *

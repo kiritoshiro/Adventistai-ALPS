@@ -153,10 +153,11 @@ await save();
 const newId = await page.evaluate(() => window.wp.data.select('core/editor').getCurrentPostId());
 check('new page stores the taller banner', (await meta(newId))._featured_image_hero_layout?.[0] === 'page-header');
 
-// Attachments keep the Carbon Fields boxes on the classic media screen.
+// The classic media screen has no theme fields (Carbon Fields is gone) and no errors.
 const imageId = (await api('/wp/v2/media?per_page=1&_fields=id'))[0].id;
-await page.goto(`${base}/wp-admin/post.php?post=${imageId}&action=edit`);
-check('attachment screen keeps Carbon Fields boxes', await page.locator('[id^="carbon_fields_container_alps_"]').count() >= 4);
+const media = await page.goto(`${base}/wp-admin/post.php?post=${imageId}&action=edit`);
+check('attachment screen loads without theme boxes', media.status() === 200 && await page.locator('[id^="carbon_fields_container"]').count() === 0
+  && await page.locator('#post-body').count() === 1);
 
 // Narrow editor sidebar: fields fit.
 await page.setViewportSize({width: 1024, height: 900});

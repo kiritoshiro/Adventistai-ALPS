@@ -1,20 +1,16 @@
 <?php
+/**
+ * Test-only: the Carbon Fields post boxes as they were before the block editor
+ * panels and the removal of Carbon Fields (frozen from
+ * app/carbon-fields/cf-post-options.php at 3eb8d66, without its display
+ * conditions). run.py compare loads it so post fields can still be compared
+ * with Carbon Fields. Never loaded by the theme.
+ */
 
 use Carbon_Fields\Container;
 use Carbon_Fields\Field;
 
 // The defaults live with the field list (app/Fields/Registry.php).
-
-/**
- * These boxes now only show on classic edit screens (attachments, post types
- * without the block editor); the block editor has the theme's own panels
- * (app/Fields/PostPanels.php). The boxes of the removed home and posts
- * templates are gone; their stored values were left in place.
- */
-function crb_classic_screen($post_type)
-{
-    return in_array($post_type, \App\Fields\PostPanels::classicTypes(), true);
-}
 function setDefaultHeader() {
     return \App\Fields\Registry::defaultHeroLayout();
 }
@@ -26,7 +22,6 @@ function crb_page_options()
 {
 	Container
 		::make('post_meta', __('ALPS: Header and Page Builder Options', 'alps'))
-		->where('post_type', 'CUSTOM', 'crb_classic_screen')
 		->add_fields([
 			Field
 				::make('separator', 'crb_page_options', __('Header and Page Builder Options', 'alps'))
@@ -68,7 +63,6 @@ function crb_attach_header()
 {
 	Container
 		::make('post_meta', __('ALPS: Header Banner', 'alps'))
-		->where('post_type', 'CUSTOM', 'crb_classic_screen')
 		->add_fields([
 			Field
 				::make('separator', 'crb_long_header', __('Banner', 'alps'))
@@ -92,7 +86,6 @@ function crb_attach_hero()
 {
 	Container
 		::make('post_meta', __('ALPS: Hero', 'alps'))
-		->where('post_type', 'CUSTOM', 'crb_classic_screen')
 		->add_fields([
 			Field
 				::make('separator', 'crb_hero_banner', __('Hero Banner', 'alps'))
@@ -308,7 +301,6 @@ function crb_attach_page_template_fields()
 {
 	Container
 		::make('post_meta', __('ALPS: Entry Sidebar / Featured Image', 'alps'))
-		->where('post_type', 'CUSTOM', 'crb_classic_screen')
 		->add_fields([
 			Field
 				::make('separator', 'crb_hide_sidebar', __('Hide Sidebar', 'alps'))
@@ -335,7 +327,6 @@ function crb_attach_related_pages()
 	Container
 		::make('post_meta', __('ALPS: Related Pages & Posts', 'alps'))
 		->where('post_type', '=', 'page')
-		->where('post_type', 'CUSTOM', 'crb_classic_screen')
 		->add_fields([
 			Field
 				::make('radio', 'related', __('Related Pages Format', 'alps'))

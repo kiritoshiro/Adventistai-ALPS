@@ -32,10 +32,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # As in the release ZIP: no dev dependencies, so no Carbon Fields.
           composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
-          mkdir -p public/carbon-fields/core/Libraries/Sidebar_Manager
-          cp -R vendor/htmlburger/carbon-fields/build public/carbon-fields/
-          cp -R vendor/htmlburger/carbon-fields/core/Libraries/Sidebar_Manager/assets public/carbon-fields/core/Libraries/Sidebar_Manager/
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -51,7 +49,10 @@ jobs:
       # App\Fields\Store (the theme's own field reader) must return exactly
       # what Carbon Fields returns, for saved, empty, invalid and hand-written
       # edge rows. See tests/fields/compare.php.
+      # The comparison loads Carbon Fields itself (a dev dependency).
       - name: Theme fields read the same as through Carbon Fields
         env:
           PHP_VERSION: ${{ matrix.php }}
-        run: python3 tests/fields/run.py compare --php "$PHP_VERSION"
+        run: |
+          composer install --prefer-dist --no-interaction --no-progress
+          python3 tests/fields/run.py compare --php "$PHP_VERSION"

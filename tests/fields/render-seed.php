@@ -108,7 +108,12 @@ if (! empty($alps_render_seed)) {
             'post_content' => "<!-- wp:paragraph --><p>Body of $title.</p><!-- /wp:paragraph -->",
         ]);
         foreach ($fields as $name => $value) {
-            carbon_set_post_meta($id, $name, $value);
+            // Same rows either way; the theme no longer loads Carbon Fields.
+            if (method_exists('App\Fields\Store', 'setPost')) {
+                \App\Fields\Store::setPost($id, $name, $value);
+            } else {
+                carbon_set_post_meta($id, $name, $value);
+            }
         }
         return $id;
     };

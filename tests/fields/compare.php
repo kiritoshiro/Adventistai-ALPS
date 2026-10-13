@@ -24,6 +24,11 @@ use Carbon_Fields\Field\Association_Field;
 use Carbon_Fields\Field\Checkbox_Field;
 use Carbon_Fields\Field\Complex_Field;
 
+if (! function_exists('carbon_get_post_meta')) {
+    echo "ERROR Carbon Fields is not loaded: run composer install with dev dependencies (see tests/fields/legacy/boot.php)\n";
+    return;
+}
+
 $checks = 0;
 $failures = [];
 $same = function ($label, $expected, $actual) use (&$checks, &$failures) {
@@ -506,7 +511,7 @@ $alps = function ($response) {
     return json_decode(wp_json_encode($response->get_data()['alps_fields']), true);
 };
 $same('panel post types include post and page', true, in_array('post', PostPanels::blockEditorTypes(), true) && in_array('page', PostPanels::blockEditorTypes(), true));
-$same('attachments stay on Carbon Fields boxes', true, in_array('attachment', PostPanels::classicTypes(), true));
+$same('attachments have no panels', false, in_array('attachment', PostPanels::blockEditorTypes(), true));
 
 $filled = $new_post('page', 'REST filled page');
 foreach ($registry_post as $name => $field) {
@@ -661,22 +666,6 @@ foreach ([
         && (strpos($form, esc_attr("Text " . array_key_first($definitions))) !== false || strpos($form, 'selected') !== false || strpos($form, 'checked') !== false));
 }
 wp_set_current_user(0);
-// Carbon Fields' loader (on rest_api_init) calls register_container() on
-// every sidebar widget whose ID starts with carbon_fields_.
-$saved_sidebars = get_option('sidebars_widgets');
-update_option('widget_carbon_fields_alps_widget_text_with_link', [2 => ['_text_link_title' => 'In a sidebar'], '_multiwidget' => 1]);
-wp_set_sidebars_widgets(['sidebar-posts' => ['carbon_fields_alps_widget_text_with_link-2'], 'wp_inactive_widgets' => []]);
-$GLOBALS['wp_registered_widgets'] = [];
-remove_action('widgets_init', 'alps_widgets_init');
-$GLOBALS['wp_widget_factory']->_register_widgets();
-try {
-    \Carbon_Fields\Carbon_Fields::resolve('loader')->initialize_widgets();
-    $loader_ok = true;
-} catch (Throwable $e) {
-    $loader_ok = $e->getMessage();
-}
-$same("Carbon Fields' loader accepts the native widgets", true, $loader_ok);
-update_option('sidebars_widgets', $saved_sidebars);
 global $wp_widget_factory;
 $registered = array_map(function ($widget) {
     return get_class($widget) . '=' . $widget->id_base;

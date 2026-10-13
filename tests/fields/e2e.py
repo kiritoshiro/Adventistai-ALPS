@@ -76,15 +76,6 @@ def main():
     blueprint = {"$schema": "https://playground.wordpress.net/blueprint-schema.json",
                  "preferredVersions": {"php": args.php, "wp": args.wp}, "steps": steps}
 
-    # Carbon Fields' admin scripts, copied into public/ as the release
-    # workflow does (a plain checkout has none); removed afterwards.
-    cf_public = os.path.join(ROOT, "public", "carbon-fields")
-    copied = not os.path.exists(cf_public)
-    if copied:
-        cf = os.path.join(ROOT, "vendor", "htmlburger", "carbon-fields")
-        shutil.copytree(os.path.join(cf, "build"), os.path.join(cf_public, "build"))
-        shutil.copytree(os.path.join(cf, "core", "Libraries", "Sidebar_Manager", "assets"),
-                        os.path.join(cf_public, "core", "Libraries", "Sidebar_Manager", "assets"))
     logs = tempfile.mkdtemp()
     bp_path = os.path.join(logs, "blueprint.json")
     with open(bp_path, "w", encoding="utf-8") as fh:
@@ -129,8 +120,6 @@ def main():
             if theme_lines:
                 code = code or 1
         shutil.rmtree(logs, ignore_errors=True)
-        if copied:
-            shutil.rmtree(cf_public, ignore_errors=True)
         with open(os.path.join(ROOT, "theme.json"), "rb") as fh:
             if fh.read() != theme_json:
                 with open(os.path.join(ROOT, "theme.json"), "wb") as out:

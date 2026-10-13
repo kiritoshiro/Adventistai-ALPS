@@ -25,7 +25,8 @@ if (! defined('ABSPATH')) {
  * is stored yet, as before.
  *
  * Post types edited on a classic screen (attachments, any type without the
- * block editor) keep the Carbon Fields boxes (app/carbon-fields/cf-post-options.php).
+ * block editor) have no fields to edit any more; values stored there are
+ * still read.
  */
 class PostPanels
 {
@@ -54,18 +55,13 @@ class PostPanels
         return $types;
     }
 
-    /** Of those, the ones edited in the block editor (the rest keep the Carbon Fields boxes). */
+    /** Of those, the ones edited in the block editor. */
     public static function blockEditorTypes()
     {
         if (! function_exists('use_block_editor_for_post_type')) {
             require_once ABSPATH . 'wp-admin/includes/post.php';
         }
         return array_values(array_filter(self::postTypes(), 'use_block_editor_for_post_type'));
-    }
-
-    public static function classicTypes()
-    {
-        return array_values(array_diff(array_merge(self::postTypes(), ['attachment']), self::blockEditorTypes()));
     }
 
     /** Whether a field belongs on a post type (Related Pages & Posts is for pages). */

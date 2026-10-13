@@ -81,24 +81,6 @@ jobs:
         if: steps.existing.outputs.released != 'true'
         run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
 
-      - name: Publish Carbon Fields browser assets
-        if: steps.existing.outputs.released != 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p public/carbon-fields/core/Libraries/Sidebar_Manager
-          cp -R vendor/htmlburger/carbon-fields/build public/carbon-fields/
-          cp -R vendor/htmlburger/carbon-fields/core/Libraries/Sidebar_Manager/assets \
-            public/carbon-fields/core/Libraries/Sidebar_Manager/
-          # Carbon Fields loads the readable builds only under SCRIPT_DEBUG, and
-          # app/carbon-fields/_init.php falls back to the .min files then. Drop
-          # each readable build (about 15 MB) that has a minified twin.
-          find public/carbon-fields/build -type f \( -name '*.js' -o -name '*.css' \) ! -name '*.min.*' -print0 |
-            while IFS= read -r -d '' file; do
-              min="${file%.*}.min.${file##*.}"
-              if [ -s "$min" ]; then rm "$file"; fi
-            done
-
       - name: Check PHP syntax
         if: steps.existing.outputs.released != 'true'
         shell: bash
@@ -114,7 +96,6 @@ jobs:
             --exclude='.git/' \
             --exclude='.github/' \
             --exclude='/build/' \
-            --exclude='/vendor/htmlburger/carbon-fields/build/' \
             --exclude='/vendor/roots/acorn/tests/' \
             --exclude='/tests/' \
             --exclude='/docs/' \
@@ -134,15 +115,13 @@ jobs:
             --exclude='.env*' \
             --exclude='*.log' \
             --exclude='*~*'
-          test -s build/adventistai/public/carbon-fields/build/classic/core.min.js
-          test -s build/adventistai/public/carbon-fields/build/classic/metaboxes.min.js
-          test -s build/adventistai/public/carbon-fields/build/gutenberg/core.min.js
-          test -s build/adventistai/public/carbon-fields/build/gutenberg/metaboxes.min.js
-          test -s build/adventistai/public/carbon-fields/core/Libraries/Sidebar_Manager/assets/css/app.css
-          test -s build/adventistai/public/carbon-fields/core/Libraries/Sidebar_Manager/assets/js/app.js
           test -s build/adventistai/vendor/roots/acorn/src/Roots/helpers.php
           test -s build/adventistai/colors.json
-          test ! -e build/adventistai/public/carbon-fields/build/classic/vendor.js
+          # Carbon Fields is a dev dependency (comparison tests only) since 3.36.
+          test ! -e build/adventistai/vendor/htmlburger
+          test ! -e build/adventistai/public/carbon-fields
+          test ! -e build/adventistai/app/carbon-fields
+          test -s build/adventistai/app/Fields/Store.php
           test ! -e build/adventistai/vendor/roots/acorn/tests
           test ! -e build/adventistai/tests
           cd build
