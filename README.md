@@ -99,13 +99,14 @@ Make sure all dependencies have been installed before moving on:
 ```shell
 themes/your-theme-name/   # → Root of your Sage based theme
 ├── app/                  # → Theme PHP
-│   ├── carbon-fields     # → Carbon fields plugin for Theme Settings
+│   ├── Fields            # → Theme fields: settings page, editor panels, reader (Store)
 │   ├── Core              # → Utils functionality for theme support
 │   ├── local             # → folder for storing styles on your local env
 │   │   ├── alps          # → folder with generated css and js files 
 │   │   └── source        # → folder with source css and js files. After generation of this folder files will store in the /alps folder 
 │   ├── Providers/        # → Service providers
 │   ├── View/             # → View models
+│   ├── Widgets           # → The theme's classic widgets
 │   ├── filters.php       # → Theme filters
 │   └── setup.php         # → Theme setup
 ├── composer.json         # → Autoloading for `app/` files
@@ -167,7 +168,7 @@ The translation in `ALPS for Wordpress` was done thanks to the following individ
 
 ### Contributing
 
-Contributions are welcome from everyone. We have [contributing guidelines](https://github.com/roots/guidelines/blob/master/CONTRIBUTING.md) to help you get started.
+Contributions are welcome from everyone. We have [contributing guidelines](https://github.com/roots/guidelines) to help you get started.
 
 ### Community
 

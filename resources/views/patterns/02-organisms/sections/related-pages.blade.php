@@ -33,7 +33,7 @@
   }
   elseif ($related == 'related_custom') {
     // CARBON FIELDS HAS COMPELTELY DIFFERENT FORMAT HERE
-    $assigned = carbon_get_post_meta(get_the_id(), 'related_custom_value');
+    $assigned = \App\Fields\Store::post(get_the_id(), 'related_custom_value');
     $pages = [];
     foreach ($assigned as $k => $entry) {
       foreach ($entry as $key => $val) {

@@ -37,7 +37,7 @@ array_map(function ($file) use ($sage_error) {
     if (!locate_template($file, true, true)) {
         $sage_error(sprintf(__('Error locating <code>%s</code> for inclusion.', 'alps'), $file), 'File not found');
     }
-}, ['helpers', 'setup', 'fields', 'filters', 'admin', 'template-helpers', 'ContentHelpers', 'Breadcrumbs', 'SeoDefaults', 'UploadImages', 'ImageDelivery', 'ContentImages', 'OriginalImageRetention', 'AccountAccess', 'ThemeCache', 'InlineStyles', 'ScriptLoading', 'LogoImage', 'SecurityHeaders']);
+}, ['helpers', 'setup', 'filters', 'admin', 'template-helpers', 'ContentHelpers', 'Breadcrumbs', 'SeoDefaults', 'UploadImages', 'ImageDelivery', 'ContentImages', 'OriginalImageRetention', 'AccountAccess', 'ThemeCache', 'InlineStyles', 'ScriptLoading', 'LogoImage', 'SecurityHeaders']);
 
 \App\SeoDefaults::register();
 \App\UploadImages::register();
@@ -66,17 +66,6 @@ if (! file_exists($composer = __DIR__ . '/vendor/autoload.php')) {
 
 require $composer;
 
-/**
- * Carbon Fields normally serves its editor assets from Composer's vendor
- * directory. The server blocks public /vendor/ URLs, so use the browser assets
- * copied into the public theme directory by the release workflow.
- */
-if (! defined('Carbon_Fields\\URL')) {
-    define('Carbon_Fields\\URL', get_template_directory_uri() . '/public/carbon-fields');
-}
-
-require_once __DIR__ . '/vendor/htmlburger/carbon-fields/core/functions.php';
-require_once __DIR__ . '/app/carbon-fields/_init.php';
 require_once __DIR__ . '/defaults-themes.php';
 require_once __DIR__ . '/app/AdventistaiAlpsUpdater.php';
 require_once __DIR__ . '/inc/search/bootstrap.php';
@@ -85,6 +74,11 @@ add_action('init', [\App\LatestPostSliderBlock::class, 'register']);
 add_action('wp_head', [\App\LatestPostSlider::class, 'printHeadPreload'], 2);
 add_action('wp_footer', [\App\LatestPostSlider::class, 'printDeferScript'], 20);
 \App\SidebarImages::register();
+\App\Fields\Store::register();
+\App\ThemePalette::register();
+\App\Fields\SettingsPage::register();
+\App\Fields\PostPanels::register();
+add_action('widgets_init', [\App\Widgets\AlpsWidget::class, 'registerAll']);
 add_action('init', [\App\WrappedImageTextBlock::class, 'register']);
 add_action('init', [\App\CardScrollerBlock::class, 'register']);
 \App\PostMediaPriority::register();
@@ -173,7 +167,7 @@ function get_alps_field( $field, $id = NULL ) {
         $id = get_queried_object_id();
     }
 
-    $field_data = carbon_get_post_meta( $id, $field );
+    $field_data = \App\Fields\Store::post( $id, $field );
     if ( !empty( $field_data ) ) {
         if ( is_array( $field_data ) ) {
             if ( count( $field_data ) === 1 ) {
@@ -192,7 +186,7 @@ function get_alps_field( $field, $id = NULL ) {
 function get_alps_option( $field ) {
     global $post;
     $option = '';
-    $option = carbon_get_theme_option( $field );
+    $option = \App\Fields\Store::option( $field );
 
     if ( is_array( $option ) ) {
         // RETURN SINGLE KEY/VAL ARRAY AS VAL (IMAGES)

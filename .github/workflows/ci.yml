@@ -132,3 +132,6 @@ jobs:
 
       - name: Check theme asset budgets
         run: node scripts/check-asset-budgets.mjs
+
+      - name: No Carbon Fields in the theme code
+        run: node scripts/check-no-carbon-fields.mjs

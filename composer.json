@@ -45,7 +45,6 @@
   },
   "require": {
     "php": "^8.3",
-    "htmlburger/carbon-fields": "^3.6.11",
     "roots/acorn": "^6.3"
   },
   "suggest": {
@@ -68,5 +67,8 @@
         "App\\Providers\\ThemeServiceProvider"
       ]
     }
+  },
+  "require-dev": {
+    "htmlburger/carbon-fields": "^3.6.11"
   }
 }

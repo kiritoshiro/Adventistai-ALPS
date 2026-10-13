@@ -1,4 +1,12 @@
 <?php
+/**
+ * Test-only: the Carbon Fields definition of Appearance → ALPS Theme Settings
+ * as it was before the native page (app/Fields/SettingsPage.php) replaced it,
+ * frozen from app/carbon-fields/cf-theme-options.php at fb1c4ef. run.py loads
+ * it (through a Playground mu-plugin) so tests/fields/compare.php can still
+ * compare App\Fields\Registry, Store::option() and Store::setOption() with
+ * Carbon Fields itself. Never loaded by the theme.
+ */
 
 use Carbon_Fields\Container;
 use Carbon_Fields\Field;
@@ -301,27 +309,4 @@ function crb_attach_theme_options()
                 ::make('html', 'crb_theme_cache')
                 ->set_html([\App\ThemeCache::class, 'settingsHtml']),
         ]);
-
-        // Added to rewrite theme.json file with complete color palette based on selected color theme
-
-        $colors = json_decode(file_get_contents(get_template_directory().'/colors.json', false));
-        $color = carbon_get_theme_option('theme_color');
-        $theme_json_path = get_template_directory().'/theme.json';
-        $theme_json_contents = is_readable($theme_json_path)
-            ? file_get_contents($theme_json_path)
-            : false;
-        $json = $theme_json_contents !== false && $theme_json_contents !== ''
-            ? json_decode($theme_json_contents)
-            : null;
-
-        if ($json && !empty($colors)){
-            if (!empty($colors->{$color})){
-                $json->settings->color->palette = $colors->{$color};
-                $updated_theme_json = json_encode($json, JSON_PRETTY_PRINT);
-
-                if ($updated_theme_json !== false && $updated_theme_json !== $theme_json_contents) {
-                    file_put_contents($theme_json_path, $updated_theme_json, LOCK_EX);
-                }
-            }
-        }
 }
