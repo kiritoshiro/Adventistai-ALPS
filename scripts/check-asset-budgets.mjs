@@ -10,7 +10,10 @@ const budgets = [
   ['Frontend CSS', built('app.css'), 22_000],
   ['Frontend JS', built('app.js'), 4_500],
   ['Editor CSS', built('editor.css'), 9_000],
-  ['Editor JS', built('editor.js'), 24_000],
+  // Block editor only (never on the site). Includes the theme's post field
+  // panels (resources/scripts/field-panels.js, ~7 KB) since they replaced the
+  // Carbon Fields boxes.
+  ['Editor JS', built('editor.js'), 30_000],
   ['ALPS denim CSS', 'app/local/alps/css/main-denim.css', 215_000],
   // Trimmed to the classes the site uses (scripts/trim-alps-css.mjs); this
   // is the copy the theme links.

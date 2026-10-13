@@ -1,4 +1,10 @@
 <?php
+/**
+ * Test-only: the Carbon Fields widgets as they were before app/Widgets/
+ * replaced them (frozen from app/carbon-fields/cf-widget.php at 7866f5f, with
+ * the templates' path changed). tests/fields/compare.php loads it to compare
+ * the native widgets with Carbon Fields. Never loaded by the theme.
+ */
 
 use Carbon_Fields\Widget;
 use Carbon_Fields\Field;
@@ -20,7 +26,7 @@ class ALPS_Author_Box_Widget extends Widget
 
     public function front_end($args, $settings)
     {
-        include_once(dirname(__FILE__) . '/widgets/alps-author-box.php');
+        include_once(get_template_directory() . '/app/Widgets/templates/alps-author-box.php');
     }
 }
 
@@ -50,7 +56,7 @@ class ALPS_Text_With_Link_Widget extends Widget
     // Called when rendering the widget in the front-end
     public function front_end($args, $settings)
     {
-        include_once(dirname(__FILE__) . '/widgets/alps-text-with-link.php');
+        include_once(get_template_directory() . '/app/Widgets/templates/alps-text-with-link.php');
     }
 }
 
@@ -90,7 +96,7 @@ class ALPS_Post_Feed_Widget extends Widget
 
     public function front_end($args, $settings)
     {
-        include_once(dirname(__FILE__) . '/widgets/alps-post-feed.php');
+        include_once(get_template_directory() . '/app/Widgets/templates/alps-post-feed.php');
     }
 }
 
@@ -112,7 +118,7 @@ class ALPS_Related_Stories_Widget extends Widget
     // Called when rendering the widget in the front-end
     public function front_end($args, $settings)
     {
-        include_once(dirname(__FILE__) . '/widgets/alps-related-stories.php');
+        include_once(get_template_directory() . '/app/Widgets/templates/alps-related-stories.php');
     }
 }
 

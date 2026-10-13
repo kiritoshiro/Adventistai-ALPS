@@ -350,6 +350,11 @@ add_action('init', function () {
  * @return void
  */
 
+// The theme's widgets (app/Widgets/) are classic widgets: keep the classic
+// widgets screen instead of the block-based one.
+add_filter('use_widgets_block_editor', '__return_false');
+add_filter('gutenberg_use_widgets_block_editor', '__return_false');
+
 add_action('widgets_init', function () {
     $config = [
         'before_widget' => '<section class="c-widget c-%1$s c-%2$s o-link-wrapper--underline u-spacing u-background-color--gray--light u-padding u-theme--border-color--darker u-border--left can-be--dark-dark">',

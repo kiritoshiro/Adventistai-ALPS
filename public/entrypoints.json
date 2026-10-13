@@ -10,7 +10,7 @@
   },
   "editor": {
     "js": [
-      "js/editor.448861.js"
+      "js/editor.8904c8.js"
     ],
     "css": [
       "css/editor.7ab06d.css"
@@ -19,9 +19,12 @@
       "wp-block-editor",
       "wp-blocks",
       "wp-components",
+      "wp-core-data",
       "wp-data",
+      "wp-editor",
       "wp-element",
       "wp-i18n",
+      "wp-plugins",
       "wp-server-side-render"
     ]
   }

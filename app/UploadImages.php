@@ -33,7 +33,7 @@ final class UploadImages
         'set_flag' => true,
     ];
 
-    /** Appearance → ALPS Theme Settings → Images fields (Carbon Fields theme options). */
+    /** Appearance → ALPS Theme Settings → Images fields (app/Fields/SettingsPage.php). */
     public const SETTINGS = [
         'avif_quality' => 'alps_image_avif_quality',
         'full_max' => 'alps_image_full_max',
@@ -104,7 +104,7 @@ final class UploadImages
             return $settings;
         }
         foreach (self::SETTINGS as $key => $field) {
-            // Carbon Fields keeps a theme option as "_<field name>".
+            // Theme options are stored as "_<field name>" (the format Carbon Fields used).
             $value = get_option('_' . $field, '');
             if (is_scalar($value) && trim((string) $value) !== '' && is_numeric(trim((string) $value))) {
                 $settings[$key] = (int) $value;
