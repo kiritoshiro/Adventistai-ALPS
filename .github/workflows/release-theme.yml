@@ -117,7 +117,7 @@ jobs:
             --exclude='*~*'
           test -s build/adventistai/vendor/roots/acorn/src/Roots/helpers.php
           test -s build/adventistai/colors.json
-          # Carbon Fields is a dev dependency (comparison tests only) since 3.36.
+          # Carbon Fields is only a dev dependency (for the comparison tests).
           test ! -e build/adventistai/vendor/htmlburger
           test ! -e build/adventistai/public/carbon-fields
           test ! -e build/adventistai/app/carbon-fields
