@@ -1,5 +1,9 @@
 # Link checker configuration (lychee). Used by .github/workflows/links.yml.
-max_retries = 3
+# 5xx, 408 and 429 are retried with doubling waits (5, 10, 20, 40, 80 s).
+# github.com sometimes answers runners with 503/504 for over half a minute
+# (3 of 30 runs in October 2026 failed on links that work); five retries
+# span about 2.5 minutes, and only for links that fail.
+max_retries = 5
 retry_wait_time = 5
 timeout = 30
 max_concurrency = 16
