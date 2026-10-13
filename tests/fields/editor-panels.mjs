@@ -103,6 +103,10 @@ check('move up reorders', await headings.nth(0).inputValue() === 'Second slide f
 // Related pages: custom list through search.
 const related = await openPanel('ALPS: Related Pages & Posts');
 await related.getByLabel('Show custom pages').check();
+await related.getByLabel('Search pages and posts').fill('Roll');
+await related.locator('.alps-field-panels__result').first().waitFor({timeout: 30000});
+const decoded = await related.locator('.alps-field-panels__result').first().innerText();
+check('result title shown as plain text', decoded === 'Rock & Roll’s page (page)', decoded);
 await related.getByLabel('Search pages and posts').fill('Plain');
 await related.locator('.alps-field-panels__result').first().waitFor({timeout: 30000});
 const picked = await related.locator('.alps-field-panels__result').first().innerText();

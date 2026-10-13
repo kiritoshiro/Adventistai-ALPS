@@ -64,7 +64,9 @@ def main():
         f" require '{THEME_VFS}/tests/fields/render-seed.php';"
         # Test-only account on this throwaway site.
         " wp_insert_user(['user_login' => 'fields-editor', 'user_pass' => 'fields-editor-test',"
-        " 'user_email' => 'fields-editor@example.test', 'role' => 'editor']);")})
+        " 'user_email' => 'fields-editor@example.test', 'role' => 'editor']);"
+        # Its rendered title has entities (&#038;, &#8217;) for the search results.
+        " wp_insert_post(['post_type' => 'page', 'post_status' => 'publish', 'post_title' => \"Rock & Roll's page\"]);")})
     blueprint = {"$schema": "https://playground.wordpress.net/blueprint-schema.json",
                  "preferredVersions": {"php": args.php, "wp": args.wp}, "steps": steps}
 

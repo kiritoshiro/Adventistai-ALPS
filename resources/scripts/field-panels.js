@@ -23,6 +23,9 @@ const config = () => window.alpsFieldPanels;
 
 const choiceOptions = (choices) => Object.entries(choices).map(([value, label]) => ({value, label}));
 
+// A rendered title as plain text (tags dropped, entities decoded); React escapes it again.
+const plainText = (html) => new DOMParser().parseFromString(html || '', 'text/html').body.textContent || '';
+
 function ImageField({label, help, value, onChange}) {
   const id = Number(value) || 0;
   const media = useSelect((select) => (id ? select(coreStore).getMedia(id, {context: 'view'}) : null), [id]);
@@ -98,7 +101,7 @@ function RowsField({field, value, onChange}) {
 function PostTitle({entry}) {
   const record = useSelect((select) => select(coreStore).getEntityRecord('postType', entry.subtype, entry.id), [entry.subtype, entry.id]);
   const title = record?.title?.rendered || record?.title?.raw;
-  return <span>{title ? title.replace(/<[^>]+>/g, '') : sprintf('#%d', entry.id)} <em>({entry.subtype})</em></span>;
+  return <span>{plainText(title) || sprintf('#%d', entry.id)} <em>({entry.subtype})</em></span>;
 }
 
 function PostsField({field, value, onChange}) {
@@ -135,7 +138,7 @@ function PostsField({field, value, onChange}) {
       {results.filter((post) => !chosen(post.id)).map((post) => <li key={`${post.subtype}-${post.id}`}>
         <Button variant="link" className="alps-field-panels__result"
           onClick={() => onChange([...entries, {type: 'post', subtype: post.subtype, id: post.id}])}>
-          {`${post.title.replace(/<[^>]+>/g, '') || sprintf('#%d', post.id)} (${post.subtype})`}
+          {`${plainText(post.title) || sprintf('#%d', post.id)} (${post.subtype})`}
         </Button>
       </li>)}
     </ul>
