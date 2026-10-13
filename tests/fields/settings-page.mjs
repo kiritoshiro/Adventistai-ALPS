@@ -177,6 +177,44 @@ await nojs_page.goto(page_url);
 check('no JS: saved', await nojs_page.inputValue('#alps-footer_copyright') === 'Saved without JS');
 check('no JS: other values kept', await nojs_page.inputValue('#alps-theme_color') === 'forest' && await nojs_page.isChecked('#alps-dark_theme'));
 
+// An older theme version stored the footer description as one plain option
+// (as on the live site), which the field ignores.
+const rest = async (method, route, data) => {
+  const nonce = await (await page.request.get(`${base}/wp-admin/admin-ajax.php?action=rest-nonce`)).text();
+  const response = await page.request.fetch(`${base}/index.php?rest_route=${route}`, {method, headers: {'X-WP-Nonce': nonce}, data});
+  return response.json();
+};
+const footerText = async () => {
+  await front.goto(`${base}/?page_id=19`);
+  return front.locator('.c-footer__description-text').innerText();
+};
+const saveFooter = async () => {
+  await page.click('.nav-tab[data-tab="footer"]');
+  await Promise.all([page.waitForNavigation(), page.click('#submit')]);
+};
+const legacy = 'Footer text from an older theme version';
+await page.goto(page_url);
+await page.click('.nav-tab[data-tab="footer"]');
+await page.locator('[data-rows="footer_description"] [data-row] [data-row-remove]').first().click();
+await saveFooter();
+await rest('POST', '/alps-test/v1/set-option/_footer_description', {value: legacy});
+check('legacy footer: shown while the field has no entries', (await footerText()).includes(legacy));
+await page.goto(page_url);
+await page.click('.nav-tab[data-tab="footer"]');
+check('legacy footer: offered as the first entry', await page.locator('[data-rows="footer_description"] [data-row]').count() === 1
+  && await page.inputValue('#alps-footer_description-0-footer_description_en') === legacy);
+await saveFooter();
+check('legacy footer: saving deletes the plain option', await rest('GET', '/alps-test/v1/option/_footer_description') === false);
+check('legacy footer: still shown after saving', (await footerText()).includes(legacy));
+await page.goto(page_url);
+await page.click('.nav-tab[data-tab="footer"]');
+check('legacy footer: now a stored entry', await page.inputValue('#alps-footer_description-0-footer_description_en') === legacy);
+await page.locator('[data-rows="footer_description"] [data-row] [data-row-remove]').first().click();
+await saveFooter();
+const defaultText = await footerText();
+// The theme loads its Lithuanian translation, as on the live site.
+check('legacy footer: removing the entry shows the default', defaultText.trim() === 'Oficiali Septintosios dienos adventistų bažnyčios interneto svetainė.', defaultText);
+
 // Narrow screen: no horizontal scroll.
 await page.setViewportSize({width: 390, height: 800});
 await page.goto(page_url);

@@ -61,6 +61,11 @@ def main():
         "        'permission_callback' => function () { return current_user_can('manage_options'); },",
         "        'callback' => function ($request) { return get_option($request['name']); },",
         '    ]);',
+        "    register_rest_route('alps-test/v1', '/set-option/(?P<name>[a-z0-9_]+)', [",
+        "        'methods' => 'POST',",
+        "        'permission_callback' => function () { return current_user_can('manage_options'); },",
+        "        'callback' => function ($request) { return update_option($request['name'], (string) $request['value'], false); },",
+        '    ]);',
         '});',
     ]
     steps.append({"step": "writeFile", "path": "/wordpress/wp-content/mu-plugins/alps-test-meta.php", "data": chr(10).join(test_meta) + chr(10)})

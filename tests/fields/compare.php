@@ -418,6 +418,34 @@ foreach (Registry::options() as $name => $field) {
 }
 $same('setOption unknown field', false, Store::setOption('no_such_option', 'x'));
 
+// An older theme version stored footer_description as one plain option (as on
+// the live site). The field ignores it and the footer falls back to it.
+// Saving the field: Carbon Fields leaves it, Store::setOption() deletes it
+// (one known difference: a row neither reads), so removing the entry later
+// shows the default, not the old text again.
+$same('legacy footer description: none', '', Store::legacyFooterDescription());
+$results_by_writer = [];
+foreach (['carbon', 'store'] as $writer) {
+    add_option('_footer_description', " Older footer text \n", '', false);
+    $same("legacy footer description: field ignores it [$writer]", [], $writer === 'carbon' ? carbon_get_theme_option('footer_description') : Store::option('footer_description'));
+    $same("legacy footer description: read [$writer]", 'Older footer text', Store::legacyFooterDescription());
+    $rows = [['_type' => 'translatable_footer_description', 'footer_description_en' => 'Older footer text']];
+    if ($writer === 'carbon') {
+        carbon_set_theme_option('footer_description', $rows);
+    } else {
+        Store::setOption('footer_description', $rows);
+    }
+    $snapshot = $option_snapshot('footer_description');
+    $same("legacy footer description: plain option after saving [$writer]", $writer === 'carbon', isset($snapshot['_footer_description']));
+    $same("legacy footer description: saved as the English entry [$writer]", 'Older footer text', Store::option('footer_description')[0]['footer_description_en'] ?? null);
+    unset($snapshot['_footer_description']);
+    $results_by_writer[$writer] = $snapshot;
+    foreach (array_keys($option_snapshot('footer_description')) as $option) {
+        delete_option($option);
+    }
+}
+$same('legacy footer description: same rows otherwise', $results_by_writer['carbon'], $results_by_writer['store']);
+
 // 5. The settings page turns submitted values into what Store::setOption() takes.
 $page_cases = [
     'dark_theme' => [['true', 'true'], ['', ''], [null, ''], ['on', '']],

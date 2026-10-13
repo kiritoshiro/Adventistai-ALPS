@@ -190,6 +190,17 @@ class Store
         return $rows;
     }
 
+    /**
+     * The footer description an older theme version stored as one plain
+     * option. Carbon Fields' footer_description field (one row per language)
+     * ignores it; saving that field deletes it.
+     */
+    public static function legacyFooterDescription()
+    {
+        $value = get_option('_footer_description');
+        return is_string($value) ? trim($value) : '';
+    }
+
     /** Forget the cached option rows (after options change). */
     public static function flush($option = null)
     {

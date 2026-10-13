@@ -4,10 +4,15 @@
   $footer_logo_type = get_alps_option('footer_logo_type');
   $footer_text = crb_get_i18n_theme_option( 'footer_description' );
     if (empty($footer_text)) {
-      if ( empty( get_alps_option('footer_description')['footer_description_en']) ) {
-        $footer_text = __('An official website of the Seventh-day Adventist Church.', 'alps');
+      $footer_rows = get_alps_option('footer_description');
+      // No entries yet: an older theme version's plain description, if any.
+      $footer_legacy = empty($footer_rows) ? \App\Fields\Store::legacyFooterDescription() : '';
+      if ( ! empty( $footer_rows['footer_description_en'] ) ) {
+        $footer_text = $footer_rows['footer_description_en'];
+      } elseif ( $footer_legacy !== '' ) {
+        $footer_text = $footer_legacy;
       } else {
-        $footer_text = get_alps_option('footer_description')['footer_description_en'];
+        $footer_text = __('An official website of the Seventh-day Adventist Church.', 'alps');
       }
     }
   $footer_copyright = get_alps_option('footer_copyright');

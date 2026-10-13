@@ -305,6 +305,11 @@ class SettingsPage
         $group = (string) array_key_first($field['groups']);
         $subs = $field['groups'][$group];
         $single = $name === 'footer_address';
+        if ($name === 'footer_description' && ! $rows && Store::legacyFooterDescription() !== '') {
+            // The footer shows an older plain description: offer it as the
+            // first entry, so saving keeps it in this field.
+            $rows = [['footer_description_en' => Store::legacyFooterDescription()]];
+        }
         if ($single && ! $rows) {
             // Carbon Fields showed this one row (min 1, max 1) even when empty.
             $rows = [[]];
