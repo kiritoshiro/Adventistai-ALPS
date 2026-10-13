@@ -3,6 +3,21 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.33.0]
+### Changed
+- Carbon Fields is no longer part of the theme. Its three jobs are done with WordPress's own APIs, and **every value is stored exactly as Carbon Fields stored it**, so nothing is migrated and an older theme version reads the same settings (`App\Fields\Store`; `tests/fields/run.py compare` checks about 1,880 reads and writes against Carbon Fields 3.6.11 itself).
+  - **Appearance → ALPS Theme Settings** is a native settings page (`App\Fields\SettingsPage`) with the same address, tabs, fields and labels. It also works without JavaScript.
+  - **Post and page fields** (header, hero, banner, related pages, sidebar and featured-image switches) are panels in the block editor's sidebar (`App\Fields\PostPanels`, `resources/scripts/field-panels.js`) instead of boxes below the editor. They cover every post type that uses the block editor, including calendar events. Six boxes tied to page templates that no longer exist are gone (their stored values stay in place).
+  - **The four ALPS widgets** are WordPress widgets (`app/Widgets/`) that keep their IDs, CSS classes and settings.
+- The block editor's colour palette follows the theme colour through WordPress's `wp_theme_json_data_theme` filter (`App\ThemePalette`); `theme.json` is no longer rewritten on every request.
+- Smaller download: the release ZIP is about 1.3 MB smaller. CI fails if Carbon Fields code comes back into the theme (`scripts/check-no-carbon-fields.mjs`).
+
+### Fixed
+- Every ALPS widget shows. Carbon Fields loaded each widget's template only once per page, so a second widget of the same kind stayed empty.
+- Related Stories lists other posts of the category, not the post being viewed, and a story with a picture no longer repeats the excerpt of the text-only story before it.
+- The footer shows the description saved by an older theme version ("Adventistai.lt yra oficialus …") instead of the default sentence. The Settings page offers it as the first Footer Description entry; saving the settings once stores it there.
+- Post titles in the editor's related-pages list show `&` and quotes as characters, not as `&amp;` or `&#8217;`.
+
 ## [3.32.9]
 ### Changed
 - Smaller pages: the stylesheets printed inside each page are minified. The theme's responsive zoom fixes (7.1 → 3.3 KB), Sabbath timer styles (6.2 → 5.1 KB, front page) and search styles (5.2 → 4.4 KB) are embedded from minified copies (`scripts/minify-assets.mjs`; the readable files under `SCRIPT_DEBUG`). Plugin stylesheets the theme embeds (cookie banner, calendar lightbox and tooltips, book showcase, YouTube player, …) are embedded from minified copies kept in `wp-content/cache/adventistai/css/`. Only comments and extra whitespace are removed; the theme's Clear cache also removes these copies. On the homepage this is about 5 KB less compressed HTML.
