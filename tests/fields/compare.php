@@ -452,7 +452,11 @@ $page_cases = [
     'theme_color' => [['forest', 'forest'], ['bogus', ''], [['x'], '']],
     'logo' => [[(string) $images[0], (string) $images[0]], ['12abc', '12'], ['', ''], ['0', '']],
     'footer_copyright' => [['Text <b>bold</b>', 'Text <b>bold</b>']],
+    // Ticked by default; the unticked box submits '' and is stored as off.
+    'alps_image_keep_originals' => [['true', 'true'], ['', ''], [null, '']],
+    'alps_image_original_days' => [['10', '10'], ['', '']],
 ];
+$same('original retention reads the stored keep setting', true, \App\OriginalImageRetention::keeps() === Store::option('alps_image_keep_originals'));
 foreach ($page_cases as $name => $cases) {
     foreach ($cases as $i => $case) {
         $same("SettingsPage::sanitize($name #$i)", $case[1], \App\Fields\SettingsPage::sanitize(Registry::field('option', $name), $case[0]));

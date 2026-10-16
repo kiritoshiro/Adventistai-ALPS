@@ -6,7 +6,7 @@ New JPEG, PNG and AVIF attachments get three display files:
 - one **`alps-small` AVIF** capped at 768 × 768,
 - one **JPEG fallback** capped at 1920 × 1920, for browsers without AVIF. Transparent areas of PNG/AVIF sources are white in it, since JPEG has no transparency.
 
-Aspect ratio is preserved, with no upscaling or hard crop. Small sources may need only one AVIF. A successfully replaced source is retained for seven days, then removed by the existing twice-daily alps_cron task. WP-Cron depends on traffic, so cleanup may run later. The live display image is never expired. Sources whose replacement or smaller image is missing or unreadable are retained and retried the next day. Recovery to the uploaded original is unavailable after cleanup; subsequent edits and regeneration use the retained display image.
+Aspect ratio is preserved, with no upscaling or hard crop. Small sources may need only one AVIF. A successfully replaced source is retained for seven days, then removed by the existing twice-daily alps_cron task. Appearance → ALPS Theme Settings → Images sets the days (1–365) or turns retention off; then a source is removed by a sweep scheduled five minutes after the upload. The due date is the time the source was kept (`_alps_original_kept_at`; for sources kept before this setting, the old due date minus seven days) plus the days, so a change also applies to sources already kept. The same tab links to a list of the kept sources, where they can be deleted at once through the same checks. WP-Cron depends on traffic, so cleanup may run later. The live display image is never expired. Sources whose replacement or smaller image is missing or unreadable are retained and retried the next day. Recovery to the uploaded original is unavailable after cleanup; subsequent edits and regeneration use the retained display image.
 
 JPEG/PNG convert to AVIF through WordPress core when the image editor supports it. This needs WordPress 6.5+ and an AVIF-capable GD/Imagick installation. Unsupported hosts keep the source format, which is then its own fallback, and no JPEG copy is made. GIF/WebP are excluded to avoid flattening animations. SVG and documents are unaffected. Legacy uploads and their regeneration keep their previous policy. Newly marked attachments keep this policy on regeneration, which reuses the existing JPEG fallback.
 
@@ -17,7 +17,7 @@ WordPress 6.x+ first saves a full-size converted copy (`name.avif`) and makes su
 The files are recorded in the attachment meta `_wpcu_image_outputs` (`jpeg`, `avif_full`, `avif_small`, their widths/heights, the `policy` and `by: alps-theme`). This is the same record the [WP Cleanup](https://github.com/kiritoshiro/wp-cleanup) plugin writes when it converts older images, so:
 
 - the theme serves both the same way (see below);
-- WP Cleanup lists new uploads as already converted, including during the seven days the original is retained, and its data check leaves the theme's marker alone.
+- WP Cleanup lists new uploads as already converted, including during the days the original is retained, and its data check leaves the theme's marker alone.
 
 When WP Cleanup is active and its saved image policy fits ALPS (`alps-small`, at most 1920/768 px), the theme uses that policy's sizes and JPEG quality, so both describe new uploads identically. Otherwise the defaults above apply. Themes or plugins can adjust them with the `alps_upload_image_policy` filter.
 

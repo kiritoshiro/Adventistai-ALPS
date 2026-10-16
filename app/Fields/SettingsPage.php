@@ -116,6 +116,9 @@ class SettingsPage
                 ['field', 'alps_image_avif_quality', __('AVIF quality (20–95)', 'alps'), __('Empty: 82, the WordPress default.', 'alps'), 33, ['type' => 'number', 'min' => 20, 'max' => 95, 'placeholder' => '82']],
                 ['field', 'alps_image_full_max', __('Full image: longest side (px)', 'alps'), __('320–1920. Empty: 1920.', 'alps'), 33, ['type' => 'number', 'min' => 320, 'max' => 1920, 'placeholder' => '1920']],
                 ['field', 'alps_image_small_max', __('Small image: longest side (px)', 'alps'), __('64–768, smaller than the full image. Empty: 768.', 'alps'), 33, ['type' => 'number', 'min' => 64, 'max' => 768, 'placeholder' => '768']],
+                ['html', \App\RetainedOriginalsPage::settingsHtml()],
+                ['field', 'alps_image_keep_originals', __('Keep the uploaded originals', 'alps'), __('Unticked: they are deleted a few minutes after the upload, and those kept so far by the next clean-up.', 'alps'), 50],
+                ['field', 'alps_image_original_days', __('Keep them for (days)', 'alps'), __('1–365. Empty: 7. Also applies to the originals kept so far.', 'alps'), 50, ['type' => 'number', 'min' => 1, 'max' => 365, 'placeholder' => '7', 'data-shown-with' => 'alps_image_keep_originals']],
             ]],
             'cache' => [__('CACHE', 'alps'), [
                 ['html', \App\ThemeCache::settingsHtml()],
@@ -190,6 +193,11 @@ class SettingsPage
     public static function render()
     {
         if (! current_user_can(self::CAPABILITY)) {
+            return;
+        }
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only picks the view to show.
+        if (isset($_GET['view']) && sanitize_key(wp_unslash($_GET['view'])) === \App\RetainedOriginalsPage::VIEW) {
+            \App\RetainedOriginalsPage::render();
             return;
         }
         $layout = self::layout();
@@ -374,6 +382,8 @@ class SettingsPage
                 }
             }
         }
+        // E.g. OriginalImageRetention recomputes due dates when its settings changed.
+        do_action('alps_theme_settings_saved');
         $tab = isset($_POST['tab']) ? sanitize_key(wp_unslash($_POST['tab'])) : 'global';
         wp_safe_redirect(self::url(['tab' => $tab, 'updated' => 1]));
         exit;

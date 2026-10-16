@@ -6,6 +6,15 @@
 (function () {
   'use strict';
 
+  // Kept originals (app/RetainedOriginalsPage.php): "Delete all now" asks first.
+  document.querySelectorAll('.alps-originals [data-confirm]').forEach(function (button) {
+    button.addEventListener('click', function (event) {
+      if (!window.confirm(button.dataset.confirm)) {
+        event.preventDefault();
+      }
+    });
+  });
+
   var form = document.querySelector('.alps-settings__form');
   if (!form) {
     return;

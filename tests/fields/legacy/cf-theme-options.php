@@ -316,6 +316,13 @@ function crb_attach_theme_options()
                 ->set_attribute('placeholder', '768')
                 ->set_help_text(__('64–768, smaller than the full image. Empty: 768.', 'alps'))
                 ->set_width(33),
+            // Added after the move away from Carbon Fields; defined here so
+            // compare.php checks they are read and stored in its format too.
+            Field
+                ::make('checkbox', 'alps_image_keep_originals', __('Keep the uploaded originals', 'alps'))
+                ->set_option_value('true')->set_default_value('true'),
+            Field
+                ::make('text', 'alps_image_original_days', __('Keep them for (days)', 'alps')),
         ])
         ->add_tab(__('CACHE', 'alps'), [
             Field

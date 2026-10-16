@@ -3,6 +3,14 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- **Appearance → ALPS Theme Settings → Images** has settings for the uploaded originals WordPress keeps next to the smaller copies of a large image:
+  - **Keep the uploaded originals** (on by default, as before). Off: a new upload's original is deleted by a clean-up a few minutes after the upload, and the originals kept so far by the next scheduled clean-up.
+  - **Keep them for (days)**: 1–365, 7 by default (as before). A change also applies to the originals already kept, counted from when each was kept.
+- **A list of the kept originals**, linked from the Images tab: thumbnail, title, original file name, size on disk, kept since and deletion date, 50 per page, with the total count and size. **Delete original now** and **Delete all now** delete before the due date through the same safety checks as the scheduled clean-up; originals a check refuses are kept and named in the notice.
+- The two settings are stored in the same row format as the other theme settings; `tests/fields/run.py compare` checks them against Carbon Fields too.
+
 ## [3.34.0]
 ### Added
 - **Appearance → ALPS Theme Settings → Sabbath Timer**, a new tab for the Sabbath timer at the top of the front page:

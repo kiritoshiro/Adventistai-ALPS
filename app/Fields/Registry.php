@@ -232,6 +232,9 @@ class Registry
             'alps_image_avif_quality' => ['type' => 'text'],
             'alps_image_full_max' => ['type' => 'text'],
             'alps_image_small_max' => ['type' => 'text'],
+            // Added after Carbon Fields (OriginalImageRetention)
+            'alps_image_keep_originals' => ['type' => 'checkbox', 'value' => 'true', 'default' => 'true'],
+            'alps_image_original_days' => ['type' => 'text'],
         ];
         return $fields;
     }

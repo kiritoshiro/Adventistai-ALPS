@@ -112,6 +112,14 @@ check('image remove clears the ID', await page.inputValue('#alps-footer_logo_ico
 // IMAGES
 await page.click('.nav-tab[data-tab="images"]');
 await page.fill('#alps-alps_image_avif_quality', '60');
+// Uploaded originals: kept by default; the days only show while they are kept.
+check('originals kept by default', await page.isChecked('#alps-alps_image_keep_originals'));
+check('days shown while kept', await page.locator('#alps-alps_image_original_days').isVisible());
+await page.uncheck('#alps-alps_image_keep_originals');
+check('days hidden when not kept', !(await page.locator('#alps-alps_image_original_days').isVisible()));
+await page.check('#alps-alps_image_keep_originals');
+await page.fill('#alps-alps_image_original_days', '10');
+check('link to the kept originals', await page.locator('#alps-tab-images a[href*="view=originals"]').count() === 1);
 
 // Save from the Images tab.
 await Promise.all([page.waitForNavigation(), page.click('#submit')]);
@@ -138,6 +146,8 @@ const values = {
   circle: await page.isChecked('input[name="alps[footer_logo_type]"][value="circle"]'),
   footer_logo_icon: await page.inputValue('#alps-footer_logo_icon'),
   avif: await page.inputValue('#alps-alps_image_avif_quality'),
+  keep_originals: await page.isChecked('#alps-alps_image_keep_originals'),
+  original_days: await page.inputValue('#alps-alps_image_original_days'),
 };
 const expected = {
   theme_color: 'forest', dark_theme: true, site_branding_statement: 'Statement from the test', logo: logo_id,
@@ -145,6 +155,7 @@ const expected = {
   verse_rows: 2, verse_2: 'Second verse from the test',
   footer_copyright: 'Copyright from the test', footer_en: 'Footer EN from the test', footer_rows: 1,
   city: 'Vilnius', circle: true, footer_logo_icon: '', avif: '60',
+  keep_originals: true, original_days: '10',
 };
 for (const [key, value] of Object.entries(expected)) {
   check(`after reload: ${key}`, values[key] === value, `got ${JSON.stringify(values[key])}`);
@@ -192,6 +203,17 @@ check('bad nonce refused', forged.status() >= 400, `HTTP ${forged.status()}`);
 await page.goto(page_url);
 check('bad nonce changed nothing', await page.inputValue('#alps-footer_copyright') === 'Copyright from the test');
 
+// Kept originals: the list with its totals; deleting needs a valid nonce.
+await page.goto(`${page_url}&view=originals`);
+check('originals view', (await page.locator('.alps-originals h1').innerText()).includes('Kept uploaded originals'));
+check('originals view: totals', /\d+ originals?, .+ in total\./.test(await page.locator('.alps-originals').innerText()));
+check('originals view: back to the Images tab', await page.locator('.alps-originals a[href*="tab=images"]').count() === 1);
+const forged_delete = await page.request.post(`${base}/wp-admin/admin-post.php`, {
+  form: {action: 'alps_delete_originals', _wpnonce: 'bad', all: '1'},
+  maxRedirects: 0,
+});
+check('delete originals: bad nonce refused', forged_delete.status() >= 400, `HTTP ${forged_delete.status()}`);
+
 // An editor cannot open or save the page.
 const editor_context = await browser.newContext();
 // Its 403 responses are expected, so they are not counted as errors.
@@ -203,6 +225,11 @@ const editor_nonce_page = await editor.request.post(`${base}/wp-admin/admin-post
   maxRedirects: 0,
 });
 check('editor save refused', editor_nonce_page.status() >= 400, `HTTP ${editor_nonce_page.status()}`);
+const editor_delete = await editor.request.post(`${base}/wp-admin/admin-post.php`, {
+  form: {action: 'alps_delete_originals', all: '1'},
+  maxRedirects: 0,
+});
+check('editor cannot delete originals', editor_delete.status() >= 400, `HTTP ${editor_delete.status()}`);
 
 // Without JavaScript every tab shows and the form still saves.
 const nojs = await browser.newContext({javaScriptEnabled: false});
