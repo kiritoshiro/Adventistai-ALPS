@@ -139,9 +139,11 @@
                         'decoding' => 'async',
                         'sizes' => \App\LatestPostSlider::imageSizes((int) $sliderColumns, (int) ($thumbnailFile[1] ?? 0), (int) ($thumbnailFile[2] ?? 0)),
                       ]);
+                      // The sizes above, without the "auto" WordPress adds to lazy images.
+                      $thumbnailHtml = \App\LatestPostSlider::withoutAutoSizes($thumbnailHtml);
                       // Hidden slides get their image when they are next in line.
                       if (!$isActive) {
-                        $thumbnailHtml = \App\LatestPostSlider::deferImage($thumbnailHtml);
+                        $thumbnailHtml = \App\DeferredImages::defer($thumbnailHtml);
                       }
                     @endphp
                     @if ($firstRow && $moduleIndex === $priorityIndex)

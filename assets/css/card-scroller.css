@@ -142,6 +142,11 @@ a.alps-card-scroller__card:hover .alps-card-scroller__image {
   transform: scale(1.025);
 }
 
+/* Deferred: no shadow dot */
+.alps-card-scroller__image[data-alps-src] {
+  box-shadow: none !important;
+}
+
 .alps-card-scroller--logo .alps-card-scroller__media {
   margin-bottom: 10px;
 }
