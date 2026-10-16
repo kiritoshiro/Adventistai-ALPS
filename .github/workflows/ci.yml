@@ -126,8 +126,8 @@ jobs:
         run: node tests/sabbath/sunsets.cjs
 
       # Printed inline and untranspiled: a syntax error would leave every
-      # hidden slide without its image.
-      - name: The slider images script parses
+      # hidden slide and deferred card without its image.
+      - name: The deferred images script parses
         run: node --check assets/js/slider-images.js && node --check assets/js/slider-images.min.js
 
       - name: Check theme asset budgets

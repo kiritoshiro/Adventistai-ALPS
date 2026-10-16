@@ -12,6 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The scheduled clean-up only ever moves due dates later and waits while the settings are being saved, so it cannot delete originals early by reading the settings halfway through a save. Saving the settings, or opening the list, applies a shorter period. When more than 50 originals are due, the clean-up goes on a few minutes later until they are done.
 - The two settings are stored in the same row format as the other theme settings; `tests/fields/run.py compare` checks them against Carbon Fields too.
 
+## [3.34.1]
+### Changed
+- Smaller image downloads (Lighthouse on 3.34.0: 41 images, 1.78 MB before the Largest Contentful Paint on desktop):
+  - **Latest Post Slider**: slide images keep only the theme's own `sizes`, without the `auto` WordPress adds to lazy images. `auto` stands for the image's layout width, which for a portrait slide is the whole frame, and the high-priority preload copied it as well, so Chrome fetched the 1200px file for a 308px slide; the preload and the slide now choose the same file.
+  - **Side column and footer widgets**: images in image widgets and in block widgets get a `sizes` for the width the area is drawn at (`App\SidebarImages`; about 365px in the side column on a 1350px screen) instead of WordPress's full-width default, never wider than the image itself. The side column's inner padding is taken off, and widgets under a post share the article's width when a side column is shown beside it (`SidebarImages::single()`, called by the single post template). Sizes set on purpose and the widget areas above the content are left alone. The AVIF `<source>` now always takes the `<img>`'s sizes (an image widget with a custom size used to get full-width sizes there).
+  - **Card scroller** (`alps/card-scroller`): covers past the first screen-width of the track (from the 7th cover, the 8th logo) wait until the track is scrolled (also with its arrows or by dragging) or the block is hovered, touched or focused, then the covers within one more track-width load. Before, all covers were fetched as soon as the block came near. A wide block shows nine covers at once. Without JavaScript a `<noscript>` copy of each waiting cover shows instead. The slider's helper and restore script are shared for this: `LatestPostSlider::deferImage()`, `deferScript()`, `printDeferScript()` and `BLANK` moved to `App\DeferredImages` (`defer()`, `script()`, `printScript()`, `BLANK`; `assets/js/slider-images.js`); the slider behaves as before.
+  - Slide images, and covers waiting for their file, no longer get `auto` back in their `sizes` when the block is placed in post content (WordPress adds it again after the block has rendered).
+
 ## [3.34.0]
 ### Added
 - **Appearance → ALPS Theme Settings → Sabbath Timer**, a new tab for the Sabbath timer at the top of the front page:

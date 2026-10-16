@@ -376,14 +376,15 @@ final class ImageDelivery
     /** @param string|array $size */
     private static function wrap(string $html, array $outputs, $size): string
     {
+        // The <source> takes the <img>'s sizes, so both choose the same width
+        // (an image widget with a custom size used to get full-width sizes here).
         $sizes = '100vw';
         if (preg_match('/\bsizes="([^"]+)"/', $html, $match)) {
             $sizes = html_entity_decode($match[1], ENT_QUOTES, 'UTF-8');
+        } elseif (is_array($size) && !empty($size[0])) {
+            $sizes = '(max-width: ' . (int) $size[0] . 'px) 100vw, ' . (int) $size[0] . 'px';
         } elseif (preg_match('/\bwidth="(\d+)"/', $html, $match)) {
             $sizes = '(max-width: ' . (int) $match[1] . 'px) 100vw, ' . (int) $match[1] . 'px';
-        }
-        if (is_array($size) && !empty($size[0])) {
-            $sizes = '(max-width: ' . (int) $size[0] . 'px) 100vw, ' . (int) $size[0] . 'px';
         }
         if ($outputs['jpeg']) {
             $jpeg = $outputs['jpeg'];

@@ -8,6 +8,8 @@
   if (get_post_meta($post->ID , $cf_.'hide_sidebar', true) == true ) {
     $has_sidebar = false;
   }
+  // Widget images under the post and in the side column are sized for it.
+  \App\SidebarImages::single($has_sidebar);
 
   $section_offset = 'u-shift--left--1-col--at-large';
 

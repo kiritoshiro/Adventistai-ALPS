@@ -73,9 +73,14 @@ class CardScrollerBlock
         }
 
         $ids = self::attachmentIds($items);
+        // Cards past the first screen-width of the track get their image when
+        // the track is scrolled towards them (DeferredImages): they sit at the
+        // same page height as the first ones, so loading="lazy" alone fetched
+        // every cover as soon as the block came near.
+        $eager = self::eagerCount($layout, (string) ($attributes['align'] ?? ''));
         $cards = '';
-        foreach ($items as $item) {
-            $cards .= '<div class="alps-card-scroller__item" role="listitem">' . self::card($item, $ids, $layout) . '</div>';
+        foreach ($items as $index => $item) {
+            $cards .= '<div class="alps-card-scroller__item" role="listitem">' . self::card($item, $ids, $layout, $index >= $eager) . '</div>';
         }
 
         $moreCard = $moreLabel && $moreUrl;
@@ -124,6 +129,25 @@ class CardScrollerBlock
             . '<button type="button" class="alps-card-scroller__arrow alps-card-scroller__arrow--next" aria-label="' . esc_attr__('Slinkti į dešinę', 'alps') . '" data-card-scroller-next hidden><span aria-hidden="true">›</span></button>'
             . $moreLink
             . '</div></div>';
+    }
+
+    /**
+     * Widest visible part of the track by block alignment: the block is at
+     * most 1200px wide (card-scroller.css) less the frame's and the track's
+     * 4px side paddings; wide is at most 105rem (site-overrides.css,
+     * `.text > .alignwide`), full is taken as a 1920px screen.
+     */
+    public const TRACK_WIDTHS = ['' => 1184, 'wide' => 1664, 'full' => 1904];
+
+    /**
+     * How many cards can show, at least in part, before the track is
+     * scrolled at the widest layout: cards are 190px wide (logos 180px) with
+     * a 14px gap.
+     */
+    public static function eagerCount(string $layout, string $align = ''): int
+    {
+        $pitch = ($layout === 'logo' ? 180 : 190) + 14;
+        return (int) ceil((self::TRACK_WIDTHS[$align] ?? self::TRACK_WIDTHS['']) / $pitch);
     }
 
     /**
@@ -200,8 +224,9 @@ class CardScrollerBlock
     /**
      * @param array<string, mixed> $item
      * @param array<string, int>   $ids
+     * @param bool                 $defer Whether the image waits for the track to scroll.
      */
-    private static function card(array $item, array $ids, string $layout): string
+    private static function card(array $item, array $ids, string $layout, bool $defer = false): string
     {
         $alt = $item['alt'] !== '' ? $item['alt'] : $item['title'];
         $id = $item['imageId'] ?: ($ids[$item['imageUrl']] ?? 0);
@@ -225,6 +250,16 @@ class CardScrollerBlock
                 esc_url($item['imageUrl']),
                 esc_attr($alt)
             );
+        }
+        if ($image && $defer) {
+            // Without the "auto" WordPress adds to lazy images: a waiting
+            // cover is laid out at its 1x1 placeholder's width. Without
+            // JavaScript nothing restores the file, so the <noscript> copy
+            // shows instead (the transparent placeholder takes 1px).
+            $waiting = DeferredImages::defer(LatestPostSlider::withoutAutoSizes($image));
+            if (false !== strpos($waiting, 'data-alps-src')) {
+                $image = $waiting . '<noscript>' . $image . '</noscript>';
+            }
         }
 
         $inner = ($image ? '<span class="alps-card-scroller__media">' . $image . '</span>' : '')
