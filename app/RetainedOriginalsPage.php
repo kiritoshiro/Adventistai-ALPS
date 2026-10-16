@@ -121,7 +121,9 @@ class RetainedOriginalsPage
             $link = get_edit_post_link($id);
             $title = self::title($id);
             echo '<tr>';
+            // nosemgrep: php.lang.security.injection.echoed-request.echoed-request -- escaped by wp_kses_post().
             echo '<td>' . wp_kses_post(wp_get_attachment_image($id, [60, 60], false, ['style' => 'max-width:60px;height:auto'])) . '</td>';
+            // nosemgrep: php.lang.security.injection.echoed-request.echoed-request -- escaped by esc_url()/esc_html().
             echo '<td>' . ($link ? '<a href="' . esc_url($link) . '">' . esc_html($title) . '</a>' : esc_html($title)) . '</td>';
             echo '<td><code>' . esc_html(is_array($metadata) ? (string) ($metadata['original_image'] ?? '') : '') . '</code></td>';
             echo '<td>' . esc_html($size === null ? __('missing', 'alps') : size_format($size, 1)) . '</td>';
@@ -132,6 +134,7 @@ class RetainedOriginalsPage
         }
         echo '</tbody></table></form>';
         if ($pages > 1) {
+            // nosemgrep: php.lang.security.injection.echoed-request.echoed-request -- escaped by wp_kses_post().
             echo '<div class="tablenav"><div class="tablenav-pages">' . wp_kses_post(paginate_links([
                 'base' => add_query_arg('paged', '%#%', self::url()),
                 'format' => '',
