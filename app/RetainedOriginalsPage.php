@@ -19,6 +19,8 @@ class RetainedOriginalsPage
     const VIEW = 'originals';
     const ACTION = 'alps_delete_originals';
     const PER_PAGE = 50;
+    /** "Delete all now" batches per click (redirects stay under the browsers' limit of about 20). */
+    const MAX_ROUNDS = 15;
     /** Refused rows named in the notice; the rest are counted. */
     const LISTED = 20;
 
@@ -163,6 +165,9 @@ class RetainedOriginalsPage
             /* translators: %d: number of originals deleted */
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html(sprintf(_n('%d original deleted.', '%d originals deleted.', $deleted, 'alps'), $deleted)) . '</p></div>';
         }
+        if (! empty($_GET['more'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display only.
+            echo '<div class="notice notice-info is-dismissible"><p>' . esc_html__('More originals remain. Use "Delete all now" again to continue.', 'alps') . '</p></div>';
+        }
         if (! $refused) {
             return;
         }
@@ -206,6 +211,7 @@ class RetainedOriginalsPage
                 }
             }
         }
+        $round = $all && isset($_REQUEST['round']) ? absint(wp_unslash($_REQUEST['round'])) + 1 : 1;
         $args = [
             'paged' => isset($_REQUEST['paged']) ? max(1, absint(wp_unslash($_REQUEST['paged']))) : 1,
             'deleted' => $deleted,
@@ -214,8 +220,13 @@ class RetainedOriginalsPage
         ];
         if ($all && count($ids) === self::PER_PAGE
             && OriginalImageRetention::query(['posts_per_page' => 1, 'offset' => $refused])) {
-            wp_safe_redirect(self::continueUrl($args));
-            exit;
+            // Browsers stop following redirects after about 20: end the chain
+            // before that and say that more remain.
+            if ($round < self::MAX_ROUNDS) {
+                wp_safe_redirect(self::continueUrl($args + ['round' => $round]));
+                exit;
+            }
+            $args['more'] = 1;
         }
         wp_safe_redirect(self::url($args));
         exit;
