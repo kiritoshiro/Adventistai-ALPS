@@ -213,6 +213,9 @@ const forged_delete = await page.request.post(`${base}/wp-admin/admin-post.php`,
   maxRedirects: 0,
 });
 check('delete originals: bad nonce refused', forged_delete.status() >= 400, `HTTP ${forged_delete.status()}`);
+// "Delete all now" goes on in batches of 50 by GET; that step needs the nonce too.
+const forged_continue = await page.request.get(`${base}/wp-admin/admin-post.php?action=alps_delete_originals&all=1&deleted=50&refused=0&_wpnonce=bad`, {maxRedirects: 0});
+check('delete originals: bad nonce refused on the next batch', forged_continue.status() >= 400, `HTTP ${forged_continue.status()}`);
 
 // An editor cannot open or save the page.
 const editor_context = await browser.newContext();

@@ -6,7 +6,8 @@
 (function () {
   'use strict';
 
-  // Kept originals (app/RetainedOriginalsPage.php): "Delete all now" asks first.
+  // Kept originals (app/RetainedOriginalsPage.php): "Delete all now" and
+  // "Delete original now" ask first.
   document.querySelectorAll('.alps-originals [data-confirm]').forEach(function (button) {
     button.addEventListener('click', function (event) {
       if (!window.confirm(button.dataset.confirm)) {

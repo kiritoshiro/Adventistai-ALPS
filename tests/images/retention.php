@@ -10,6 +10,7 @@ $meta = [];
 $data = [];
 $options = [];
 $scheduled = [];
+$transients = [];
 $shared = false;
 $blocked = false;
 $checks = 0;
@@ -19,6 +20,7 @@ function update_post_meta($id, $key, $value) { $GLOBALS['meta'][$id][$key] = $va
 function delete_post_meta($id, $key) { unset($GLOBALS['meta'][$id][$key]); }
 function get_option($name, $default = false) { return array_key_exists($name, $GLOBALS['options']) ? $GLOBALS['options'][$name] : $default; }
 function update_option($name, $value, $autoload = null) { $GLOBALS['options'][$name] = $value; }
+function get_transient($name) { return $GLOBALS['transients'][$name] ?? false; }
 function wp_next_scheduled($hook) { return $GLOBALS['scheduled'][$hook] ?? false; }
 function wp_schedule_single_event($time, $hook) { $GLOBALS['scheduled'][$hook] = $time; }
 function wp_get_attachment_metadata($id) { return $GLOBALS['data'][$id]; }
@@ -35,7 +37,12 @@ function get_posts($args) {
         $due = $values['_alps_original_delete_after'] ?? null;
         if ($due !== null && (!isset($args['meta_value']) || $due <= $args['meta_value'])) { $ids[] = $id; }
     }
-    return $ids;
+    $limit = $args['posts_per_page'] ?? -1;
+    return array_slice($ids, $args['offset'] ?? 0, $limit > 0 ? $limit : null);
+}
+class WP_Query {
+    public $found_posts;
+    public function __construct($args) { $this->found_posts = count(get_posts(['posts_per_page' => -1] + $args)); }
 }
 function wp_delete_file_from_directory($file, $dir) {
     if (!$GLOBALS['blocked'] && dirname(realpath($file)) === realpath($dir)) { unlink($file); }
@@ -55,7 +62,7 @@ function near($a, $b) { return abs($a - $b) < 3; }
 try {
     Retention::apply(); // The default settings, as already applied on a site.
     resetFixture();
-    $due =$meta[1]['_alps_original_delete_after'];
+    $due = $meta[1]['_alps_original_delete_after'];
     check(abs($due - time() - WEEK_IN_SECONDS) < 2, 'seven day grace');
     check(near($meta[1]['_alps_original_kept_at'], time()) && Retention::keptAt(1) === $meta[1]['_alps_original_kept_at'], 'kept time recorded');
     check(!$scheduled, 'no early sweep while originals are kept');
@@ -138,10 +145,13 @@ try {
     check($meta[1]['_alps_original_delete_after'] === $retry, 'unchanged settings leave due dates (retries) alone');
     Retention::sweep();
     check(file_exists($root . '/source.png'), 'sweep keeps the original before its due date');
-    // Saved without the settings page's hook (e.g. another tool): the sweep applies it first.
+    // Saved without the settings page's hook (e.g. another tool): the sweep only moves due dates later.
     $options['_alps_image_original_days'] = '2';
     Retention::sweep();
-    check(!file_exists($root . '/source.png'), 'sweep applies changed settings, then deletes what is due');
+    check(file_exists($root . '/source.png') && $meta[1]['_alps_original_delete_after'] === $retry, 'sweep never moves a due date earlier');
+    Retention::apply(); // E.g. opening the list of kept originals.
+    Retention::sweep();
+    check(!file_exists($root . '/source.png'), 'applied settings, then the sweep deletes what is due');
 
     // Rows kept before the setting existed have no kept time: kept = due - 7 days.
     $options = [];
@@ -182,7 +192,55 @@ try {
     check(file_exists($root . '/source.png') && $meta[1]['_alps_original_delete_after'] > time(), 'kept while on');
     $options['_alps_image_keep_originals'] = '';
     Retention::sweep();
+    check(file_exists($root . '/source.png') && $meta[1]['_alps_original_delete_after'] > time(), 'a sweep alone never moves a due date earlier');
+    Retention::apply(); // The settings page's saved action.
+    Retention::sweep();
     check(!file_exists($root . '/source.png'), 'switching off deletes kept originals at the next sweep');
+
+    // A sweep while the settings are rewritten (Store::setOption() deletes, then adds each row).
+    $options = ['_alps_image_original_days' => '30'];
+    resetFixture();
+    $kept = time() - 10 * DAY_IN_SECONDS;
+    $meta[1]['_alps_original_kept_at'] = $kept;
+    Retention::apply();
+    $due = $meta[1]['_alps_original_delete_after'];
+    check($due === $kept + 30 * DAY_IN_SECONDS, 'kept for 30 days');
+    unset($options['_alps_image_original_days']); // Read as the default 7: due 3 days ago.
+    Retention::sweep();
+    check(file_exists($root . '/source.png') && isset($data[1]['original_image']), 'days row missing: nothing deleted');
+    check($meta[1]['_alps_original_delete_after'] === $due, 'days row missing: no due date moved earlier');
+    $options['_alps_image_original_days'] = '30';
+    Retention::apply();
+    check($meta[1]['_alps_original_delete_after'] === $due, 'rewritten days: due date unchanged');
+    // While the settings page saves, the sweep neither applies nor deletes.
+    $transients[Retention::SAVING] = 1;
+    $options['_alps_image_original_days'] = '60';
+    expireFixture();
+    Retention::sweep();
+    check(file_exists($root . '/source.png') && $meta[1]['_alps_original_delete_after'] < time(), 'saving: the sweep waits');
+    $transients = [];
+    Retention::sweep();
+    check(file_exists($root . '/source.png') && $meta[1]['_alps_original_delete_after'] === $kept + 60 * DAY_IN_SECONDS, 'saved: a longer period applies at the sweep');
+
+    // Not kept and more due than one batch: the sweep goes on soon, one event at a time.
+    $options = ['_alps_image_keep_originals' => ''];
+    resetFixture();
+    Retention::apply();
+    $scheduled = [];
+    for ($id = 2; $id <= 101; $id++) {
+        $meta[$id] = ['_alps_two_size_upload' => 1, '_alps_original_delete_after' => time() - 1];
+        $data[$id] = ['file' => 'display.png']; // No original left: deleting only clears the row.
+    }
+    check(Retention::count() === 101, 'count of kept originals');
+    Retention::sweep();
+    check(Retention::count() === 51, 'one batch of 50 per sweep');
+    check(isset($scheduled[Retention::SOON]) && near($scheduled[Retention::SOON], time() + 5 * MINUTE_IN_SECONDS), 'more due: next sweep scheduled');
+    $scheduled[Retention::SOON] = 123;
+    Retention::sweep();
+    check(Retention::count() === 1 && $scheduled[Retention::SOON] === 123, 'one pending sweep at a time');
+    $scheduled = [];
+    Retention::sweep();
+    check(Retention::count() === 0 && !$scheduled, 'all done: nothing scheduled');
     $options = ['_alps_image_keep_originals' => 'true'];
     check(Retention::keeps(), 'ticked setting read as on');
     echo "Original retention: $checks checks passed.\n";

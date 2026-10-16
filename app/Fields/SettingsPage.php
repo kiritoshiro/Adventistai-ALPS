@@ -371,6 +371,9 @@ class SettingsPage
         check_admin_referer(self::ACTION);
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Each value is sanitised per field below.
         $input = isset($_POST['alps']) && is_array($_POST['alps']) ? wp_unslash($_POST['alps']) : [];
+        // Store::setOption() deletes and re-adds each row: a clean-up running now would
+        // read the defaults, so it waits (OriginalImageRetention::sweep()).
+        set_transient(\App\OriginalImageRetention::SAVING, 1, 2 * MINUTE_IN_SECONDS);
         foreach (self::layout() as $section) {
             foreach ($section[1] as $item) {
                 if ($item[0] !== 'field') {
@@ -384,6 +387,7 @@ class SettingsPage
         }
         // E.g. OriginalImageRetention recomputes due dates when its settings changed.
         do_action('alps_theme_settings_saved');
+        delete_transient(\App\OriginalImageRetention::SAVING);
         $tab = isset($_POST['tab']) ? sanitize_key(wp_unslash($_POST['tab'])) : 'global';
         wp_safe_redirect(self::url(['tab' => $tab, 'updated' => 1]));
         exit;

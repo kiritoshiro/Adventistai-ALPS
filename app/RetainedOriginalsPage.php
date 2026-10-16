@@ -35,7 +35,7 @@ class RetainedOriginalsPage
     /** Content above the Images settings: how many originals are kept, and a link to them. */
     public static function settingsHtml()
     {
-        $count = count(OriginalImageRetention::query());
+        $count = OriginalImageRetention::count();
         /* translators: %d: number of kept original images */
         $text = sprintf(_n('%d uploaded original is kept for now.', '%d uploaded originals are kept for now.', $count, 'alps'), $count);
         return '<h3>' . esc_html__('Uploaded originals', 'alps') . '</h3>'
@@ -110,6 +110,7 @@ class RetainedOriginalsPage
         }
         echo '</tr></thead><tbody>';
         $format = get_option('date_format') . ' ' . get_option('time_format');
+        $confirm = __('Delete this original now? The image stays in the library, but it can no longer be edited or converted again from the uploaded file.', 'alps');
         foreach ($rows as $id) {
             $metadata = wp_get_attachment_metadata($id);
             $size = self::fileSize($id);
@@ -124,7 +125,7 @@ class RetainedOriginalsPage
             echo '<td>' . esc_html($size === null ? __('missing', 'alps') : size_format($size, 1)) . '</td>';
             echo '<td>' . esc_html($kept ? wp_date($format, $kept) : '—') . '</td>';
             echo '<td>' . esc_html($due <= time() ? __('at the next clean-up', 'alps') : wp_date($format, $due)) . '</td>';
-            printf('<td><button type="submit" class="button-link button-link-delete" name="attachment" value="%d">%s</button></td>', (int) $id, esc_html__('Delete original now', 'alps'));
+            printf('<td><button type="submit" class="button-link button-link-delete" name="attachment" value="%d" data-confirm="%s">%s</button></td>', (int) $id, esc_attr($confirm), esc_html__('Delete original now', 'alps'));
             echo '</tr>';
         }
         echo '</tbody></table></form>';
@@ -184,27 +185,46 @@ class RetainedOriginalsPage
             wp_die(esc_html__('Sorry, you are not allowed to manage these options.', 'alps'), 403);
         }
         check_admin_referer(self::ACTION);
-        if (! empty($_POST['all'])) {
-            $ids = OriginalImageRetention::query();
+        // "Delete all now" posts the form, then continues by GET (continueUrl()) with the totals so far.
+        $all = ! empty($_REQUEST['all']);
+        $deleted = $all && isset($_REQUEST['deleted']) ? absint(wp_unslash($_REQUEST['deleted'])) : 0;
+        $refused = $all && isset($_REQUEST['refused']) ? absint(wp_unslash($_REQUEST['refused'])) : 0;
+        $listed = $all && isset($_REQUEST['refused_ids']) ? array_values(array_filter(array_map('absint', explode(',', sanitize_text_field(wp_unslash($_REQUEST['refused_ids'])))))) : [];
+        if ($all) {
+            // One batch per request. Refused rows stay first in the queue, so they are skipped.
+            $ids = OriginalImageRetention::query(['posts_per_page' => self::PER_PAGE, 'offset' => $refused]);
         } else {
             $ids = isset($_POST['attachment']) ? [absint(wp_unslash($_POST['attachment']))] : [];
         }
-        $deleted = 0;
-        $refused = [];
         foreach (array_filter($ids) as $id) {
             if (OriginalImageRetention::deleteNow($id)) {
                 $deleted++;
             } else {
-                $refused[] = $id;
+                $refused++;
+                if (count($listed) < self::LISTED) {
+                    $listed[] = $id;
+                }
             }
         }
-        $paged = isset($_POST['paged']) ? max(1, absint(wp_unslash($_POST['paged']))) : 1;
-        wp_safe_redirect(self::url([
-            'paged' => $paged,
+        $args = [
+            'paged' => isset($_REQUEST['paged']) ? max(1, absint(wp_unslash($_REQUEST['paged']))) : 1,
             'deleted' => $deleted,
-            'refused' => count($refused),
-            'refused_ids' => implode(',', array_slice($refused, 0, self::LISTED)),
-        ]));
+            'refused' => $refused,
+            'refused_ids' => implode(',', $listed),
+        ];
+        if ($all && count($ids) === self::PER_PAGE
+            && OriginalImageRetention::query(['posts_per_page' => 1, 'offset' => $refused])) {
+            wp_safe_redirect(self::continueUrl($args));
+            exit;
+        }
+        wp_safe_redirect(self::url($args));
         exit;
+    }
+
+    /** The next batch of "Delete all now", carrying the totals so far. */
+    public static function continueUrl($args)
+    {
+        // Not wp_nonce_url(): it escapes "&" for HTML, and this is a redirect.
+        return add_query_arg(array_merge(['action' => self::ACTION, 'all' => 1], $args, ['_wpnonce' => wp_create_nonce(self::ACTION)]), admin_url('admin-post.php'));
     }
 }

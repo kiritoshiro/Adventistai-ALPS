@@ -18,6 +18,9 @@ final class OriginalImageRetention
     private const APPLIED = 'alps_original_retention_applied';
     /** A sweep shortly after an upload when originals are not kept. */
     public const SOON = 'alps_original_sweep';
+    /** Set while the settings page writes its options (rows briefly missing). */
+    public const SAVING = 'alps_theme_settings_saving';
+    private const BATCH = 50;
     /** Appearance → ALPS Theme Settings → Images fields (app/Fields/SettingsPage.php). */
     public const SETTINGS = [
         'keep' => 'alps_image_keep_originals',
@@ -104,45 +107,83 @@ final class OriginalImageRetention
     /** Ids of attachments with a kept original, soonest due first. */
     public static function query(array $args = []): array
     {
+        // The ID breaks ties, so batches that skip refused rows by offset stay in order.
         return get_posts($args + [
             'post_type' => 'attachment', 'post_status' => 'any', 'fields' => 'ids',
             'posts_per_page' => -1, 'meta_key' => self::DUE, 'meta_type' => 'NUMERIC',
-            'orderby' => 'meta_value_num', 'order' => 'ASC',
+            'orderby' => ['meta_value_num' => 'ASC', 'ID' => 'ASC'],
         ]);
+    }
+
+    /** How many originals are kept, without loading their IDs. */
+    public static function count(): int
+    {
+        $query = new \WP_Query([
+            'post_type' => 'attachment', 'post_status' => 'any', 'fields' => 'ids',
+            'posts_per_page' => 1, 'meta_key' => self::DUE,
+        ]);
+        return (int) $query->found_posts;
     }
 
     /**
      * Recomputes the due dates when the settings changed since they were last
-     * applied (after saving the settings, and before each sweep).
+     * applied (after saving the settings, and on the list of kept originals).
      */
     public static function apply(): void
+    {
+        self::recompute(true);
+    }
+
+    /**
+     * With $earlier false (the sweep) due dates only move later: the sweep can
+     * read settings while another tool rewrites them, and must not delete
+     * originals early. The settings then count as applied only when no due date
+     * was left for apply() to move earlier.
+     */
+    private static function recompute(bool $earlier): void
     {
         $settings = (self::keeps() ? 'keep' : 'delete') . ':' . self::days();
         if (get_option(self::APPLIED) === $settings) {
             return;
         }
+        $skipped = false;
         foreach (self::query() as $id) {
             $kept = self::keptAt($id);
             if (!$kept) {
                 continue;
             }
+            $due = self::dueFor($kept);
+            if (!$earlier && $due < self::dueAt($id)) {
+                $skipped = true;
+                continue;
+            }
             update_post_meta($id, self::KEPT, $kept);
-            update_post_meta($id, self::DUE, self::dueFor($kept));
+            update_post_meta($id, self::DUE, $due);
         }
-        update_option(self::APPLIED, $settings, false);
+        if (!$skipped) {
+            update_option(self::APPLIED, $settings, false);
+        }
     }
 
     public static function sweep(): void
     {
-        self::apply();
-        $ids = self::query([
-            'posts_per_page' => 50, 'meta_value' => time(), 'meta_compare' => '<=',
-        ]);
+        // The settings page is rewriting its options; its saved action applies them.
+        if (get_transient(self::SAVING)) {
+            return;
+        }
+        self::recompute(false);
+        $due = ['meta_value' => time(), 'meta_compare' => '<='];
+        $ids = self::query(['posts_per_page' => self::BATCH] + $due);
         foreach ($ids as $id) {
             if (!self::deleteExpired($id)) {
                 // Retry unsafe/unavailable files later without starving the next batch.
                 update_post_meta($id, self::DUE, time() + DAY_IN_SECONDS);
             }
+        }
+        // More are due than one batch takes (e.g. after switching keeping off): go on soon.
+        if (count($ids) === self::BATCH && self::query(['posts_per_page' => 1] + $due)
+            && !wp_next_scheduled(self::SOON)) {
+            wp_schedule_single_event(time() + 5 * MINUTE_IN_SECONDS, self::SOON);
         }
     }
 
