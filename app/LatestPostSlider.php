@@ -168,6 +168,27 @@ class LatestPostSlider
     }
 
     /**
+     * wp_content_img_tag: slide images, and card scroller covers that wait
+     * for their file, lose the "auto" WordPress adds again when a block is
+     * printed in post content (wp_filter_content_tags runs after the block
+     * has rendered). Their own sizes are right; a waiting cover's layout
+     * width is that of its 1x1 placeholder.
+     *
+     * @param mixed $image
+     * @return mixed
+     */
+    public static function contentImageSizes($image)
+    {
+        if (!is_string($image)
+            || !preg_match('/\sclass\s*=\s*"(?:[^"]*\s)?(alps-latest-slider__image|alps-card-scroller__image)[\s"]/i', $image, $m)
+            || (0 === strcasecmp($m[1], 'alps-card-scroller__image') && false === stripos($image, 'data-alps-src'))
+        ) {
+            return $image;
+        }
+        return self::withoutAutoSizes($image);
+    }
+
+    /**
      * The `sizes` value for a slide image: how wide it is actually drawn.
      *
      * The frame is 16:9 (4:3 when a one-column slider puts the image beside

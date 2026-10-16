@@ -121,6 +121,17 @@ check('withoutAuto drops a leading "auto" only', '177px' === LatestPostSlider::w
 check('slide markup: <source> and <img> keep only the theme sizes', $picture === LatestPostSlider::withoutAutoSizes($autoPicture));
 check('slide markup without "auto" is unchanged', $picture === LatestPostSlider::withoutAutoSizes($picture));
 check('the preload and the slide then share the same sizes', false !== strpos(LatestPostSlider::withoutAutoSizes($autoPicture), 'sizes="(max-width: 700px) calc(100vw - 34px), 420px"') && false !== strpos(LatestPostSlider::priorityPreload(LatestPostSlider::withoutAutoSizes($autoPicture)), 'imagesizes="(max-width: 700px) calc(100vw - 34px), 420px"'));
+// A slider block in post content: wp_filter_content_tags adds "auto" again after the block rendered.
+$slideImg = '<img width="1200" height="675" src="d.jpg" class="alps-latest-slider__image wp-post-image" sizes="auto, (max-width: 700px) calc(100vw - 34px), 420px" loading="lazy">';
+check('content filter: a slide image loses the "auto" added in post content', str_replace('sizes="auto, ', 'sizes="', $slideImg) === LatestPostSlider::contentImageSizes($slideImg));
+$waitingCover = '<img src="data:image/gif;base64,x" data-alps-src="c.jpg" class="alps-card-scroller__image" sizes="auto, (max-width: 600px) 149px, 170px" loading="lazy">';
+check('content filter: a waiting card cover loses it too', '<img src="data:image/gif;base64,x" data-alps-src="c.jpg" class="alps-card-scroller__image" sizes="(max-width: 600px) 149px, 170px" loading="lazy">' === LatestPostSlider::contentImageSizes($waitingCover));
+$shownCover = '<img src="c.jpg" class="alps-card-scroller__image" sizes="auto, (max-width: 600px) 149px, 170px" loading="lazy">';
+$otherImg = '<img class="wp-image-5 alps-latest-slider__image-x" sizes="auto, 300px" loading="lazy">';
+check('content filter: covers shown at once and other images are left alone', $shownCover === LatestPostSlider::contentImageSizes($shownCover) && $otherImg === LatestPostSlider::contentImageSizes($otherImg));
+check('content filter: non-strings pass through', null === LatestPostSlider::contentImageSizes(null));
+$functions = (string) file_get_contents(dirname(__DIR__, 2) . '/functions.php');
+check('content filter registered after WordPress adds "auto" (priority 10)', false !== strpos($functions, "add_filter('wp_content_img_tag', [\\App\\LatestPostSlider::class, 'contentImageSizes'], 20);"));
 
 // Blade renders the content before the layout's wp_head(): the preload waits for <head>.
 $GLOBALS['did_head'] = 0;
@@ -184,7 +195,7 @@ foreach (['[data-alps-latest-slider]', '[data-alps-slider-slide]', "'is-active'"
 $scrollerJs = (string) file_get_contents(dirname(__DIR__, 2) . '/assets/js/card-scroller.js');
 $scrollerPhp = (string) file_get_contents(dirname(__DIR__, 2) . '/app/CardScrollerBlock.php');
 check('restore script, card scroller script and block share [data-card-scroller-track]', false !== strpos($restore, "'[data-card-scroller-track]'") && false !== strpos($scrollerJs, "'[data-card-scroller-track]'") && false !== strpos($scrollerPhp, ' data-card-scroller-track>'));
-check('the card scroller defers through DeferredImages', false !== strpos($scrollerPhp, '$card = DeferredImages::defer($card);'));
+check('the card scroller defers through DeferredImages', false !== strpos($scrollerPhp, '$waiting = DeferredImages::defer(LatestPostSlider::withoutAutoSizes($image));'));
 check('restore script: no syntax newer than the browsers it must run in (no => or ?.)', false === strpos($restore, '=>') && false === strpos($restore, '?.') && 0 === preg_match('/\b(const|let)\s/', $restore));
 
 // Sidebar images: lazy, never high priority, decided before WordPress counts them.
@@ -216,11 +227,17 @@ SidebarImages::leave();
 // Sidebar images: sizes for the width the area is drawn at.
 check('sizes filters registered (image widgets before ImageDelivery copies them, block images)', in_array(['wp_get_attachment_image', 8, 'sizes'], $GLOBALS['actions'], true) && in_array(['wp_content_img_tag', 10, 'sizes'], $GLOBALS['actions'], true));
 check('area types', 'side' === SidebarImages::layout('sidebar-page') && 'side' === SidebarImages::layout('sidebar-posts') && 'footer' === SidebarImages::layout('footer-region') && 'footer' === SidebarImages::layout('footer-region-post') && '' === SidebarImages::layout('section-page-top') && '' === SidebarImages::layout('category-top') && '' === SidebarImages::layout('section-page-bottom'));
-$side = '(max-width: 700px) calc(100vw - 32px), (max-width: 1000px) 81.31vw, (max-width: 1272px) 28.17vw, (max-width: 1680px) calc(32.57vw - 56px), 492px';
-check('side column: full width less the gutters on phones and tablets, 38% of the content column on desktop', $side === SidebarImages::areaSizes('side'));
+$side = '(max-width: 700px) calc(100vw - 47px), (max-width: 900px) calc(81.31vw - 15px), (max-width: 1000px) calc(81.31vw - 20px), (max-width: 1272px) calc(28.17vw - 20px), (max-width: 1680px) calc(32.57vw - 76px), 472px';
+check('side column: full width less the gutters and its inner padding on phones and tablets, 38% of the content column on desktop', $side === SidebarImages::areaSizes('side'));
 check('side column, a 1280px image: no cap reached', $side === SidebarImages::areaSizes('side', 1280));
-check('side column, a 300px image: never wider than the image', '(max-width: 332px) calc(100vw - 32px), (max-width: 1000px) 300px, (max-width: 1064px) 28.17vw, 300px' === SidebarImages::areaSizes('side', 300));
-check('side column, a 400px image', '(max-width: 432px) calc(100vw - 32px), (max-width: 1000px) 400px, (max-width: 1272px) 28.17vw, (max-width: 1400px) calc(32.57vw - 56px), 400px' === SidebarImages::areaSizes('side', 400));
+check('side column, a 300px image: never wider than the image', '(max-width: 347px) calc(100vw - 47px), (max-width: 1000px) 300px, (max-width: 1135px) calc(28.17vw - 20px), 300px' === SidebarImages::areaSizes('side', 300));
+check('side column, a 400px image', '(max-width: 447px) calc(100vw - 47px), (max-width: 1000px) 400px, (max-width: 1272px) calc(28.17vw - 20px), (max-width: 1461px) calc(32.57vw - 76px), 400px' === SidebarImages::areaSizes('side', 400));
+$singleSide = '(max-width: 700px) calc(100vw - 32px), (max-width: 1000px) 81.31vw, (max-width: 1272px) 28.17vw, (max-width: 1680px) calc(32.57vw - 56px), 492px';
+check('a single post\'s side column has no inner padding', $singleSide === SidebarImages::areaSizes('single-side'));
+check('a single post\'s side column, a 300px image', '(max-width: 332px) calc(100vw - 32px), (max-width: 1000px) 300px, (max-width: 1064px) 28.17vw, 300px' === SidebarImages::areaSizes('single-side', 300));
+$post = '(max-width: 700px) calc(100vw - 32px), (max-width: 1000px) 81.31vw, (max-width: 1272px) 48.74vw, (max-width: 1680px) calc(53.14vw - 56px), 837px';
+check('widgets under a post beside the side column: 62% of the content column on desktop', $post === SidebarImages::areaSizes('post') && $post === SidebarImages::areaSizes('post', 1280));
+check('widgets under a post, a 600px image', '(max-width: 632px) calc(100vw - 32px), (max-width: 700px) 600px, (max-width: 737px) 81.31vw, (max-width: 1000px) 600px, (max-width: 1231px) 48.74vw, 600px' === SidebarImages::areaSizes('post', 600));
 $footer = '(max-width: 700px) calc(100vw - 32px), (max-width: 1272px) 81.31vw, (max-width: 1680px) calc(85.71vw - 56px), 1384px';
 check('footer: the content column less the gutters, up to the 90rem measure', $footer === SidebarImages::areaSizes('footer') && $footer === SidebarImages::areaSizes('footer', 2000));
 check('unknown layout: nothing', '' === SidebarImages::areaSizes('other'));
@@ -243,6 +260,15 @@ SidebarImages::enter('footer-region-post');
 check('footer area nested in the side column: footer sizes, capped at the 1280px image', false !== strpos(SidebarImages::sizes($widget), 'sizes="(max-width: 700px) calc(100vw - 32px), (max-width: 1272px) 81.31vw, (max-width: 1558px) calc(85.71vw - 56px), 1280px"'));
 SidebarImages::leave();
 SidebarImages::leave();
+SidebarImages::single(true);
+check('single post beside its side column: widgets under it share the article\'s width, the side column has no inner padding', 'post' === SidebarImages::layout('footer-region-post') && 'single-side' === SidebarImages::layout('sidebar-posts') && 'side' === SidebarImages::layout('sidebar-page') && 'footer' === SidebarImages::layout('footer-region'));
+SidebarImages::enter('footer-region-post');
+check('widgets under a post beside the side column: post sizes', false !== strpos(SidebarImages::sizes($widget), 'sizes="' . $post . '"'));
+SidebarImages::leave();
+SidebarImages::single(false);
+check('single post without a side column: widgets under it as wide as the footer', 'footer' === SidebarImages::layout('footer-region-post'));
+$singleTemplate = (string) file_get_contents(dirname(__DIR__, 2) . '/resources/views/patterns/02-organisms/content/content-single.blade.php');
+check('the single post template says whether its side column is shown, before the article', false !== strpos($singleTemplate, '\App\SidebarImages::single($has_sidebar);') && strpos($singleTemplate, 'SidebarImages::single(') < strpos($singleTemplate, 'article-footer'));
 SidebarImages::enter('category-top');
 check('category header area: sizes left to WordPress', $widget === SidebarImages::sizes($widget));
 SidebarImages::leave();

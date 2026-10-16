@@ -80,11 +80,7 @@ class CardScrollerBlock
         $eager = self::eagerCount($layout, (string) ($attributes['align'] ?? ''));
         $cards = '';
         foreach ($items as $index => $item) {
-            $card = self::card($item, $ids, $layout);
-            if ($index >= $eager) {
-                $card = DeferredImages::defer($card);
-            }
-            $cards .= '<div class="alps-card-scroller__item" role="listitem">' . $card . '</div>';
+            $cards .= '<div class="alps-card-scroller__item" role="listitem">' . self::card($item, $ids, $layout, $index >= $eager) . '</div>';
         }
 
         $moreCard = $moreLabel && $moreUrl;
@@ -138,10 +134,10 @@ class CardScrollerBlock
     /**
      * Widest visible part of the track by block alignment: the block is at
      * most 1200px wide (card-scroller.css) less the frame's and the track's
-     * 4px side paddings; wide stays within the content measure (90rem), full
-     * is taken as a 1920px screen.
+     * 4px side paddings; wide is at most 105rem (site-overrides.css,
+     * `.text > .alignwide`), full is taken as a 1920px screen.
      */
-    public const TRACK_WIDTHS = ['' => 1184, 'wide' => 1424, 'full' => 1904];
+    public const TRACK_WIDTHS = ['' => 1184, 'wide' => 1664, 'full' => 1904];
 
     /**
      * How many cards can show, at least in part, before the track is
@@ -228,8 +224,9 @@ class CardScrollerBlock
     /**
      * @param array<string, mixed> $item
      * @param array<string, int>   $ids
+     * @param bool                 $defer Whether the image waits for the track to scroll.
      */
-    private static function card(array $item, array $ids, string $layout): string
+    private static function card(array $item, array $ids, string $layout, bool $defer = false): string
     {
         $alt = $item['alt'] !== '' ? $item['alt'] : $item['title'];
         $id = $item['imageId'] ?: ($ids[$item['imageUrl']] ?? 0);
@@ -253,6 +250,16 @@ class CardScrollerBlock
                 esc_url($item['imageUrl']),
                 esc_attr($alt)
             );
+        }
+        if ($image && $defer) {
+            // Without the "auto" WordPress adds to lazy images: a waiting
+            // cover is laid out at its 1x1 placeholder's width. Without
+            // JavaScript nothing restores the file, so the <noscript> copy
+            // shows instead (the transparent placeholder takes 1px).
+            $waiting = DeferredImages::defer(LatestPostSlider::withoutAutoSizes($image));
+            if (false !== strpos($waiting, 'data-alps-src')) {
+                $image = $waiting . '<noscript>' . $image . '</noscript>';
+            }
         }
 
         $inner = ($image ? '<span class="alps-card-scroller__media">' . $image . '</span>' : '')

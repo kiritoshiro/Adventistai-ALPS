@@ -41,12 +41,21 @@ class SidebarImages
      * responsive-zoom-fixes.css. The content column is the viewport less the
      * Sabbath rail (85.71vw) above 700px, capped at 90rem; the side column is
      * 38% of it above 1000px and the full column below; each column loses the
-     * page gutter, clamp(1rem, 2.2vw, 1.75rem), on both sides.
+     * page gutter, clamp(1rem, 2.2vw, 1.75rem), on both sides. The page and
+     * archive templates' side column also has an inner u-padding--right
+     * (15px, 20px above 900px); a single post's has not ('single-side').
+     * Widgets under a post ('post') share the article's 62% beside a side
+     * column; without one they are as wide as the footer.
      */
     public const LAYOUTS = [
-        'side' => [[700, 100, 32], [1000, 81.31, 0], [1272, 28.17, 0], [1680, 32.57, 56], [null, 0, -492]],
+        'side' => [[700, 100, 47], [900, 81.31, 15], [1000, 81.31, 20], [1272, 28.17, 20], [1680, 32.57, 76], [null, 0, -472]],
+        'single-side' => [[700, 100, 32], [1000, 81.31, 0], [1272, 28.17, 0], [1680, 32.57, 56], [null, 0, -492]],
+        'post' => [[700, 100, 32], [1000, 81.31, 0], [1272, 48.74, 0], [1680, 53.14, 56], [null, 0, -837]],
         'footer' => [[700, 100, 32], [1272, 81.31, 0], [1680, 85.71, 56], [null, 0, -1384]],
     ];
+
+    /** On a single post (single()): whether its side column is shown; else null. */
+    private static ?bool $singleSidebar = null;
 
     /** @var array<int, string> One entry per open dynamic_sidebar(): its id. */
     private static array $stack = [];
@@ -111,11 +120,26 @@ class SidebarImages
         );
     }
 
-    /** 'side', 'footer' or '' (left to WordPress) for a widget area id. */
+    /**
+     * Called by the single post template (content-single.blade.php) before
+     * it prints the article: whether the side column is shown beside it.
+     */
+    public static function single(bool $sidebar): void
+    {
+        self::$singleSidebar = $sidebar;
+    }
+
+    /** A LAYOUTS key, or '' (left to WordPress), for a widget area id. */
     public static function layout(string $area): string
     {
+        if ('sidebar-posts' === $area && null !== self::$singleSidebar) {
+            return 'single-side';
+        }
         if (in_array($area, self::SIDE_AREAS, true)) {
             return 'side';
+        }
+        if ('footer-region-post' === $area && true === self::$singleSidebar) {
+            return 'post';
         }
         return in_array($area, self::FOOTER_AREAS, true) ? 'footer' : '';
     }

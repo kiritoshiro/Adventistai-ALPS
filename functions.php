@@ -72,6 +72,8 @@ require_once __DIR__ . '/inc/search/bootstrap.php';
 
 add_action('init', [\App\LatestPostSliderBlock::class, 'register']);
 add_action('wp_head', [\App\LatestPostSlider::class, 'printHeadPreload'], 2);
+// After WordPress adds "auto" to lazy images (wp_img_tag_add_auto_sizes, 10).
+add_filter('wp_content_img_tag', [\App\LatestPostSlider::class, 'contentImageSizes'], 20);
 add_action('wp_footer', [\App\DeferredImages::class, 'printScript'], 20);
 \App\SidebarImages::register();
 \App\Fields\Store::register();
