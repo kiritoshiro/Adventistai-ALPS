@@ -37,13 +37,14 @@ array_map(function ($file) use ($sage_error) {
     if (!locate_template($file, true, true)) {
         $sage_error(sprintf(__('Error locating <code>%s</code> for inclusion.', 'alps'), $file), 'File not found');
     }
-}, ['helpers', 'setup', 'filters', 'admin', 'template-helpers', 'ContentHelpers', 'Breadcrumbs', 'SeoDefaults', 'UploadImages', 'ImageDelivery', 'ContentImages', 'OriginalImageRetention', 'AccountAccess', 'ThemeCache', 'InlineStyles', 'ScriptLoading', 'LogoImage', 'SecurityHeaders']);
+}, ['helpers', 'setup', 'filters', 'admin', 'template-helpers', 'ContentHelpers', 'Breadcrumbs', 'SeoDefaults', 'UploadImages', 'ImageDelivery', 'ContentImages', 'OriginalImageRetention', 'RetainedOriginalsPage', 'AccountAccess', 'ThemeCache', 'InlineStyles', 'ScriptLoading', 'LogoImage', 'SecurityHeaders']);
 
 \App\SeoDefaults::register();
 \App\UploadImages::register();
 \App\ImageDelivery::register();
 \App\ContentImages::register();
 \App\OriginalImageRetention::register();
+\App\RetainedOriginalsPage::register();
 \App\AccountAccess::register();
 \App\ThemeCache::register();
 \App\InlineStyles::register();

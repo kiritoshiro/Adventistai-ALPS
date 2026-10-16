@@ -3,6 +3,15 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.35.0]
+### Added
+- **Appearance → ALPS Theme Settings → Images** has settings for the uploaded originals WordPress keeps next to the smaller copies of a large image:
+  - **Keep the uploaded originals** (on by default, as before). Off: a new upload's original is deleted by a clean-up a few minutes after the upload, and the originals kept so far by the next scheduled clean-up.
+  - **Keep them for (days)**: 1–365, 7 by default (as before). A change also applies to the originals already kept, counted from when each was kept.
+- **A list of the kept originals**, linked from the Images tab: thumbnail, title, original file name, size on disk, kept since and deletion date, 50 per page, with the total count and size. **Delete original now** and **Delete all now** delete before the due date through the same safety checks as the scheduled clean-up; originals a check refuses are kept and named in the notice. Both ask first; **Delete all now** works in batches of 50 and shows the totals at the end.
+- The scheduled clean-up only ever moves due dates later and waits while the settings are being saved, so it cannot delete originals early by reading the settings halfway through a save. Saving the settings, or opening the list, applies a shorter period. When more than 50 originals are due, the clean-up goes on a few minutes later until they are done.
+- The two settings are stored in the same row format as the other theme settings; `tests/fields/run.py compare` checks them against Carbon Fields too.
+
 ## [3.34.1]
 ### Changed
 - Smaller image downloads (Lighthouse on 3.34.0: 41 images, 1.78 MB before the Largest Contentful Paint on desktop):
