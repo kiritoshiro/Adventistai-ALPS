@@ -100,6 +100,10 @@ class SettingsPage
                 ['field', 'sabbath_hide', __('Hide the sabbath column', 'alps'), __('Select to hide the sabbath column.', 'alps'), 33],
                 ['field', 'sabbath_hide_screens', __('Hide the sabbath column at certain screen widths', 'alps'), '', 33, ['data-shown-with' => 'sabbath_hide']],
             ]],
+            'sabbath_timer' => [__('SABBATH TIMER', 'alps'), [
+                ['field', 'sabbath_timer_hide', __('Hide the Sabbath timer', 'alps'), __('Select to hide the Sabbath countdown and verse at the top of the front page.', 'alps'), 100],
+                ['field', 'sabbath_timer_verses', __('Sabbath verses', 'alps'), __('Shown at the top of the front page during the Sabbath, one picked at random on each visit. Without entries the timer shows Exodus 20:8.', 'alps')],
+            ]],
             'footer' => [__('FOOTER CONTENT', 'alps'), [
                 ['field', 'footer_description', __('Footer Description', 'alps')],
                 ['field', 'footer_copyright', __('Footer Copyright', 'alps')],
@@ -162,6 +166,8 @@ class SettingsPage
             'footer_address_zip' => __('Postal Code', 'alps'),
             'footer_address_country' => __('Country', 'alps'),
             'footer_phone' => __('Phone Number', 'alps'),
+            'sabbath_verse_text' => __('Verse', 'alps'),
+            'sabbath_verse_reference' => __('Reference', 'alps'),
         ];
     }
 

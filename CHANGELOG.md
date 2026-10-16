@@ -3,6 +3,13 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.34.0]
+### Added
+- **Appearance → ALPS Theme Settings → Sabbath Timer**, a new tab for the Sabbath timer at the top of the front page:
+  - **Hide the Sabbath timer** turns it off. The front page then shows its normal page header (title), and the timer's markup, script and styles are left out.
+  - **Sabbath verses**: a list of verses (text and reference) shown during the Sabbath. The browser picks one at random on each visit, so a cached front page still rotates them. Without entries the timer shows Exodus 20:8 as before.
+- The new settings are stored in the same row format as the other theme settings; `tests/fields/run.py compare` checks them against Carbon Fields too.
+
 ## [3.33.0]
 ### Changed
 - Carbon Fields is no longer part of the theme. Its three jobs are done with WordPress's own APIs, and **every value is stored exactly as Carbon Fields stored it**, so nothing is migrated and an older theme version reads the same settings (`App\Fields\Store`; `tests/fields/run.py compare` checks about 1,880 reads and writes against Carbon Fields 3.6.11 itself).

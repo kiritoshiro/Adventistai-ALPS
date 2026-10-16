@@ -33,17 +33,47 @@ final class SabbathTimer
     }
 
     /**
-     * Sabbath verses shown only between Friday sunset and Saturday sunset.
-     * More verses can be added here later without changing the front-end markup.
+     * Whether the front page shows the timer: Appearance → ALPS Theme
+     * Settings → Sabbath Timer can turn it off.
+     */
+    public static function enabled(): bool
+    {
+        return !self::option('sabbath_timer_hide');
+    }
+
+    /**
+     * Sabbath verses shown only between Friday sunset and Saturday sunset,
+     * from the theme settings; the script picks one at random per visit.
+     * Without any, the default verse.
      */
     public static function verses(): array
     {
-        return [
+        $verses = [];
+        $rows = self::option('sabbath_timer_verses');
+        foreach (is_array($rows) ? $rows : [] as $row) {
+            // The script shows them as plain text.
+            $text = trim(wp_strip_all_tags((string) ($row['sabbath_verse_text'] ?? '')));
+            if ($text === '') {
+                continue;
+            }
+            $verses[] = [
+                'text' => $text,
+                'reference' => trim(wp_strip_all_tags((string) ($row['sabbath_verse_reference'] ?? ''))),
+            ];
+        }
+
+        return $verses ?: [
             [
                 'text' => 'Atmink ir švęsk šabo dieną.',
                 'reference' => 'Išėjimo knyga 20, 8',
             ],
         ];
+    }
+
+    /** A theme setting; none outside WordPress (tests/sabbath/run.php). */
+    private static function option(string $name)
+    {
+        return defined('ABSPATH') && class_exists(Fields\Store::class) ? Fields\Store::option($name) : null;
     }
 
     /**

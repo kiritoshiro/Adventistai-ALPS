@@ -208,6 +208,19 @@ function crb_attach_theme_options()
                 ]])
                 ->set_width(33),
         ])
+        // Added in 3.34.0, after the move away from Carbon Fields. Defined here
+        // so compare.php checks they are read and stored in its format too.
+        ->add_tab(__('SABBATH TIMER', 'alps'), [
+            Field
+                ::make('checkbox', 'sabbath_timer_hide', __('Hide the Sabbath timer', 'alps'))
+                ->set_option_value('true'),
+            Field
+                ::make('complex', 'sabbath_timer_verses', __('Sabbath verses', 'alps'))
+                ->add_fields([
+                    Field::make('textarea', 'sabbath_verse_text', __('Verse', 'alps')),
+                    Field::make('text', 'sabbath_verse_reference', __('Reference', 'alps')),
+                ]),
+        ])
         ->add_tab(__('FOOTER CONTENT', 'alps'), [
             Field
                 ::make( 'complex', 'footer_description', __('Footer Description', 'alps'))

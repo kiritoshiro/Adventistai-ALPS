@@ -74,7 +74,7 @@ add_action('wp_enqueue_scripts', function () {
         'strategy' => 'async',
     ]);
 
-    $timer = is_front_page() ? embedded_css(get_template_directory() . '/assets/css/sabbath-timer.css') : '';
+    $timer = is_front_page() && SabbathTimer::enabled() ? embedded_css(get_template_directory() . '/assets/css/sabbath-timer.css') : '';
     if ($timer !== '') {
         wp_add_inline_style('alps-main', $timer);
     }
