@@ -3,7 +3,7 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.34.1]
 ### Changed
 - Smaller image downloads (Lighthouse on 3.34.0: 41 images, 1.78 MB before the Largest Contentful Paint on desktop):
   - **Latest Post Slider**: slide images keep only the theme's own `sizes`, without the `auto` WordPress adds to lazy images. `auto` stands for the image's layout width, which for a portrait slide is the whole frame, and the high-priority preload copied it as well, so Chrome fetched the 1200px file for a 308px slide; the preload and the slide now choose the same file.
