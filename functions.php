@@ -72,7 +72,7 @@ require_once __DIR__ . '/inc/search/bootstrap.php';
 
 add_action('init', [\App\LatestPostSliderBlock::class, 'register']);
 add_action('wp_head', [\App\LatestPostSlider::class, 'printHeadPreload'], 2);
-add_action('wp_footer', [\App\LatestPostSlider::class, 'printDeferScript'], 20);
+add_action('wp_footer', [\App\DeferredImages::class, 'printScript'], 20);
 \App\SidebarImages::register();
 \App\Fields\Store::register();
 \App\ThemePalette::register();

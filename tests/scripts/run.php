@@ -112,6 +112,16 @@ check('an image without AVIF: its own srcset, no type', false !== strpos(LatestP
 check('an image with only src: href', false !== strpos(LatestPostSlider::priorityPreload('<img src="https://e.test/a.jpg?x=1&amp;y=2" alt="">'), 'href="https://e.test/a.jpg?x=1&amp;y=2"'));
 check('no image: no preload', '' === LatestPostSlider::priorityPreload('<span>text</span>'));
 
+// WordPress adds "auto" to lazy images; a preload must not repeat it (Chrome took the 1200w file).
+$autoPicture = str_replace('sizes="(max', 'sizes="auto, (max', $picture);
+check('"auto" is not copied into imagesizes', $preload === LatestPostSlider::priorityPreload($autoPicture));
+check('a lone "auto": no imagesizes', false === strpos(LatestPostSlider::priorityPreload('<img src="a.jpg" srcset="a.jpg 800w" sizes="auto">'), 'imagesizes'));
+check('withoutAuto keeps sizes without "auto"', '(max-width: 700px) 100vw, 420px' === LatestPostSlider::withoutAuto('(max-width: 700px) 100vw, 420px'));
+check('withoutAuto drops a leading "auto" only', '177px' === LatestPostSlider::withoutAuto('AUTO , 177px') && 'auto' === LatestPostSlider::withoutAuto('auto') && '100vw, auto' === LatestPostSlider::withoutAuto('100vw, auto'));
+check('slide markup: <source> and <img> keep only the theme sizes', $picture === LatestPostSlider::withoutAutoSizes($autoPicture));
+check('slide markup without "auto" is unchanged', $picture === LatestPostSlider::withoutAutoSizes($picture));
+check('the preload and the slide then share the same sizes', false !== strpos(LatestPostSlider::withoutAutoSizes($autoPicture), 'sizes="(max-width: 700px) calc(100vw - 34px), 420px"') && false !== strpos(LatestPostSlider::priorityPreload(LatestPostSlider::withoutAutoSizes($autoPicture)), 'imagesizes="(max-width: 700px) calc(100vw - 34px), 420px"'));
+
 // Blade renders the content before the layout's wp_head(): the preload waits for <head>.
 $GLOBALS['did_head'] = 0;
 function did_action($hook) { return 'wp_head' === $hook ? $GLOBALS['did_head'] : 0; }
@@ -133,41 +143,48 @@ check('slide images never say fetchpriority="high" themselves', false === strpos
 check('the template no longer calls the removed per-image claim', false === strpos($template, 'claimEagerImage'));
 check('slide images carry no fetchpriority attribute (lazy images never get high)', false === strpos($template, "'fetchpriority'"));
 check('every slide image is lazy, none eager', false !== strpos($template, "'loading' => 'lazy',") && false === strpos($template, "'eager'"));
-check('hidden slides are deferred', false !== strpos($template, "if (!\$isActive) {\n                        \$thumbnailHtml = \\App\\LatestPostSlider::deferImage(\$thumbnailHtml);"));
+check('slide images lose the "auto" WordPress adds, before deferring and the preload', false !== strpos($template, "\$thumbnailHtml = \\App\\LatestPostSlider::withoutAutoSizes(\$thumbnailHtml);\n                      // Hidden slides get their image when they are next in line."));
+check('hidden slides are deferred', false !== strpos($template, "if (!\$isActive) {\n                        \$thumbnailHtml = \\App\\DeferredImages::defer(\$thumbnailHtml);"));
 
 // Hidden slides: no file address until the slide is next in line.
+require dirname(__DIR__, 2) . '/app/DeferredImages.php';
+use App\DeferredImages;
 $GLOBALS['feed'] = false;
 $GLOBALS['rest'] = false;
 function is_feed() { return $GLOBALS['feed']; }
 function wp_is_serving_rest_request() { return $GLOBALS['rest']; }
 function get_template_directory() { return dirname(__DIR__, 2); }
 $GLOBALS['feed'] = true;
-check('feeds keep the real files (nothing restores them there)', $picture === LatestPostSlider::deferImage($picture));
+check('feeds keep the real files (nothing restores them there)', $picture === DeferredImages::defer($picture));
 $GLOBALS['feed'] = false;
 $GLOBALS['rest'] = true;
-check('REST responses and the editor preview keep the real files', $picture === LatestPostSlider::deferImage($picture));
+check('REST responses and the editor preview keep the real files', $picture === DeferredImages::defer($picture));
 $GLOBALS['rest'] = false;
 $GLOBALS['inline'] = [];
 function wp_print_inline_script_tag($js) { $GLOBALS['inline'][] = $js; }
-LatestPostSlider::printDeferScript();
+DeferredImages::printScript();
 check('nothing deferred yet: no restore script', [] === $GLOBALS['inline']);
-$deferred = LatestPostSlider::deferImage($picture);
+$deferred = DeferredImages::defer($picture);
 check('deferred <source>: srcset moved to data-alps-srcset', false !== strpos($deferred, '<source type="image/avif" data-alps-srcset="https://e.test/d-768.avif 768w, https://e.test/d.avif 1200w" sizes='));
-check('deferred <img>: src and srcset moved, blank placeholder first', 0 === strpos(substr($deferred, strpos($deferred, '<img')), '<img src="' . LatestPostSlider::BLANK . '" width="1200"') && false !== strpos($deferred, ' data-alps-src="https://e.test/d-fallback.jpg" data-alps-srcset="https://e.test/d-fallback.jpg 1200w"'));
+check('deferred <img>: src and srcset moved, blank placeholder first', 0 === strpos(substr($deferred, strpos($deferred, '<img')), '<img src="' . DeferredImages::BLANK . '" width="1200"') && false !== strpos($deferred, ' data-alps-src="https://e.test/d-fallback.jpg" data-alps-srcset="https://e.test/d-fallback.jpg 1200w"'));
 check('deferred: no real file address left', 1 === preg_match_all('/\s(src|srcset)="/', $deferred) && false !== strpos($deferred, 'sizes="(max-width: 700px) calc(100vw - 34px), 420px" loading="eager"'));
-check('deferred: data-src of a lazy-load plugin is left alone', '<img src="' . LatestPostSlider::BLANK . '" data-src="a.jpg" data-alps-src="b.jpg">' === LatestPostSlider::deferImage('<img data-src="a.jpg" src="b.jpg">'));
-check('text without an image is unchanged', '<span>text</span>' === LatestPostSlider::deferImage('<span>text</span>'));
-LatestPostSlider::printDeferScript();
+check('deferred: data-src of a lazy-load plugin is left alone', '<img src="' . DeferredImages::BLANK . '" data-src="a.jpg" data-alps-src="b.jpg">' === DeferredImages::defer('<img data-src="a.jpg" src="b.jpg">'));
+check('text without an image is unchanged', '<span>text</span>' === DeferredImages::defer('<span>text</span>'));
+DeferredImages::printScript();
 $minified = (string) file_get_contents(dirname(__DIR__, 2) . '/assets/js/slider-images.min.js');
 check('a deferred image embeds the minified restore script once', 1 === count($GLOBALS['inline']) && trim($minified) === $GLOBALS['inline'][0] && '' !== trim($minified));
-LatestPostSlider::printDeferScript();
+DeferredImages::printScript();
 check('and not twice', 1 === count($GLOBALS['inline']));
-// node --check (ci.yml) parses it; here: it keeps to the slider's markup.
+// node --check (ci.yml) parses it; here: it keeps to the slider's and the card scroller's markup.
 $restore = (string) file_get_contents(dirname(__DIR__, 2) . '/assets/js/slider-images.js');
 $sliderJs = (string) file_get_contents(dirname(__DIR__, 2) . '/resources/scripts/latest-post-sliders.js');
 foreach (['[data-alps-latest-slider]', '[data-alps-slider-slide]', "'is-active'"] as $hook) {
     check("restore script and slider script share $hook", false !== strpos($restore, $hook) && false !== strpos($sliderJs, $hook));
 }
+$scrollerJs = (string) file_get_contents(dirname(__DIR__, 2) . '/assets/js/card-scroller.js');
+$scrollerPhp = (string) file_get_contents(dirname(__DIR__, 2) . '/app/CardScrollerBlock.php');
+check('restore script, card scroller script and block share [data-card-scroller-track]', false !== strpos($restore, "'[data-card-scroller-track]'") && false !== strpos($scrollerJs, "'[data-card-scroller-track]'") && false !== strpos($scrollerPhp, ' data-card-scroller-track>'));
+check('the card scroller defers through DeferredImages', false !== strpos($scrollerPhp, '$card = DeferredImages::defer($card);'));
 check('restore script: no syntax newer than the browsers it must run in (no => or ?.)', false === strpos($restore, '=>') && false === strpos($restore, '?.') && 0 === preg_match('/\b(const|let)\s/', $restore));
 
 // Sidebar images: lazy, never high priority, decided before WordPress counts them.
@@ -196,10 +213,64 @@ SidebarImages::enter('footer-region');
 check('footer widgets: lazy', $lazy === SidebarImages::attributes(false, 'img'));
 SidebarImages::leave();
 
+// Sidebar images: sizes for the width the area is drawn at.
+check('sizes filters registered (image widgets before ImageDelivery copies them, block images)', in_array(['wp_get_attachment_image', 8, 'sizes'], $GLOBALS['actions'], true) && in_array(['wp_content_img_tag', 10, 'sizes'], $GLOBALS['actions'], true));
+check('area types', 'side' === SidebarImages::layout('sidebar-page') && 'side' === SidebarImages::layout('sidebar-posts') && 'footer' === SidebarImages::layout('footer-region') && 'footer' === SidebarImages::layout('footer-region-post') && '' === SidebarImages::layout('section-page-top') && '' === SidebarImages::layout('category-top') && '' === SidebarImages::layout('section-page-bottom'));
+$side = '(max-width: 700px) calc(100vw - 32px), (max-width: 1000px) 81.31vw, (max-width: 1272px) 28.17vw, (max-width: 1680px) calc(32.57vw - 56px), 492px';
+check('side column: full width less the gutters on phones and tablets, 38% of the content column on desktop', $side === SidebarImages::areaSizes('side'));
+check('side column, a 1280px image: no cap reached', $side === SidebarImages::areaSizes('side', 1280));
+check('side column, a 300px image: never wider than the image', '(max-width: 332px) calc(100vw - 32px), (max-width: 1000px) 300px, (max-width: 1064px) 28.17vw, 300px' === SidebarImages::areaSizes('side', 300));
+check('side column, a 400px image', '(max-width: 432px) calc(100vw - 32px), (max-width: 1000px) 400px, (max-width: 1272px) 28.17vw, (max-width: 1400px) calc(32.57vw - 56px), 400px' === SidebarImages::areaSizes('side', 400));
+$footer = '(max-width: 700px) calc(100vw - 32px), (max-width: 1272px) 81.31vw, (max-width: 1680px) calc(85.71vw - 56px), 1384px';
+check('footer: the content column less the gutters, up to the 90rem measure', $footer === SidebarImages::areaSizes('footer') && $footer === SidebarImages::areaSizes('footer', 2000));
+check('unknown layout: nothing', '' === SidebarImages::areaSizes('other'));
+
+$widget = '<img width="1280" height="640" src="w.jpg" srcset="w-768.jpg 768w, w.jpg 1280w" sizes="auto, (max-width: 1280px) 100vw, 1280px" loading="lazy">';
+check('outside a sidebar: sizes unchanged', $widget === SidebarImages::sizes($widget));
+SidebarImages::enter('sidebar-page');
+$sized = SidebarImages::sizes($widget);
+check('side column image widget: area sizes, no "auto"', str_replace('sizes="auto, (max-width: 1280px) 100vw, 1280px"', 'sizes="' . $side . '"', $widget) === $sized);
+check('sizes set on purpose are kept', '<img sizes="(max-width: 600px) 50vw, 300px">' === SidebarImages::sizes('<img sizes="(max-width: 600px) 50vw, 300px">'));
+check('mismatched default-like sizes are kept', '<img sizes="(max-width: 900px) 100vw, 300px">' === SidebarImages::sizes('<img sizes="(max-width: 900px) 100vw, 300px">'));
+check('non-strings pass through', null === SidebarImages::sizes(null));
+$pictureWidget = '<picture><source type="image/avif" srcset="a.avif 1892w" sizes="(max-width: 1000px) 100vw, 1000px"><img sizes="(max-width: 1000px) 100vw, 1000px" src="a.jpg"></picture>';
+check('a <picture> made earlier: <source> and <img> both changed', 2 === substr_count(SidebarImages::sizes($pictureWidget), 'sizes="' . $side . '"'));
+SidebarImages::enter('section-page-top');
+check('a widget area above the content (nested): sizes left to WordPress', $widget === SidebarImages::sizes($widget));
+SidebarImages::leave();
+check('back in the side column: area sizes again', $sized === SidebarImages::sizes($widget));
+SidebarImages::enter('footer-region-post');
+check('footer area nested in the side column: footer sizes, capped at the 1280px image', false !== strpos(SidebarImages::sizes($widget), 'sizes="(max-width: 700px) calc(100vw - 32px), (max-width: 1272px) 81.31vw, (max-width: 1558px) calc(85.71vw - 56px), 1280px"'));
+SidebarImages::leave();
+SidebarImages::leave();
+SidebarImages::enter('category-top');
+check('category header area: sizes left to WordPress', $widget === SidebarImages::sizes($widget));
+SidebarImages::leave();
+SidebarImages::enter('category-bottom');
+check('an area inside the article: sizes left to WordPress', $widget === SidebarImages::sizes($widget));
+SidebarImages::leave();
+
+// ImageDelivery gives the AVIF <source> the <img>'s sizes.
+$uploads = sys_get_temp_dir() . '/alps-scripts-uploads-' . getmypid();
+@mkdir($uploads);
+foreach (['w.avif', 'w-small.avif', 'w-fallback.jpg'] as $file) {
+    file_put_contents("$uploads/$file", 'x');
+}
+function get_post_meta($id, $key, $single) { return 'w' === $key ? '' : ['avif_full' => 'w.avif', 'avif_full_width' => 1892, 'avif_full_height' => 946, 'avif_small' => 'w-small.avif', 'avif_small_width' => 768, 'jpeg' => 'w-fallback.jpg', 'jpeg_width' => 1200]; }
+function wp_upload_dir($time = null, $create = true) { return ['basedir' => $GLOBALS['uploads'], 'baseurl' => 'https://e.test/uploads']; }
+function trailingslashit($value) { return rtrim($value, '/\\') . '/'; }
+function wp_get_attachment_metadata($id) { return ['width' => 1892, 'height' => 946]; }
+require dirname(__DIR__, 2) . '/app/ImageDelivery.php';
+$wrapped = App\ImageDelivery::filterImage($sized, 5, [400, 200]);
+check('AVIF <source> takes the <img> sizes, also for an image widget with a custom size', 1 === preg_match('/<source type="image\/avif" srcset="[^"]*w-small\.avif 768w[^"]*" sizes="([^"]*)">/', $wrapped, $source) && $side === html_entity_decode($source[1], ENT_QUOTES));
+check('without sizes on the <img>, a custom size still gives the <source> its width', false !== strpos(App\ImageDelivery::filterImage('<img src="w.jpg" width="400">', 5, [400, 200]), 'sizes="(max-width: 400px) 100vw, 400px"'));
+array_map('unlink', glob("$uploads/*"));
+@rmdir($uploads);
+
 $functions = (string) file_get_contents(dirname(__DIR__, 2) . '/functions.php');
 check('functions.php loads and registers ScriptLoading', false !== strpos($functions, "'ScriptLoading'") && false !== strpos($functions, '\App\ScriptLoading::register();'));
 check('functions.php prints the slider preload early in <head>', false !== strpos($functions, "add_action('wp_head', [\\App\\LatestPostSlider::class, 'printHeadPreload'], 2);"));
-check('functions.php prints the slide restore script in the footer and registers SidebarImages', false !== strpos($functions, "add_action('wp_footer', [\\App\\LatestPostSlider::class, 'printDeferScript'], 20);") && false !== strpos($functions, '\App\SidebarImages::register();'));
+check('functions.php prints the deferred images script in the footer and registers SidebarImages', false !== strpos($functions, "add_action('wp_footer', [\\App\\DeferredImages::class, 'printScript'], 20);") && false !== strpos($functions, '\App\SidebarImages::register();'));
 
 $head = (string) file_get_contents(dirname(__DIR__, 2) . '/app/local/alps/js/head-script.min.js');
 check('Modernizr touch test reads no layout', false === strpos($head, 'a.join("touch-enabled),(")') && false === strpos($head, 't=9===e.offsetTop'));

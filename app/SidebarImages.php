@@ -3,7 +3,7 @@
 namespace App;
 
 /**
- * Side-column and footer widget images load lazily.
+ * Side-column and footer widget images load lazily, at their real width.
  *
  * WordPress leaves the first images it meets on a page without
  * loading="lazy", counting them as above the fold. The side column is
@@ -17,13 +17,38 @@ namespace App;
  * on screen. The answer is given through the pre_ filter, so these images
  * neither take the page's one fetchpriority="high" nor count towards the
  * images WordPress keeps eager.
+ *
+ * Images in the side column and the footer areas also get a `sizes` for the
+ * width they are drawn at (areaSizes()). WordPress's default says the full
+ * file width up to the whole screen, e.g. "(max-width: 1280px) 100vw, 1280px",
+ * and desktop browsers fetched 1000-1892px files for a column about 320px
+ * wide.
  */
 class SidebarImages
 {
     /** Widget areas printed above the content: WordPress decides there. */
     public const TOP_AREAS = ['section-page-top', 'category-top'];
 
-    /** @var array<int, bool> One entry per open dynamic_sidebar(): lazy or not. */
+    /** The side column beside the article (page, posts and archive templates). */
+    public const SIDE_AREAS = ['sidebar-page', 'sidebar-posts'];
+
+    /** The footer widgets and the widgets under a post. */
+    public const FOOTER_AREAS = ['footer-region', 'footer-region-post'];
+
+    /**
+     * How wide an area is drawn, as [up to this viewport width or null for
+     * the rest, vw share, px taken off], from site-overrides.css and
+     * responsive-zoom-fixes.css. The content column is the viewport less the
+     * Sabbath rail (85.71vw) above 700px, capped at 90rem; the side column is
+     * 38% of it above 1000px and the full column below; each column loses the
+     * page gutter, clamp(1rem, 2.2vw, 1.75rem), on both sides.
+     */
+    public const LAYOUTS = [
+        'side' => [[700, 100, 32], [1000, 81.31, 0], [1272, 28.17, 0], [1680, 32.57, 56], [null, 0, -492]],
+        'footer' => [[700, 100, 32], [1272, 81.31, 0], [1680, 85.71, 56], [null, 0, -1384]],
+    ];
+
+    /** @var array<int, string> One entry per open dynamic_sidebar(): its id. */
     private static array $stack = [];
 
     public static function register(): void
@@ -31,12 +56,16 @@ class SidebarImages
         add_action('dynamic_sidebar_before', [self::class, 'enter'], 10, 1);
         add_action('dynamic_sidebar_after', [self::class, 'leave'], 10, 0);
         add_filter('pre_wp_get_loading_optimization_attributes', [self::class, 'attributes'], 10, 2);
+        // Image widgets: before ImageDelivery (9) copies the sizes to the AVIF <source>.
+        add_filter('wp_get_attachment_image', [self::class, 'sizes'], 8, 1);
+        // Image blocks in block widgets.
+        add_filter('wp_content_img_tag', [self::class, 'sizes'], 10, 1);
     }
 
     /** @param int|string $index The sidebar id dynamic_sidebar() was called with. */
     public static function enter($index = ''): void
     {
-        self::$stack[] = ! in_array((string) $index, self::TOP_AREAS, true);
+        self::$stack[] = (string) $index;
     }
 
     public static function leave(): void
@@ -50,9 +79,90 @@ class SidebarImages
      */
     public static function attributes($value, $tagName)
     {
-        if ('img' !== $tagName || ! end(self::$stack)) {
+        $area = end(self::$stack);
+        if ('img' !== $tagName || false === $area || in_array($area, self::TOP_AREAS, true)) {
             return $value;
         }
         return ['decoding' => 'async', 'loading' => 'lazy'];
+    }
+
+    /**
+     * Image markup with WordPress's default sizes replaced by the current
+     * area's (areaSizes()). Sizes set on purpose are kept.
+     *
+     * @param mixed $html
+     * @return mixed
+     */
+    public static function sizes($html)
+    {
+        $area = end(self::$stack);
+        $layout = false === $area ? '' : self::layout($area);
+        if ('' === $layout || !is_string($html) || false === stripos($html, 'sizes=')) {
+            return $html;
+        }
+        // WordPress's default, with the "auto" it adds to lazy images: that
+        // stands for the <img>'s layout width, which a <source> may not take.
+        return (string) preg_replace_callback(
+            '/(\ssizes\s*=\s*")(?:auto\s*,\s*)?\(max-width:\s*(\d+)px\)\s*100vw\s*,\s*(\d+)px(")/i',
+            static function (array $m) use ($layout): string {
+                return $m[2] === $m[3] ? $m[1] . self::areaSizes($layout, (int) $m[2]) . $m[4] : $m[0];
+            },
+            $html
+        );
+    }
+
+    /** 'side', 'footer' or '' (left to WordPress) for a widget area id. */
+    public static function layout(string $area): string
+    {
+        if (in_array($area, self::SIDE_AREAS, true)) {
+            return 'side';
+        }
+        return in_array($area, self::FOOTER_AREAS, true) ? 'footer' : '';
+    }
+
+    /**
+     * The sizes value for an image in a 'side' or 'footer' area, never wider
+     * than the image's own width (0: unknown).
+     */
+    public static function areaSizes(string $layout, int $width = 0): string
+    {
+        $value = static function (float $vw, int $px): string {
+            if ($vw <= 0) {
+                return -$px . 'px';
+            }
+            $share = rtrim(rtrim(sprintf('%.2F', $vw), '0'), '.') . 'vw';
+            return 0 === $px ? $share : 'calc(' . $share . ' - ' . $px . 'px)';
+        };
+        $parts = [];
+        $add = static function (?int $upTo, string $size) use (&$parts): void {
+            $last = count($parts) - 1;
+            if ($last >= 0 && $parts[$last][1] === $size) {
+                $parts[$last][0] = $upTo;
+            } else {
+                $parts[] = [$upTo, $size];
+            }
+        };
+        $from = 0;
+        foreach (self::LAYOUTS[$layout] ?? [] as [$upTo, $vw, $px]) {
+            $end = $upTo ?? PHP_INT_MAX;
+            // The widest viewport at which this column is no wider than the image.
+            $fits = PHP_INT_MAX;
+            if ($width > 0) {
+                $fits = $vw > 0 ? (int) floor(($width + $px) * 100 / $vw) : ($width >= -$px ? PHP_INT_MAX : 0);
+            }
+            if ($fits > $from) {
+                $add(min($fits, $end) === PHP_INT_MAX ? null : min($fits, $end), $value($vw, $px));
+            }
+            if ($fits < $end) {
+                $add($upTo, $width . 'px');
+            }
+            $from = $end;
+        }
+
+        $out = [];
+        foreach ($parts as [$upTo, $size]) {
+            $out[] = null === $upTo ? $size : '(max-width: ' . $upTo . 'px) ' . $size;
+        }
+        return implode(', ', $out);
     }
 }

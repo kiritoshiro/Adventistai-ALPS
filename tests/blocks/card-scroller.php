@@ -22,6 +22,11 @@ function attachment_url_to_postid($url) { global $lookups; $lookups++; return st
 function wp_get_attachment_image($id, $size, $icon, $attr) {
     return sprintf('<img src="/uploads/%d-300x440.jpg" width="300" height="440" srcset="x" sizes="%s" alt="%s" class="%s">', $id, esc_attr($attr['sizes']), esc_attr($attr['alt']), esc_attr($attr['class']));
 }
+$feed = false;
+function is_admin() { return false; }
+function is_feed() { global $feed; return $feed; }
+function wp_is_serving_rest_request() { return false; }
+require __DIR__ . '/../../app/DeferredImages.php';
 require __DIR__ . '/../../app/CardScrollerBlock.php';
 function check($condition, $message) { if (!$condition) { throw new RuntimeException($message); } }
 use App\CardScrollerBlock as Block;
@@ -83,5 +88,26 @@ $ok(strpos($onlyUrl, 'alps-card-scroller__card--more') === false, 'no Daugiau ca
 $ok(strpos($logo, 'data-card-scroller-more') === false, 'no end-of-row link when the row ends with a Daugiau card');
 $ok(strpos(Block::render(['items' => $items]), 'data-card-scroller-more') === false, 'no end-of-row link without a destination');
 $ok(strpos(Block::render(['items' => $items, 'moreUrl' => 'javascript:alert(1)']), 'data-card-scroller-more') === false, 'unsafe Daugiau URL is ignored');
+
+// Cards past the first screen-width of the widest track wait for the track to scroll.
+$ok(Block::eagerCount('cover') === 6 && Block::eagerCount('logo') === 7, 'widest default track (1184px) shows 6 covers or 7 logos');
+$ok(Block::eagerCount('cover', 'wide') === 7 && Block::eagerCount('cover', 'full') === 10 && Block::eagerCount('cover', 'left') === 6, 'wide and full tracks show more cards, other alignments the default');
+$ok(substr_count($html, 'data-alps-src') === 0, 'a short row defers nothing');
+$covers = [];
+for ($i = 1; $i <= 9; $i++) {
+    $covers[] = ['imageId' => 100 + $i, 'title' => 'Knyga ' . $i, 'url' => 'https://adventistai.lt/knyga-' . $i . '/'];
+}
+$row = Block::render(['items' => $covers, 'moreLabel' => 'Daugiau', 'moreUrl' => 'https://adventistai.lt/knygos/']);
+preg_match_all('/<div class="alps-card-scroller__item" role="listitem">(.*?)<\/div>(?=<div class="alps-card-scroller__item"|<\/div><button)/s', $row, $cardsHtml);
+$ok(count($cardsHtml[1]) === 10, 'nine covers and the Daugiau card');
+$ok(strpos($cardsHtml[1][5], 'src="/uploads/106-300x440.jpg"') !== false && strpos($cardsHtml[1][5], 'data-alps-') === false, 'the sixth cover keeps its file');
+$ok(strpos($cardsHtml[1][6], '<img src="' . App\DeferredImages::BLANK . '" data-alps-src="/uploads/107-300x440.jpg" width="300" height="440" data-alps-srcset="x"') !== false, 'the seventh cover waits: blank placeholder, files in data-alps-*');
+$ok(strpos($cardsHtml[1][8], 'data-alps-src="/uploads/109-300x440.jpg"') !== false && substr_count($row, 'data-alps-src=') === 3, 'covers seven to nine wait, no others');
+$ok(strpos($cardsHtml[1][6], 'sizes="(max-width: 600px) 149px, 170px"') !== false, 'deferred covers keep their sizes');
+$wideRow = Block::render(['items' => $covers, 'align' => 'wide']);
+$ok(substr_count($wideRow, 'data-alps-src=') === 2, 'a wide row defers from the eighth cover');
+$feed = true;
+$ok(strpos(Block::render(['items' => $covers]), 'data-alps-') === false, 'feeds keep every file (nothing restores them there)');
+$feed = false;
 
 echo "Card scroller block: {$checks} checks passed.\n";

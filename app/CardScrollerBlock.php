@@ -73,9 +73,18 @@ class CardScrollerBlock
         }
 
         $ids = self::attachmentIds($items);
+        // Cards past the first screen-width of the track get their image when
+        // the track is scrolled towards them (DeferredImages): they sit at the
+        // same page height as the first ones, so loading="lazy" alone fetched
+        // every cover as soon as the block came near.
+        $eager = self::eagerCount($layout, (string) ($attributes['align'] ?? ''));
         $cards = '';
-        foreach ($items as $item) {
-            $cards .= '<div class="alps-card-scroller__item" role="listitem">' . self::card($item, $ids, $layout) . '</div>';
+        foreach ($items as $index => $item) {
+            $card = self::card($item, $ids, $layout);
+            if ($index >= $eager) {
+                $card = DeferredImages::defer($card);
+            }
+            $cards .= '<div class="alps-card-scroller__item" role="listitem">' . $card . '</div>';
         }
 
         $moreCard = $moreLabel && $moreUrl;
@@ -124,6 +133,25 @@ class CardScrollerBlock
             . '<button type="button" class="alps-card-scroller__arrow alps-card-scroller__arrow--next" aria-label="' . esc_attr__('Slinkti į dešinę', 'alps') . '" data-card-scroller-next hidden><span aria-hidden="true">›</span></button>'
             . $moreLink
             . '</div></div>';
+    }
+
+    /**
+     * Widest visible part of the track by block alignment: the block is at
+     * most 1200px wide (card-scroller.css) less the frame's and the track's
+     * 4px side paddings; wide stays within the content measure (90rem), full
+     * is taken as a 1920px screen.
+     */
+    public const TRACK_WIDTHS = ['' => 1184, 'wide' => 1424, 'full' => 1904];
+
+    /**
+     * How many cards can show, at least in part, before the track is
+     * scrolled at the widest layout: cards are 190px wide (logos 180px) with
+     * a 14px gap.
+     */
+    public static function eagerCount(string $layout, string $align = ''): int
+    {
+        $pitch = ($layout === 'logo' ? 180 : 190) + 14;
+        return (int) ceil((self::TRACK_WIDTHS[$align] ?? self::TRACK_WIDTHS['']) / $pitch);
     }
 
     /**

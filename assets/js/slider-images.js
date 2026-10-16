@@ -1,16 +1,27 @@
 /*
- * Latest Post Slider: images of hidden slides.
+ * Deferred images: hidden slides of the Latest Post Slider and the cards of a
+ * card scroller beyond the first screen-width of its track.
  *
- * The theme prints a hidden slide's image with its files in data-alps-src /
- * data-alps-srcset (App\LatestPostSlider::deferImage()), so the page does not
- * download every slide up front. This restores them: the active slide and its
- * two neighbours once the slider is within 600px of the screen and again on
- * every slide change, and the whole slider as soon as someone hovers, touches
- * or focuses it (a dot can jump to any slide). It relies on the markup of
- * resources/scripts/latest-post-sliders.js: [data-alps-latest-slider],
- * [data-alps-slider-slide] and the is-active class (tests/scripts/run.php
- * checks that they still match). Printed inline in the footer, untranspiled,
- * so it keeps to syntax every supported browser parses.
+ * The theme prints these images with their files in data-alps-src /
+ * data-alps-srcset (App\DeferredImages::defer()), so the page does not
+ * download them all up front. This restores them.
+ *
+ * Sliders: the active slide and its two neighbours once the slider is within
+ * 600px of the screen and again on every slide change, and the whole slider as
+ * soon as someone hovers, touches or focuses it (a dot can jump to any slide).
+ * It relies on the markup of resources/scripts/latest-post-sliders.js:
+ * [data-alps-latest-slider], [data-alps-slider-slide] and the is-active class.
+ *
+ * Card scrollers ([data-card-scroller-track], App\CardScrollerBlock): a card
+ * that shows inside the track (a track wider than expected), and, from the
+ * first scroll of the track (its arrows and mouse drag scroll it too) or
+ * hover, touch or focus on the block, every card within one track-width of
+ * the visible part. The images stay loading="lazy", so the browser still
+ * waits for the block to come near.
+ *
+ * tests/scripts/run.php checks that the hooks still match. Printed inline in
+ * the footer, untranspiled, so it keeps to syntax every supported browser
+ * parses.
  */
 (function () {
   var deferred = '[data-alps-src], [data-alps-srcset]';
@@ -73,5 +84,51 @@
     }, { rootMargin: '600px 0px' });
     visibility.observe(slider);
     observers.push(visibility);
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-card-scroller-track]'), function (track) {
+    var cards = Array.prototype.filter.call(track.children, function (card) {
+      return card.querySelector(deferred);
+    });
+    if (!cards.length) return;
+    if (!('IntersectionObserver' in window)) {
+      cards.forEach(load);
+      return;
+    }
+    var frame = track.parentElement || track;
+    var observers = [];
+    var interactions = ['pointerover', 'touchstart', 'focusin'];
+    var ahead = false;
+
+    var done = function () {
+      if (track.querySelector(deferred)) return;
+      observers.forEach(function (observer) { observer.disconnect(); });
+      interactions.forEach(function (type) { frame.removeEventListener(type, loadAhead); });
+      track.removeEventListener('scroll', loadAhead);
+    };
+    // Restore the cards within `margin` of the track's visible part.
+    var watch = function (margin) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          load(entry.target);
+          observer.unobserve(entry.target);
+        });
+        done();
+      }, { root: track, rootMargin: margin });
+      cards.forEach(function (card) { observer.observe(card); });
+      observers.push(observer);
+    };
+    var loadAhead = function () {
+      if (ahead) return;
+      ahead = true;
+      interactions.forEach(function (type) { frame.removeEventListener(type, loadAhead); });
+      track.removeEventListener('scroll', loadAhead);
+      watch('0px 100%');
+    };
+
+    interactions.forEach(function (type) { frame.addEventListener(type, loadAhead, { passive: true }); });
+    track.addEventListener('scroll', loadAhead, { passive: true });
+    watch('0px');
   });
 })();

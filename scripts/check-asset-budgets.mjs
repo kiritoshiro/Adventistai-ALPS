@@ -32,8 +32,9 @@ const budgets = [
   // the minified copy.
   ['Sabbath timer JS', 'assets/js/sabbath-timer.js', 17_000],
   ['Sabbath timer JS (minified, embedded)', 'assets/js/sabbath-timer.min.js', 8_500],
-  // Embedded on pages with a Latest Post Slider whose hidden slides wait for it.
-  ['Slider images JS (minified, embedded)', 'assets/js/slider-images.min.js', 1_500],
+  // Embedded on pages with a Latest Post Slider or card scroller whose
+  // deferred images wait for it.
+  ['Deferred images JS (minified, embedded)', 'assets/js/slider-images.min.js', 2_600],
   ['Card scroller CSS', 'assets/css/card-scroller.css', 10_000],
   ['Card scroller CSS (minified, loaded)', 'assets/css/card-scroller.min.css', 8_500],
   ['Card scroller JS', 'assets/js/card-scroller.js', 4_500],

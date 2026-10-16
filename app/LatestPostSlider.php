@@ -92,13 +92,18 @@ class LatestPostSlider
         if ($srcset === '' && $src === '') {
             return '';
         }
+        // "auto" is only valid on a lazy <img>; a preload has no layout width.
+        $sizes = self::withoutAuto($attribute($tag[0], 'sizes'));
+        if (0 === strcasecmp(trim($sizes), 'auto')) {
+            $sizes = '';
+        }
 
         $link = [
             'rel' => 'preload',
             'as' => 'image',
             'href' => $srcset === '' ? $src : '',
             'imagesrcset' => $srcset,
-            'imagesizes' => $srcset === '' ? '' : $attribute($tag[0], 'sizes'),
+            'imagesizes' => $srcset === '' ? '' : $sizes,
             'type' => $type,
             'media' => self::PRIORITY_MEDIA,
             'fetchpriority' => 'high',
@@ -140,62 +145,26 @@ class LatestPostSlider
         }
     }
 
-    /** Whether a slide image was deferred, so the page needs deferScript(). */
-    private static bool $deferred = false;
-
-    /** A 1x1 transparent GIF: a hidden slide shows nothing, not its alt text. */
-    public const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    /**
+     * A sizes value without the leading "auto" WordPress adds to lazy images.
+     * "auto" means the <img>'s layout width, which for a slide is the whole
+     * frame, not the narrower portrait drawn inside it; a preload does not
+     * know it at all (Chrome then fetched the 1200w file for a 308px slide).
+     */
+    public static function withoutAuto(string $sizes): string
+    {
+        return (string) preg_replace('/^\s*auto\s*,\s*(?=\S)/i', '', $sizes);
+    }
 
     /**
-     * A hidden slide's image without its address: the files move to
-     * data-alps-src / data-alps-srcset, which deferScript() restores once the
-     * slide is next in line (front-end pages only). Hidden slides are laid out (they fade in place),
-     * so loading="lazy" alone fetched every slide of a slider near the top:
-     * about 0.6 MB on the front page before anything was shown.
+     * Slide markup whose <source> and <img> keep only the theme's own sizes
+     * (imageSizes()), so they choose the same file as the priority preload.
      */
-    public static function deferImage(string $html): string
+    public static function withoutAutoSizes(string $html): string
     {
-        // Feeds, the REST API (and so the editor's block preview) and wp-admin
-        // never print the footer script that restores the files.
-        if (is_admin() || is_feed() || (function_exists('wp_is_serving_rest_request') && wp_is_serving_rest_request())) {
-            return $html;
-        }
-        $deferred = (string) preg_replace_callback('/<(img|source)\b[^>]*>/i', static function (array $tag): string {
-            $out = (string) preg_replace('/(\s)(src|srcset)\s*=\s*"/i', '$1data-alps-$2="', $tag[0]);
-            if (0 === strcasecmp($tag[1], 'img')) {
-                $out = (string) preg_replace('/^<img\b/i', '<img src="' . self::BLANK . '"', $out);
-            }
-            return $out;
+        return (string) preg_replace_callback('/(\ssizes\s*=\s*")([^"]*)"/i', static function (array $m): string {
+            return $m[1] . self::withoutAuto($m[2]) . '"';
         }, $html);
-        if ($deferred !== $html) {
-            self::$deferred = true;
-        }
-        return $deferred;
-    }
-
-    /**
-     * The script that restores deferred slide images (assets/js/slider-images.js):
-     * the minified copy, or the readable file under SCRIPT_DEBUG or when the
-     * copy is missing.
-     */
-    public static function deferScript(): string
-    {
-        $dir = get_template_directory() . '/assets/js/';
-        $file = $dir . 'slider-images.min.js';
-        if ((defined('SCRIPT_DEBUG') && SCRIPT_DEBUG) || !is_readable($file)) {
-            $file = $dir . 'slider-images.js';
-        }
-        return is_readable($file) ? trim((string) file_get_contents($file)) : '';
-    }
-
-    /** Print deferScript() in the footer when a slide image was deferred. */
-    public static function printDeferScript(): void
-    {
-        $script = self::$deferred ? self::deferScript() : '';
-        if ('' !== $script) {
-            wp_print_inline_script_tag($script);
-        }
-        self::$deferred = false;
     }
 
     /**

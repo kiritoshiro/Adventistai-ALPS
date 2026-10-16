@@ -3,6 +3,13 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- Smaller image downloads (Lighthouse on 3.34.0: 41 images, 1.78 MB before the Largest Contentful Paint on desktop):
+  - **Latest Post Slider**: slide images keep only the theme's own `sizes`, without the `auto` WordPress adds to lazy images. `auto` stands for the image's layout width, which for a portrait slide is the whole frame, and the high-priority preload copied it as well, so Chrome fetched the 1200px file for a 308px slide; the preload and the slide now choose the same file.
+  - **Side column and footer widgets**: images in image widgets and in block widgets get a `sizes` for the width the area is drawn at (`App\SidebarImages`; about 380px in the side column on a 1350px screen) instead of WordPress's full-width default, never wider than the image itself. Sizes set on purpose and the widget areas above the content are left alone. The AVIF `<source>` now always takes the `<img>`'s sizes (an image widget with a custom size used to get full-width sizes there).
+  - **Card scroller** (`alps/card-scroller`): covers past the first screen-width of the track (from the 7th cover, the 8th logo) wait until the track is scrolled (also with its arrows or by dragging) or the block is hovered, touched or focused, then the covers within one more track-width load. Before, all covers were fetched as soon as the block came near. The slider's helper and restore script are shared for this (`App\DeferredImages`, `assets/js/slider-images.js`); the slider behaves as before.
+
 ## [3.34.0]
 ### Added
 - **Appearance → ALPS Theme Settings → Sabbath Timer**, a new tab for the Sabbath timer at the top of the front page:
