@@ -42,7 +42,7 @@ await page.screenshot({path: (process.argv[3] || 'settings-page-phone.png').repl
 
 // Tabs.
 const tabs = await page.locator('.alps-settings__tabs .nav-tab').allTextContents();
-check('six tabs', tabs.join('|') === 'GLOBAL|POSTS OPTIONS|SABBATH COLUMN|FOOTER CONTENT|IMAGES|CACHE', tabs.join('|'));
+check('seven tabs', tabs.join('|') === 'GLOBAL|POSTS OPTIONS|SABBATH COLUMN|SABBATH TIMER|FOOTER CONTENT|IMAGES|CACHE', tabs.join('|'));
 check('only the first panel shows', await page.locator('.alps-settings__panel:visible').count() === 1);
 await page.click('.nav-tab[data-tab="posts"]');
 check('tab switch shows Posts options', await page.locator('#alps-posts_page_title').isVisible());
@@ -82,6 +82,19 @@ await page.check('#alps-sabbath_hide');
 check('screens choice shown once hidden', await screens.isVisible());
 await page.check('input[name="alps[sabbath_hide_screens]"][value="hide-sabbath--until-large"]');
 
+// SABBATH TIMER: starts without verses; add two, remove one, add another.
+await page.click('.nav-tab[data-tab="sabbath_timer"]');
+check('timer shown by default', !(await page.isChecked('#alps-sabbath_timer_hide')));
+check('no verses yet', await page.locator('[data-rows="sabbath_timer_verses"] [data-row]').count() === 0);
+for (let i = 0; i < 3; i++) {
+  await page.click('[data-row-add="sabbath_timer_verses"]');
+}
+await page.fill('#alps-sabbath_timer_verses-0-sabbath_verse_text', 'First verse from the test');
+await page.fill('#alps-sabbath_timer_verses-0-sabbath_verse_reference', 'Test 1, 1');
+await page.locator('[data-rows="sabbath_timer_verses"] [data-row] >> nth=1 >> [data-row-remove]').click();
+await page.fill('#alps-sabbath_timer_verses-2-sabbath_verse_text', 'Second verse from the test');
+await page.fill('#alps-sabbath_timer_verses-2-sabbath_verse_reference', 'Test 2, 2');
+
 // FOOTER CONTENT
 await page.click('.nav-tab[data-tab="footer"]');
 await page.fill('#alps-footer_copyright', 'Copyright from the test');
@@ -115,6 +128,8 @@ const values = {
   posts_page_title: await page.inputValue('#alps-posts_page_title'),
   posts_grid: await page.isChecked('#alps-posts_grid'),
   sabbath_hide: await page.isChecked('#alps-sabbath_hide'),
+  verse_rows: await page.locator('[data-rows="sabbath_timer_verses"] [data-row]').count(),
+  verse_2: await page.inputValue('#alps-sabbath_timer_verses-1-sabbath_verse_text'),
   screens: await page.isChecked('input[name="alps[sabbath_hide_screens]"][value="hide-sabbath--until-large"]'),
   footer_copyright: await page.inputValue('#alps-footer_copyright'),
   footer_en: await page.inputValue('#alps-footer_description-0-footer_description_en'),
@@ -127,6 +142,7 @@ const values = {
 const expected = {
   theme_color: 'forest', dark_theme: true, site_branding_statement: 'Statement from the test', logo: logo_id,
   posts_page_title: 'Home title from the test', posts_grid: false, sabbath_hide: true, screens: true,
+  verse_rows: 2, verse_2: 'Second verse from the test',
   footer_copyright: 'Copyright from the test', footer_en: 'Footer EN from the test', footer_rows: 1,
   city: 'Vilnius', circle: true, footer_logo_icon: '', avif: '60',
 };
@@ -144,6 +160,28 @@ check('front end: address city', html.includes('Vilnius'));
 check('front end: forest stylesheet', html.includes('main-forest'));
 check('front end: forest palette', await front.evaluate(() => getComputedStyle(document.body).getPropertyValue('--wp--preset--color--darker').trim()) === '#101a00');
 check('front end: sabbath column hidden until large', html.includes('hide-sabbath--until-large'));
+
+// Front page (the seeded plain page for now): the timer carries the saved verses; once
+// hidden, no timer.
+const reading = async (show_on_front) => {
+  await page.goto(`${base}/wp-admin/options-reading.php`);
+  await page.check(`input[name="show_on_front"][value="${show_on_front}"]`);
+  if (show_on_front === 'page') {
+    await page.selectOption('#page_on_front', {label: 'Plain page'});
+  }
+  await Promise.all([page.waitForNavigation(), page.click('#submit')]);
+};
+await reading('page');
+const home = await front.goto(`${base}/`).then(() => front.content());
+check('front page: timer with the saved verses', home.includes('data-sabbath-timer')
+  && home.includes('First verse from the test') && home.includes('Second verse from the test'),
+  (home.match(/class="c-page-header[^"]*"|<body[^>]*>/g) || []).join(' '));
+await page.goto(`${page_url}&tab=sabbath_timer`);
+await page.check('#alps-sabbath_timer_hide');
+await Promise.all([page.waitForNavigation(), page.click('#submit')]);
+const hidden_home = await front.goto(`${base}/`).then(() => front.content());
+check('front page: no timer once hidden', !hidden_home.includes('data-sabbath-timer') && !hidden_home.includes('adventistai-sabbath-timer'));
+await reading('posts');
 
 // Saving without a valid nonce is refused and changes nothing.
 const forged = await page.request.post(`${base}/wp-admin/admin-post.php`, {
@@ -170,7 +208,7 @@ check('editor save refused', editor_nonce_page.status() >= 400, `HTTP ${editor_n
 const nojs = await browser.newContext({javaScriptEnabled: false});
 const nojs_page = await login(nojs, 'admin', 'password');
 await nojs_page.goto(page_url);
-check('no JS: all panels visible', await nojs_page.locator('.alps-settings__panel:visible').count() === 6);
+check('no JS: all panels visible', await nojs_page.locator('.alps-settings__panel:visible').count() === 7);
 await nojs_page.fill('#alps-footer_copyright', 'Saved without JS');
 await Promise.all([nojs_page.waitForNavigation(), nojs_page.click('#submit')]);
 await nojs_page.goto(page_url);

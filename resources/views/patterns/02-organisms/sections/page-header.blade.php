@@ -89,10 +89,11 @@
     'subtitle' => $long_header_subtitle,
   ]])
 @elseif (empty($remove_header))
+  @php($sabbath_timer = is_front_page() && \App\SabbathTimer::enabled())
   <header class="{{ $page_header_classes }} {{ $page_header_class }}"@if (!empty($page_header_style)) style="{{ $page_header_style }}"@endif>
     <div class="c-page-header__long--inner l-grid l-grid--7-col {{ $page_header_inner_class }}">
-      <div class="c-page-header__content c-page-header__long__content l-grid-wrap l-grid-wrap--5-of-7 u-border--left {{ $page_header_content_class }}{{ is_front_page() ? ' adventistai-sabbath-timer-host' : '' }}">
-        @if (is_front_page())
+      <div class="c-page-header__content c-page-header__long__content l-grid-wrap l-grid-wrap--5-of-7 u-border--left {{ $page_header_content_class }}{{ $sabbath_timer ? ' adventistai-sabbath-timer-host' : '' }}">
+        @if ($sabbath_timer)
           @include('partials.sabbath-timer')
         @else
           @if ($long_header_kicker)

@@ -200,6 +200,12 @@ class Registry
             'sabbath_scroll' => $check,
             'sabbath_hide' => $check,
             'sabbath_hide_screens' => ['type' => 'radio', 'options' => ['hide-sabbath--all', 'hide-sabbath--until-small', 'hide-sabbath--until-medium', 'hide-sabbath--until-large']],
+            // SABBATH TIMER (front page; added in 3.34.0, after Carbon Fields)
+            'sabbath_timer_hide' => $check,
+            'sabbath_timer_verses' => ['type' => 'complex', 'groups' => ['_' => [
+                'sabbath_verse_text' => ['type' => 'textarea'],
+                'sabbath_verse_reference' => ['type' => 'text'],
+            ]]],
             // FOOTER CONTENT
             'footer_description' => ['type' => 'complex', 'groups' => ['translatable_footer_description' => [
                 'footer_description_en' => ['type' => 'text', 'default' => __('An official website of the Seventh-day Adventist Church.', 'alps')],

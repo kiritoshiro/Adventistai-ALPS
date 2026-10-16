@@ -284,9 +284,12 @@
     });
   };
 
+  // One verse per visit, picked here rather than on the server: the front
+  // page is cached, so a server pick would show one verse for hours.
+  const verses = Array.isArray(data.verses) ? data.verses : [];
+  const verse = verses.length ? verses[Math.floor(Math.random() * verses.length)] : null;
+
   const renderVerse = () => {
-    const verses = Array.isArray(data.verses) ? data.verses : [];
-    const verse = verses[0] || null;
     if (!verse) return;
     if (verseTextNode) verseTextNode.textContent = verse.text || '';
     if (verseReferenceNode) verseReferenceNode.textContent = verse.reference || '';
