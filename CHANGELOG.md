@@ -3,7 +3,7 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.35.0]
 ### Added
 - **Appearance → ALPS Theme Settings → Images** has settings for the uploaded originals WordPress keeps next to the smaller copies of a large image:
   - **Keep the uploaded originals** (on by default, as before). Off: a new upload's original is deleted by a clean-up a few minutes after the upload, and the originals kept so far by the next scheduled clean-up.
