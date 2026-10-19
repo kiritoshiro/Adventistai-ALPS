@@ -3,6 +3,11 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.35.1]
+### Fixed
+- Pages without a post (a 404, including requests for upload files that no longer exist) no longer log four PHP warnings each (`Undefined variable $post` and `Attempt to read property "ID" on null`): the main layout reads its `_remove_spacing` and `_wp_page_template` values only when there is a post. Pages look the same as before.
+- The Playground smoke test also loads a missing page, expects a 404, and fails on warnings from the compiled Blade views.
+
 ## [3.35.0]
 ### Added
 - **Appearance → ALPS Theme Settings → Images** has settings for the uploaded originals WordPress keeps next to the smaller copies of a large image:
