@@ -164,10 +164,10 @@ def get(opener, path, data=None):
         return err.code, url, err.read().decode("utf-8", "replace")
 
 
-def check_page(opener, path, label=None):
+def check_page(opener, path, label=None, expect_status=200):
     status, final, body = get(opener, path)
     label = label or path
-    if status != 200:
+    if status != expect_status:
         fail(f"{label}: HTTP {status}")
         # The text of the error page (throwaway site), to show why.
         text = re.sub(r"\s+", " ", re.sub(r"<(script|style)\b.*?</\1>|<[^>]+>", " ", body, flags=re.S | re.I))
@@ -205,6 +205,8 @@ def main():
             for needle in config.get("expect", []):
                 if needle not in body:
                     fail(f"fixture page: expected output not found: {needle!r}")
+        # Templates also run without a post (404s, missing upload files).
+        check_page(opener, "/playground-smoke-missing/", "404 page", expect_status=404)
 
         get(opener, "/wp-login.php")  # sets the test cookie
         form = urllib.parse.urlencode({"log": USER, "pwd": PASSWORD, "wp-submit": "Log In",

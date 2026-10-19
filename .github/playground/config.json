@@ -17,7 +17,8 @@
     }
   ],
   "watch": [
-    "/wordpress/wp-content/themes/adventistai/"
+    "/wordpress/wp-content/themes/adventistai/",
+    "/wordpress/wp-content/cache/acorn/framework/views/"
   ],
   "theme": "adventistai",
   "fixture": "<!-- wp:paragraph --><p>Playground smoke test paragraph.</p><!-- /wp:paragraph --><!-- wp:html --><div class=\"ci-hand-written\"><img src=\"/wp-content/uploads/alps-ci-cover.jpg\" alt=\"CI cover\"></div><!-- /wp:html -->",

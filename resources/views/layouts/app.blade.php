@@ -13,14 +13,17 @@
       wp_enqueue_script('comment-reply');
   }
 
-  $remove_spacing = get_post_meta($post->ID, '_remove_spacing', true);
+  // 404s and empty results have no post; 0 makes get_post_meta() return false.
+  $post_id = isset($post->ID) ? $post->ID : 0;
+
+  $remove_spacing = get_post_meta($post_id, '_remove_spacing', true);
   if ($remove_spacing){
     $main_classes = 'l-main';
   }else{
     $main_classes = 'l-main u-spacing--double u-padding--double--bottom';
   }
 
-  $template = get_post_meta($post->ID, '_wp_page_template', true);
+  $template = get_post_meta($post_id, '_wp_page_template', true);
   if ($template == 'template-custom.blade.php'){
     $theme_color_class.= ' template-custom';
   }
