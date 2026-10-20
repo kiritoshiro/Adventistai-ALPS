@@ -3,6 +3,10 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.35.2]
+### Fixed
+- A YouTube video that already sits in a responsive box (the WP Gallery Page video panel, a block-editor embed) is no longer loaded twice. The theme's FitVids moved every video into its own wrapper after the page loaded, and moving an iframe makes the browser load it again; on dievozodis.lt the homepage playlist was loaded twice, about 450 KB of extra YouTube files and a second player start-up. FitVids now skips iframes that are already absolutely positioned; other videos are wrapped as before.
+
 ## [3.35.1]
 ### Fixed
 - Pages without a post (a 404, including requests for upload files that no longer exist) no longer log four PHP warnings each (`Undefined variable $post` and `Attempt to read property "ID" on null`): the main layout reads its `_remove_spacing` and `_wp_page_template` values only when there is a post. Pages look the same as before.
