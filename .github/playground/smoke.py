@@ -209,6 +209,8 @@ def main():
         check_page(opener, "/playground-smoke-missing/", "404 page", expect_status=404)
         # Archive headers also run with a static front page, no posts page and no post (an empty tag).
         check_page(opener, "/?tag=playground-smoke-empty", "empty tag archive")
+        # ...and with posts (the default post's category), now that "/" is a static page.
+        check_page(opener, "/?cat=1", "category archive")
 
         get(opener, "/wp-login.php")  # sets the test cookie
         form = urllib.parse.urlencode({"log": USER, "pwd": PASSWORD, "wp-submit": "Log In",

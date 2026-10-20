@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [3.35.3]
 ### Fixed
 - Archive and category pages with no posts (an empty tag, for example) no longer log `Attempt to read property "ID" on null` from `TemplateHelpers::getRootPostData()` when no posts page is set. The header fields are read exactly as before; pages look the same.
-- The Playground smoke test also loads an empty tag archive.
+- The Playground smoke test now uses a static front page with no posts page, like adventistai.lt, and also loads an empty tag archive and a category archive with posts.
 
 ## [3.35.2]
 ### Fixed
