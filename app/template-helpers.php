@@ -41,23 +41,25 @@ class TemplateHelpers {
     public static function getRootPostData()
     {
         $postsRootPostId = get_option('page_for_posts');
+        // Null when no posts page is set and the archive has no posts (an
+        // empty tag, for example). ?-> keeps the old null ID without a warning.
         $postsRootPost = get_post($postsRootPostId);
 
-        $headerTitle = get_post_meta($postsRootPost->ID, '_display_title', true);
+        $headerTitle = get_post_meta($postsRootPost?->ID, '_display_title', true);
         if (!$headerTitle) {
             $headerTitle = get_the_title($postsRootPostId);
         }
-        $headerKicker = get_post_meta($postsRootPost->ID, '_kicker', true);
-        $headerSubtitle = get_post_meta($postsRootPost->ID, '_long_header_subtitle', true);
+        $headerKicker = get_post_meta($postsRootPost?->ID, '_kicker', true);
+        $headerSubtitle = get_post_meta($postsRootPost?->ID, '_long_header_subtitle', true);
 
-        $isVisibleFeaturedImage = !get_post_meta($postsRootPost->ID, '_hide_featured_image', true);
-        $headerBackgroundImage = get_post_meta($postsRootPost->ID, '_header_background_image', true);
+        $isVisibleFeaturedImage = !get_post_meta($postsRootPost?->ID, '_hide_featured_image', true);
+        $headerBackgroundImage = get_post_meta($postsRootPost?->ID, '_header_background_image', true);
 
         if ($isVisibleFeaturedImage && !$headerBackgroundImage) {
-            $headerBackgroundImage = get_post_thumbnail_id($postsRootPost->ID);
+            $headerBackgroundImage = get_post_thumbnail_id($postsRootPost?->ID);
         }
 
-        $postsRootPostIsVisibleSidebar = get_post_meta($postsRootPost->ID, '_hide_sidebar', true);
+        $postsRootPostIsVisibleSidebar = get_post_meta($postsRootPost?->ID, '_hide_sidebar', true);
 
         $headerHeroType = get_post_meta($postsRootPostId, '_hero_type', true);
         $isHeroHeader = $headerHeroType && $headerHeroType !== 'false';
