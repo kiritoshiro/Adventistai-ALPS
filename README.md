@@ -90,7 +90,7 @@ Sage is a WordPress starter theme with a modern development workflow.
 Make sure all dependencies have been installed before moving on:
 
 * [WordPress](https://wordpress.org/) >= 6.1^
-* [PHP](https://secure.php.net/manual/en/install.php) >= 8.3 (with [`php-mbstring`](https://secure.php.net/manual/en/book.mbstring.php) enabled)
+* [PHP](https://secure.php.net/manual/en/install.php) >= 8.4 (with [`php-mbstring`](https://secure.php.net/manual/en/book.mbstring.php) enabled)
 * [Composer](https://getcomposer.org/download/)
 * [Node.js](http://nodejs.org/) >= 18.x
 
