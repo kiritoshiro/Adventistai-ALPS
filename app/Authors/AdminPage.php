@@ -419,7 +419,6 @@ class AdminPage
         if (is_wp_error($result)) {
             self::back(['error' => $result->get_error_message()]);
         }
-        self::clearDefault($term_id, $to);
         self::back(['message' => 'deleted']);
     }
 
@@ -433,15 +432,6 @@ class AdminPage
         if (is_wp_error($result)) {
             self::back(['action' => 'merge', 'error' => $result->get_error_message()]);
         }
-        self::clearDefault($from, $to);
         self::back(['message' => 'merged']);
-    }
-
-    /** When the default author is deleted, the author who took its posts becomes the default. */
-    private static function clearDefault($deleted, $replacement)
-    {
-        if (absint(\App\Fields\Store::option('alps_authors_default')) === (int) $deleted) {
-            \App\Fields\Store::setOption('alps_authors_default', $replacement ? (string) $replacement : '');
-        }
     }
 }

@@ -49,14 +49,29 @@ class Output
         return Taxonomy::enabled() && ! is_admin();
     }
 
-    /** The authors of a post of a post type with authors. */
+    /** Whether a post is of a post type with authors. */
+    public static function hasAuthors($post)
+    {
+        $post = get_post($post);
+        return $post && in_array($post->post_type, Taxonomy::postTypes(), true);
+    }
+
+    /**
+     * Who a post is credited to: its authors, else the default author (what
+     * publishing it without one credits). Never the account. Empty only when
+     * neither is set.
+     */
     public static function authors($post)
     {
         $post = get_post($post);
-        if (! $post || ! in_array($post->post_type, Taxonomy::postTypes(), true)) {
+        if (! self::hasAuthors($post)) {
             return [];
         }
-        return Taxonomy::forPost($post);
+        $authors = Taxonomy::forPost($post);
+        if (! $authors && ($default = Taxonomy::defaultAuthor())) {
+            $authors = [$default];
+        }
+        return $authors;
     }
 
     public static function names($post, $all = true)
@@ -132,8 +147,8 @@ class Output
         if (! self::active()) {
             return $name;
         }
-        $names = self::names(get_post(), is_feed());
-        return $names !== '' ? $names : $name;
+        $post = get_post();
+        return self::hasAuthors($post) ? self::names($post, is_feed()) : $name;
     }
 
     public static function displayName($value, $user_id = 0)
@@ -142,9 +157,8 @@ class Output
             return $value;
         }
         $post = get_post();
-        if ($post && (int) $post->post_author === (int) $user_id) {
-            $names = self::names($post, false);
-            return $names !== '' ? $names : $value;
+        if ($post && (int) $post->post_author === (int) $user_id && self::hasAuthors($post)) {
+            return self::names($post, false);
         }
         return $value;
     }
@@ -175,6 +189,8 @@ class Output
         if ($authors) {
             $data['author_name'] = self::names($post);
             $data['author_url'] = self::link($authors[0]) ?: home_url('/');
+        } elseif (self::hasAuthors($post)) {
+            unset($data['author_name'], $data['author_url']);
         } elseif (isset($data['author_url'])) {
             $data['author_url'] = home_url('/');
         }
@@ -195,8 +211,9 @@ class Output
         if (! self::active()) {
             return $name;
         }
-        $names = self::names(self::yoastPost($presentation) ?: get_post());
-        return $names !== '' ? $names : $name;
+        // Empty leaves the tag out.
+        $post = self::yoastPost($presentation) ?: get_post();
+        return self::hasAuthors($post) ? self::names($post) : $name;
     }
 
     public static function yoastSlack($data, $presentation = null)
@@ -206,9 +223,14 @@ class Output
         }
         // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Yoast's own label, to find its entry.
         $key = __('Written by', 'wordpress-seo');
-        $names = self::names(self::yoastPost($presentation) ?: get_post());
-        if (isset($data[$key]) && $names !== '') {
-            $data[$key] = $names;
+        $post = self::yoastPost($presentation) ?: get_post();
+        if (isset($data[$key]) && self::hasAuthors($post)) {
+            $names = self::names($post);
+            if ($names !== '') {
+                $data[$key] = $names;
+            } else {
+                unset($data[$key]);
+            }
         }
         return $data;
     }
@@ -244,10 +266,10 @@ class Output
             return $graph;
         }
         $post = is_object($context) && isset($context->post) && $context->post instanceof \WP_Post ? $context->post : (is_singular() ? get_queried_object() : null);
-        $authors = $post instanceof \WP_Post ? self::authors($post) : [];
-        if (! $authors) {
+        if (! $post instanceof \WP_Post || ! self::hasAuthors($post)) {
             return $graph;
         }
+        $authors = self::authors($post);
         $site = is_object($context) && ! empty($context->site_url) ? $context->site_url : trailingslashit(home_url());
         $people = [];
         $refs = [];
@@ -279,7 +301,12 @@ class Output
         foreach ($graph as $i => $piece) {
             if (is_array($piece) && isset($piece['author']['@id'])) {
                 $old[] = $piece['author']['@id'];
-                $graph[$i]['author'] = count($refs) === 1 ? $refs[0] : $refs;
+                if ($refs) {
+                    $graph[$i]['author'] = count($refs) === 1 ? $refs[0] : $refs;
+                } else {
+                    // No author and no default author: no author rather than the account.
+                    unset($graph[$i]['author']);
+                }
             }
         }
         $keep = is_object($context) && isset($context->site_represents, $context->site_user_id) && $context->site_represents === 'person' && (int) $context->site_user_id === (int) $post->post_author;
@@ -298,7 +325,8 @@ class Output
             return $result;
         }
         $route = $request instanceof \WP_REST_Request ? $request->get_route() : '';
-        if ($route === '/wp/v2/users' || strpos($route, '/wp/v2/users/') === 0) {
+        // WordPress matches routes ignoring case (/wp/v2/USERS works too).
+        if (preg_match('#^/wp/v2/users(/|$)#i', $route)) {
             return new \WP_Error('rest_user_cannot_view', __('Sorry, you are not allowed to list users.', 'alps'), ['status' => 401]);
         }
         return $result;

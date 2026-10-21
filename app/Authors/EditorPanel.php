@@ -31,7 +31,7 @@ class EditorPanel
     {
         add_action('enqueue_block_editor_assets', [__CLASS__, 'config'], 5);
         add_action('rest_api_init', [__CLASS__, 'restHooks']);
-        add_filter('rest_request_before_callbacks', [__CLASS__, 'restCreatePermission'], 10, 3);
+        add_filter('rest_request_before_callbacks', [__CLASS__, 'restPermissions'], 10, 3);
         add_action('wp_after_insert_post', [__CLASS__, 'safetyNet'], 20, 2);
         add_action('add_meta_boxes', [__CLASS__, 'metaBox'], 10, 2);
         add_action('save_post', [__CLASS__, 'saveMetaBox'], 10, 2);
@@ -81,17 +81,29 @@ class EditorPanel
     }
 
     /**
-     * Only editors and administrators add authors. (For tag-like taxonomies
-     * WordPress lets anyone who may assign terms create them through REST.)
+     * The author routes of the REST API:
+     * - only editors and administrators add authors (for tag-like taxonomies
+     *   WordPress lets anyone who may assign terms create them);
+     * - authors are not deleted through REST, which would skip choosing who
+     *   takes over their posts (Posts → Authors does that).
+     * WordPress matches routes ignoring case, so this does too.
      */
-    public static function restCreatePermission($response, $handler, $request)
+    public static function restPermissions($response, $handler, $request)
     {
-        if ($response instanceof \WP_Error || ! $request instanceof \WP_REST_Request || $request->get_method() !== 'POST' || $request->get_route() !== '/wp/v2/' . Taxonomy::NAME) {
+        if ($response instanceof \WP_Error || ! $request instanceof \WP_REST_Request) {
             return $response;
         }
-        $taxonomy = get_taxonomy(Taxonomy::NAME);
-        if (! $taxonomy || ! current_user_can($taxonomy->cap->edit_terms)) {
-            return new \WP_Error('rest_cannot_create', __('Sorry, you are not allowed to add authors.', 'alps'), ['status' => rest_authorization_required_code()]);
+        $route = strtolower(untrailingslashit($request->get_route()));
+        $base = '/wp/v2/' . Taxonomy::NAME;
+        $method = $request->get_method();
+        if ($method === 'POST' && $route === $base) {
+            $taxonomy = get_taxonomy(Taxonomy::NAME);
+            if (! $taxonomy || ! current_user_can($taxonomy->cap->edit_terms)) {
+                return new \WP_Error('rest_cannot_create', __('Sorry, you are not allowed to add authors.', 'alps'), ['status' => rest_authorization_required_code()]);
+            }
+        }
+        if ($method === 'DELETE' && preg_match('#^' . preg_quote($base, '#') . '/\d+$#', $route)) {
+            return new \WP_Error('rest_cannot_delete', __('Delete authors under Posts → Authors, where their posts are given to another author.', 'alps'), ['status' => 403]);
         }
         return $response;
     }

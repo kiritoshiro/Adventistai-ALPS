@@ -151,6 +151,25 @@ $ok(strpos(get_author_posts_url($senas), '/author/') === false, 'on: no /author/
 $oembed = get_oembed_response_data($p['mantas1'], 600);
 $ok($oembed['author_name'] === 'Mantas Petraitis' && strpos($oembed['author_url'], '/autorius/') !== false, 'oEmbed uses the author', $oembed);
 
+// A post with no author never shows the account: the default author, or nobody.
+$bare = $make_post($vaiva, 'draft', 'post', 'No author');
+Taxonomy::setForPost($bare, []);
+$GLOBALS['post'] = get_post($bare);
+setup_postdata($GLOBALS['post']);
+$ok(get_the_author() === 'Adventistai' && get_the_author_meta('display_name', $vaiva) === 'Adventistai', 'no author: the default author is shown', get_the_author());
+$saved_default = Store::option('alps_authors_default');
+Store::setOption('alps_authors_default', '');
+$ok(get_the_author() === '' && get_the_author_meta('display_name', $vaiva) === '', 'no author and no default: no name, not the account', get_the_author());
+$ok(Output::yoastMetaAuthor('Vaiva Paldavičienė') === '', 'no author and no default: no Yoast meta author');
+$oembed = get_oembed_response_data($bare, 600);
+$ok(! isset($oembed['author_name']) && ! isset($oembed['author_url']), 'no author and no default: oEmbed without author', $oembed);
+$graph = Output::yoastSchema([
+    ['@type' => 'Article', '@id' => 'x#article', 'author' => ['name' => 'Vaiva Paldavičienė', '@id' => 'https://example.test/#/schema/person/v']],
+    ['@type' => 'Person', '@id' => 'https://example.test/#/schema/person/v', 'name' => 'Vaiva Paldavičienė'],
+], (object) ['post' => get_post($bare), 'site_url' => 'https://example.test/', 'site_represents' => 'organization', 'site_user_id' => 0]);
+$ok(count($graph) === 1 && ! isset($graph[0]['author']), 'no author and no default: schema without the account', $graph);
+Store::setOption('alps_authors_default', $saved_default);
+
 // Several authors keep their order.
 Taxonomy::setForPost($p['vaiva1'], [$vt->term_id, $mt->term_id]);
 $ok($names($p['vaiva1']) === ['Vaiva Paldavičienė', 'Mantas Petraitis'], 'two authors in order');
@@ -195,6 +214,10 @@ $response = rest_do_request(new WP_REST_Request('GET', '/wp/v2/users'));
 $ok($response->get_status() === 401, 'logged out: /wp/v2/users is 401', $response->get_status());
 $response = rest_do_request(new WP_REST_Request('GET', '/wp/v2/users/1'));
 $ok($response->get_status() === 401, 'logged out: /wp/v2/users/1 is 401', $response->get_status());
+foreach (['/wp/v2/USERS', '/wp/v2/Users/1'] as $route) {
+    $response = rest_do_request(new WP_REST_Request('GET', $route));
+    $ok($response->get_status() === 401, "logged out: $route (other case) is 401", $response->get_status());
+}
 wp_set_current_user($admin);
 $ok(rest_do_request(new WP_REST_Request('GET', '/wp/v2/users'))->get_status() === 200, 'logged in: users list works');
 
@@ -235,6 +258,8 @@ $response = $rest('POST', "/wp/v2/posts/$own", [Taxonomy::NAME => [$vt->term_id,
 $ok($response->get_status() === 200 && $names($own) === ['Vaiva Paldavičienė', 'Mantas Petraitis'], 'contributor chooses authors', [$response->get_status(), $response->get_data()]);
 $response = $rest('POST', '/wp/v2/' . Taxonomy::NAME, ['name' => 'Naujas']);
 $ok(in_array($response->get_status(), [401, 403], true), 'contributor cannot add an author', $response->get_status());
+$response = $rest('POST', '/wp/v2/' . strtoupper(Taxonomy::NAME), ['name' => 'Naujas']);
+$ok(in_array($response->get_status(), [401, 403], true) && ! Taxonomy::findByName('Naujas'), 'contributor cannot add an author through the route in other case', $response->get_status());
 wp_set_current_user($vaiva);
 $response = $rest('POST', '/wp/v2/' . Taxonomy::NAME, ['name' => 'Naujas Autorius', 'description' => 'Trumpai.']);
 $ok($response->get_status() === 201, 'editor adds an author from the editor', $response->get_data());
@@ -282,6 +307,25 @@ Taxonomy::setForPost($p['vaiva2'], [$bt->term_id, $vt->term_id]);
 $result = Taxonomy::replace($bt->term_id, $org->term_id);
 $ok($names($p['bridge']) === ['Adventistai'] && $names($p['admin']) === ['Adventistai'] && $names($p['vaiva2']) === ['Adventistai', 'Vaiva Paldavičienė'], 'merge keeps the place in each list, no duplicates', [$names($p['admin']), $names($p['vaiva2'])]);
 $ok(is_wp_error(Taxonomy::replace($org->term_id, $org->term_id)), 'merging an author into itself is refused');
+
+// No deleting authors through REST (it would skip choosing who takes their posts).
+wp_set_current_user($vaiva);
+foreach (['/wp/v2/' . Taxonomy::NAME . '/' . $vt->term_id, '/wp/v2/' . strtoupper(Taxonomy::NAME) . '/' . $vt->term_id] as $route) {
+    $response = $rest('DELETE', $route, ['force' => true]);
+    $ok($response->get_status() === 403 && get_term($vt->term_id, Taxonomy::NAME), "REST delete refused: $route", [$response->get_status(), $response->get_data()]);
+}
+wp_set_current_user($admin);
+
+// The default author setting follows merges and never points to a deleted author.
+$temp = Taxonomy::create(['name' => 'Laikinas']);
+Store::setOption('alps_authors_default', (string) $temp);
+Taxonomy::replace($temp, $org->term_id);
+$ok(absint(Store::option('alps_authors_default')) === $org->term_id, 'merging the default author: the kept author becomes the default');
+$temp = Taxonomy::create(['name' => 'Laikinas 2']);
+Store::setOption('alps_authors_default', (string) $temp);
+wp_delete_term($temp, Taxonomy::NAME);
+$ok(Store::option('alps_authors_default') === '' && Taxonomy::defaultAuthor() === null, 'deleting the default author clears the setting');
+Store::setOption('alps_authors_default', (string) $org->term_id);
 
 // 8. Off again: visitors see the accounts as before.
 Store::setOption('alps_authors_enabled', '');

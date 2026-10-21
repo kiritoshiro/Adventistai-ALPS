@@ -40,6 +40,10 @@ account), delete and merge.
   post's list, without duplicates) and deletes the first. Use it for
   duplicates such as "Adventistai" / "Adventistai.lt".
 - While the feature is off only administrators see the page, to prepare the list.
+- Authors are not deleted through the REST API (`DELETE /wp/v2/alps_author/<id>`
+  answers 403), so the choice of who takes over their posts can't be skipped.
+  If the default author is merged into another, that one becomes the default;
+  if it is deleted any other way, the setting is cleared.
 
 **Editor → Author panel**: search the list and choose one or more authors,
 reorder them, remove them. Editors and administrators also get **+ New
@@ -71,7 +75,8 @@ They are stored like the other theme settings (Carbon Fields' row format,
 ## What visitors see (when on)
 
 - Author pages: `/autorius/<slug>/` with the name, photo, bio, links and the
-  author's posts.
+  author's posts (paged normally, not with Ajax Load More, which only filters
+  by category). An author without posts still shows the photo and bio.
 - `/author/<login>/`, its feed and `?author=N` redirect (301) to the linked
   author's page, otherwise 404. WordPress's own redirect that reveals the
   login never runs.
@@ -81,9 +86,12 @@ They are stored like the other theme settings (Carbon Fields' row format,
   `Person` (from the author: name, page, photo, bio, website/Facebook — the
   account's Person, Gravatar and `/author/` URL are removed) and sitemaps
   (no user sitemap; an `alps_author` sitemap) all use the authors.
-- **Hide user accounts**: `/wp-json/wp/v2/users` answers 401 to visitors who
-  are not logged in (logged-in users and the block editor are unaffected), the
-  core users sitemap is off, and comment classes don't name accounts.
+- A post with no author is shown as the default author's; with no default
+  author either, no name at all — never the account.
+- **Hide user accounts**: `/wp-json/wp/v2/users` (in any letter case) answers
+  401 to visitors who are not logged in (logged-in users and the block editor
+  are unaffected), the core users sitemap is off, and comment classes don't
+  name accounts.
 
 ## Migration (WP-CLI)
 

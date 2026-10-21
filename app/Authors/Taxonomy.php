@@ -41,6 +41,15 @@ class Taxonomy
     {
         // Late, so post types registered on init (Modern Events Calendar …) are known.
         add_action('init', [__CLASS__, 'registerTaxonomy'], 99);
+        add_action('delete_' . self::NAME, [__CLASS__, 'forgetDefault']);
+    }
+
+    /** However an author is deleted, the default author setting never points to it. */
+    public static function forgetDefault($term_id)
+    {
+        if (absint(Store::option('alps_authors_default')) === (int) $term_id) {
+            Store::setOption('alps_authors_default', '');
+        }
     }
 
     public static function enabled()
@@ -323,6 +332,10 @@ class Taxonomy
             }, $ids);
             self::setForPost($post_id, $ids);
             $moved++;
+        }
+        // The author who takes over also becomes the default, if the first was.
+        if (absint(Store::option('alps_authors_default')) === $from_id) {
+            Store::setOption('alps_authors_default', (string) $to_id);
         }
         $deleted = wp_delete_term($from_id, self::NAME);
         return is_wp_error($deleted) ? $deleted : $moved;

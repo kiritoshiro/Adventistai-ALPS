@@ -61,6 +61,8 @@ res = await fetchPage('/wp-json/wp/v2/users');
 check('logged out: /wp/v2/users is 401', res.status === 401, res.status);
 res = await fetchPage('/wp-json/wp/v2/users/1');
 check('logged out: /wp/v2/users/1 is 401', res.status === 401, res.status);
+res = await fetchPage('/wp-json/wp/v2/USERS');
+check('logged out: /wp/v2/USERS (other case) is 401', res.status === 401, res.status);
 
 res = await fetchPage('/feed/');
 check('RSS dc:creator is the author', res.body.includes('<dc:creator><![CDATA[Vaiva Paldavičienė]]></dc:creator>'), res.body.match(/<dc:creator>.*?<\/dc:creator>/g)?.join(' '));
@@ -106,7 +108,10 @@ await page.click('a.page-title-action:has-text("Add author")');
 await page.fill('#alps-author-name', 'Petras Petraitis');
 await page.fill('#alps-author-description', 'Svečias autorius.');
 await Promise.all([page.waitForNavigation(), page.click('#submit')]);
-check('add author', (await page.locator('.notice-success').textContent())?.includes('Author added.') && await page.locator('.row-title', {hasText: 'Petras Petraitis'}).count() === 1);
+check('add author', await page.locator('.row-title', {hasText: 'Petras Petraitis'}).waitFor({timeout: 10000}).then(() => true, () => false)
+  && (await page.locator('.notice-success').textContent())?.includes('Author added.'), await page.locator('.notice').allTextContents());
+res = await fetchPage('/autorius/petras-petraitis/');
+check('author page without posts: 200 with the bio', res.status === 200 && res.body.includes('Svečias autorius.'), res.status);
 
 await Promise.all([page.waitForNavigation(), page.click('.row-title:has-text("Petras Petraitis")')]);
 check('edit form has the bio', (await page.inputValue('#alps-author-description')) === 'Svečias autorius.');
