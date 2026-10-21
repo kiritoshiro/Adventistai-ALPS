@@ -113,6 +113,8 @@ class AdminPage
         // phpcs:disable WordPress.Security.NonceVerification.Recommended -- These only pick what to show.
         $action = isset($_GET['action']) ? sanitize_key(wp_unslash($_GET['action'])) : '';
         $term_id = isset($_GET['author']) ? absint(wp_unslash($_GET['author'])) : 0;
+        $search = isset($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
+        $paged = isset($_GET['paged']) ? max(1, absint(wp_unslash($_GET['paged']))) : 1;
         // phpcs:enable
         $term = $term_id ? get_term($term_id, Taxonomy::NAME) : null;
         $term = $term instanceof \WP_Term ? $term : null;
@@ -126,7 +128,7 @@ class AdminPage
         } elseif ($action === 'merge') {
             self::renderMerge();
         } else {
-            self::renderList();
+            self::renderList($search, $paged);
         }
         echo '</div>';
     }
@@ -159,12 +161,9 @@ class AdminPage
         }
     }
 
-    private static function renderList()
+    /** The author list; $search and $paged come from the request, sanitised in render(). */
+    private static function renderList($search, $paged)
     {
-        // phpcs:disable WordPress.Security.NonceVerification.Recommended -- Search and paging only.
-        $search = isset($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
-        $paged = isset($_GET['paged']) ? max(1, absint(wp_unslash($_GET['paged']))) : 1;
-        // phpcs:enable
         $query = ['taxonomy' => Taxonomy::NAME, 'hide_empty' => false, 'search' => $search];
         $total = (int) wp_count_terms($query);
         $terms = get_terms($query + ['orderby' => 'name', 'number' => self::PER_PAGE, 'offset' => ($paged - 1) * self::PER_PAGE]);
