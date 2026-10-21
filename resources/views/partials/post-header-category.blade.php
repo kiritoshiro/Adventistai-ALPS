@@ -6,3 +6,4 @@
 @if ($postHeaderCategory !== '')
   <span class="o-kicker alps-hero__category {{ $postHeaderCategoryClass ?? '' }}">{{ $postHeaderCategory }}</span>
 @endif
+@include('partials.author-byline')

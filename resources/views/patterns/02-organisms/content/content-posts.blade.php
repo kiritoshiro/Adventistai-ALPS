@@ -72,10 +72,11 @@
   ];
 
   /**
-   * Content of root post
+   * Content of root post, or the archive's own intro ($postsIntro, e.g. an
+   * author's photo and bio) shown in its place
    */
-  $rootArticleContent = null;
-  if (get_option('page_for_posts')) {
+  $rootArticleContent = $postsIntro ?? null;
+  if ($rootArticleContent === null && get_option('page_for_posts')) {
       $rootArticleClasses = get_post_class($rootArticleClasses, $postsRootPostId);
       $rootArticleContent = get_the_content(null, false, $postsRootPostId);
   }

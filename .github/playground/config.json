@@ -30,5 +30,24 @@
     "Playground smoke test paragraph.",
     "width=\"640\" height=\"940\" src=\"/wp-content/uploads/alps-ci-cover.jpg\"",
     "alps-ci-cover-"
+  ],
+  "after_theme": [
+    {
+      "step": "runPHP",
+      "code": "<?php\n// After the theme is active: author profiles on, with one author linked to the\n// admin account and credited on the default post, so the smoke test loads an\n// author page and old /author/ addresses.\nrequire '/wordpress/wp-load.php';\nupdate_option('permalink_structure', '/%postname%/');\n$id = \\App\\Authors\\Taxonomy::create(['name' => 'Playground Smoke Author', 'slug' => 'playground-smoke-author', 'description' => 'Smoke test author.', 'user' => 1]);\nif (is_wp_error($id)) { throw new Exception($id->get_error_message()); }\n\\App\\Authors\\Taxonomy::setForPost(1, [$id]);\n\\App\\Fields\\Store::setOption('alps_authors_enabled', 'true');\n\\App\\Fields\\Store::setOption('alps_authors_default', (string) $id);\n"
+    }
+  ],
+  "front_paths": [
+    "/autorius/playground-smoke-author/"
+  ],
+  "redirects": [
+    {
+      "from": "/?author=1",
+      "to": "/autorius/playground-smoke-author/"
+    },
+    {
+      "from": "/author/admin/",
+      "to": "/autorius/playground-smoke-author/"
+    }
   ]
 }

@@ -63,6 +63,7 @@ const jsTarget = Object.entries(oldest).map(([engine, version]) => `${engine}${v
 // dependency WordPress never registers makes it skip the whole bundle, so
 // only packages checked to exist as `wp-<name>` scripts are allowed.
 const wordpressScripts = new Set([
+  'api-fetch',
   'block-editor',
   'blocks',
   'components',
