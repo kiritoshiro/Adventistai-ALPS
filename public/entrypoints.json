@@ -10,12 +10,13 @@
   },
   "editor": {
     "js": [
-      "js/editor.8904c8.js"
+      "js/editor.c4abd4.js"
     ],
     "css": [
       "css/editor.7ab06d.css"
     ],
     "dependencies": [
+      "wp-api-fetch",
       "wp-block-editor",
       "wp-blocks",
       "wp-components",

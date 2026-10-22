@@ -42,7 +42,7 @@ await page.screenshot({path: (process.argv[3] || 'settings-page-phone.png').repl
 
 // Tabs.
 const tabs = await page.locator('.alps-settings__tabs .nav-tab').allTextContents();
-check('seven tabs', tabs.join('|') === 'GLOBAL|POSTS OPTIONS|SABBATH COLUMN|SABBATH TIMER|FOOTER CONTENT|IMAGES|CACHE', tabs.join('|'));
+check('eight tabs', tabs.join('|') === 'GLOBAL|POSTS OPTIONS|SABBATH COLUMN|SABBATH TIMER|FOOTER CONTENT|IMAGES|AUTHORS|CACHE', tabs.join('|'));
 check('only the first panel shows', await page.locator('.alps-settings__panel:visible').count() === 1);
 await page.click('.nav-tab[data-tab="posts"]');
 check('tab switch shows Posts options', await page.locator('#alps-posts_page_title').isVisible());
@@ -238,7 +238,7 @@ check('editor cannot delete originals', editor_delete.status() >= 400, `HTTP ${e
 const nojs = await browser.newContext({javaScriptEnabled: false});
 const nojs_page = await login(nojs, 'admin', 'password');
 await nojs_page.goto(page_url);
-check('no JS: all panels visible', await nojs_page.locator('.alps-settings__panel:visible').count() === 7);
+check('no JS: all panels visible', await nojs_page.locator('.alps-settings__panel:visible').count() === 8);
 await nojs_page.fill('#alps-footer_copyright', 'Saved without JS');
 await Promise.all([nojs_page.waitForNavigation(), nojs_page.click('#submit')]);
 await nojs_page.goto(page_url);

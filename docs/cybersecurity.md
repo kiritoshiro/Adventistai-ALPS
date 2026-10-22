@@ -68,6 +68,16 @@ and `adventistai_restricted_account_actions` (extra AJAX/admin-post actions
 these accounts may call; default `heartbeat`). Password reset through
 `wp-login.php` is unaffected; such accounts can no longer edit their profile.
 
+## Author profiles and user enumeration (3.36.0)
+
+With author profiles on (`docs/authors.md`), posts are credited to authors,
+not accounts, so old accounts can be deleted. "Hide user accounts" (on by
+default) makes `/wp-json/wp/v2/users` answer 401 to visitors who are not
+logged in, turns off the core users sitemap, sends `/author/<login>/` and
+`?author=N` to the author page (or 404) and keeps login names out of Yoast's
+meta, schema and sitemaps, RSS, oEmbed and comment classes. Deleted
+accounts' posts go to the locked "Redakcija" account, which cannot log in.
+
 ## Reviewed source findings — 2026-09-29
 
 Search renderer outputs pass through wp_kses_post, while its helpers escape URLs, text, attributes and highlighted markup. The generic echoed-request rule still flags these expressions. The request-derived callable was replaced by explicit switch dispatch. Narrow inline suppressions apply only to the named rule at these reviewed expressions. Owner: repository maintainer. Review by 2026-12-29 or on code changes.

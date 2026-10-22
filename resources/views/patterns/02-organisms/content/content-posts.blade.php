@@ -72,10 +72,11 @@
   ];
 
   /**
-   * Content of root post
+   * Content of root post, or the archive's own intro ($postsIntro, e.g. an
+   * author's photo and bio) shown in its place
    */
-  $rootArticleContent = null;
-  if (get_option('page_for_posts')) {
+  $rootArticleContent = $postsIntro ?? null;
+  if ($rootArticleContent === null && get_option('page_for_posts')) {
       $rootArticleClasses = get_post_class($rootArticleClasses, $postsRootPostId);
       $rootArticleContent = get_the_content(null, false, $postsRootPostId);
   }
@@ -214,7 +215,8 @@
           $load_more_category = $queried_category instanceof \WP_Term ? $queried_category->slug : '';
         }
       @endphp
-      @if (shortcode_exists('ajax_load_more'))
+      {{-- Author pages page normally: the load-more shortcode below only knows categories. --}}
+      @if (shortcode_exists('ajax_load_more') && !is_tax('alps_author'))
         @php
           $load_more = '[ajax_load_more container_type="div" css_classes="u-spacing--double" post_type="post"';
           if ($load_more_category !== '') {
@@ -228,6 +230,10 @@
       @endif
 
       @else
+        @isset($postsIntro)
+          {{-- An author without posts yet still shows their photo and bio. --}}
+          <div class="text u-spacing--double u-space--double--top">{!! $postsIntro !!}</div>
+        @endisset
         <p class="u-padding--left">{{ __('Sorry, no results were found.', 'alps') }}</p>
       @endif
 

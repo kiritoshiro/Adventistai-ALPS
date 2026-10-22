@@ -1,3 +1,41 @@
+<?php
+// With author profiles on, the post's first author (App\Authors), never the account.
+$alps_author = \App\Authors\Output::widgetAuthor();
+if ($alps_author === false) {
+    return;
+}
+if (is_array($alps_author)):
+?>
+<div class="c-block c-block__text<?php echo $alps_author['image'] ? ' has-image' : ''; ?> u-padding--zero--left u-clear-fix">
+  <?php if ($alps_author['image']): ?>
+    <?php echo wp_get_attachment_image($alps_author['image'], 'medium', false, ['class' => 'c-block__image', 'itemprop' => 'image', 'alt' => $alps_author['name']]); ?>
+  <?php endif; ?>
+  <h4 class="c-media-block__kicker c-block__kicker u-space--zero--top">
+    <?php echo esc_html($settings['text_link_author'] ?? ''); ?>
+  </h4>
+  <h3 class="u-theme--color--darker u-font--primary--m vcard author">
+    <a href="<?php echo esc_url($alps_author['url']); ?>" class="c-block__title-link u-theme--link-hover--dark fn" rel="author">
+      <strong><?php echo esc_html($alps_author['name']); ?></strong>
+    </a>
+  </h3>
+  <?php if (trim($alps_author['bio']) !== ''): ?>
+    <div class="c-block__body text">
+      <?php echo wp_kses_post(wpautop($alps_author['bio'])); ?>
+    </div>
+  <?php endif; ?>
+  <ul class="o-inline-list">
+    <?php if ($alps_author['website'] !== ''): ?>
+      <li><a class="author-link" href="<?php echo esc_url($alps_author['website']); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Website', 'alps'); ?></a></li>
+    <?php endif; ?>
+    <?php if ($alps_author['facebook'] !== ''): ?>
+      <li><a class="author-link" href="<?php echo esc_url($alps_author['facebook']); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Facebook', 'alps'); ?></a></li>
+    <?php endif; ?>
+  </ul>
+</div>
+<?php
+    return;
+endif;
+?>
 <div class="c-block c-block__text has-image u-padding--zero--left u-clear-fix">
   <?php if (function_exists('get_avatar_url')): ?>
     <img class="c-block__image" itemprop="image" src="<?php echo esc_url(get_avatar_url(get_the_author_meta('email'), array("size" => 400))); ?>">
