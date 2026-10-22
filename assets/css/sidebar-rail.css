@@ -1,0 +1,74 @@
+/* Left side column (App\SidebarPosition, ALPS Theme Settings → POSTS OPTIONS →
+ * Sidebar position → "Left side column"). Embedded only when that is chosen;
+ * applies above 1000px (where the article and the sidebar sit side by side)
+ * on pages that show a sidebar (body class alps-has-rail, set by the
+ * templates before <body> is printed).
+ *
+ * The sidebar becomes a column at the left edge of the window, from the
+ * header band down to the footer, like the Sabbath column on the right; the
+ * article is centred in the rest, at most 90rem wide. The logo bar and the
+ * header band keep their full width and usual layout. The sidebar stays in
+ * the flex row (shown first, the article stays first in the HTML), so the
+ * column is always as tall as the taller of the article and the widgets.
+ */
+@media (min-width: 1001px) {
+  .alps-has-rail {
+    --alps-rail: clamp(17rem, 17vw, 22rem);
+  }
+  /* .l-main is at least as tall as the window; on a short page the row
+     grows to fill it, so the column still reaches the footer. */
+  .alps-has-rail .l-main {
+    padding-bottom: 0 !important;
+    display: flex;
+    flex-direction: column;
+  }
+  .alps-has-rail .l-main > .l-main__content {
+    flex: 1 0 auto;
+  }
+  .alps-has-rail .l-wrap .l-main .l-main__content {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    flex-wrap: nowrap;
+    align-items: stretch;
+  }
+  .alps-has-rail .l-main__content > .c-sidebar {
+    order: -1;
+    flex: 0 0 var(--alps-rail);
+    width: var(--alps-rail) !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 1.75rem 1.25rem 2.5rem !important;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.04);
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  /* Light colours only without the dark theme, whose widget text is white
+     (main.scss); there the widgets keep their own background. */
+  .alps-has-rail:not(.u-theme--dark) .l-main__content > .c-sidebar {
+    background: #eef1f5;
+    border-right-color: #dde3ea;
+  }
+  .alps-has-rail:not(.u-theme--dark) .l-main__content > .c-sidebar .c-widget {
+    background: #fff !important;
+  }
+  .alps-has-rail .l-main__content > .c-sidebar > div {
+    padding: 0 !important;
+  }
+  /* Iframes keep their own height (FitVids sizes video embeds to their box). */
+  .alps-has-rail .l-main__content > .c-sidebar img,
+  .alps-has-rail .l-main__content > .c-sidebar iframe {
+    max-width: 100% !important;
+  }
+  .alps-has-rail .l-main__content > .c-sidebar img {
+    height: auto;
+  }
+  .alps-has-rail .l-main__content > .c-article {
+    flex: 1 1 auto;
+    width: auto !important;
+    min-width: 0;
+    /* Centred in what is left beside the column, at most 90rem. */
+    padding: 1.75rem max(var(--site-gutter, 1.25rem), (100% - var(--alps-rail) - 90rem) / 2) 2.5rem !important;
+    box-sizing: border-box;
+  }
+}

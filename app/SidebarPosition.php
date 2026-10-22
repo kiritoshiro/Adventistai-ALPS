@@ -23,10 +23,16 @@ if (! defined('ABSPATH')) {
  * header's title starts where the article text starts and the featured image
  * sits over the sidebar column (assets/css/sidebar-layout.css, embedded on
  * every page).
+ *
+ * "Left side column" (3.38.0) turns the sidebar into a full-height column at
+ * the left edge of the window, below the logo bar and the header band, like
+ * the Sabbath column on the right; the article is centred between the two.
+ * The header band keeps its full width and usual layout.
  */
 class SidebarPosition
 {
     const CSS = '/assets/css/sidebar-layout.css';
+    const RAIL_CSS = '/assets/css/sidebar-rail.css';
 
     /** Whether the page being rendered shows the widget sidebar. */
     private static $shown = false;
@@ -38,9 +44,15 @@ class SidebarPosition
         add_action('wp_enqueue_scripts', [__CLASS__, 'styles'], 1001);
     }
 
+    /** right (default), left or rail. */
+    public static function position()
+    {
+        return (string) Store::option('sidebar_position');
+    }
+
     public static function left()
     {
-        return Store::option('sidebar_position') === 'left';
+        return self::position() === 'left';
     }
 
     /**
@@ -57,11 +69,16 @@ class SidebarPosition
 
     public static function bodyClass(array $classes)
     {
-        if (self::left()) {
+        $position = self::position();
+        if ($position === 'left') {
             $classes[] = 'alps-sidebar-left';
         }
+        if ($position === 'rail') {
+            $classes[] = 'alps-sidebar-rail';
+        }
         if (self::$shown) {
-            $classes[] = 'alps-has-sidebar';
+            // The side column has its own rules; the header keeps its usual layout there.
+            $classes[] = $position === 'rail' ? 'alps-has-rail' : 'alps-has-sidebar';
         }
         return $classes;
     }
@@ -72,6 +89,9 @@ class SidebarPosition
             return;
         }
         $css = embedded_css(get_template_directory() . self::CSS);
+        if (self::position() === 'rail') {
+            $css .= embedded_css(get_template_directory() . self::RAIL_CSS);
+        }
         if ($css !== '') {
             wp_add_inline_style('adventistai-overrides', $css);
         }

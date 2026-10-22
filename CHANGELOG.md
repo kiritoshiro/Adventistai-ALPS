@@ -3,6 +3,13 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.38.0]
+### Added
+- **Sidebar position → "Left side column"** (Appearance → ALPS Theme Settings → POSTS OPTIONS): on screens wider than 1000px, on posts, pages and archives with a sidebar, the widgets become a column at the left edge of the window, from the bottom of the header band down to the footer, like the Sabbath column on the right. The article is centred in the rest, at most 90rem wide. The logo bar and the header band keep their full width and usual layout. The column is 17% of the window wide, 17–22rem (272px at 1440px, 326px at 1920px, 352px at 2560px), always as tall as the article or the widgets, whichever is taller, and reaches the footer on short pages too. Narrower screens and phones are unchanged; the article stays first in the HTML. `assets/css/sidebar-rail.css` (1.1 KB), embedded only when this option is chosen.
+
+### Fixed
+- Headers no longer print an empty subtitle block (a bordered, empty strip with a stray vertical line under the band, e.g. on category archives) when there is no subtitle.
+
 ## [3.37.0]
 ### Added
 - **Sidebar position** (Appearance → ALPS Theme Settings → POSTS OPTIONS → Sidebar): Right (default, as before) or Left. With Left, on screens wider than 1000px (where the article and the sidebar sit side by side), the widget sidebar of posts, pages and archives sits on the left, so the article is between the sidebar and the Sabbath column instead of everything heavy being on the right: at 1440px the article's centre moves from 337px left of the screen centre to 132px right, at 1920px from 410px left to 137px right.

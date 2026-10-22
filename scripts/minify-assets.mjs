@@ -16,6 +16,7 @@ const assets = [
   ['assets/css/sabbath-timer.css', 'assets/css/sabbath-timer.min.css'],
   ['assets/css/adv-search.css', 'assets/css/adv-search.min.css'],
   ['assets/css/sidebar-layout.css', 'assets/css/sidebar-layout.min.css'],
+  ['assets/css/sidebar-rail.css', 'assets/css/sidebar-rail.min.css'],
   ['assets/js/sabbath-timer.js', 'assets/js/sabbath-timer.min.js'],
   ['assets/js/slider-images.js', 'assets/js/slider-images.min.js'],
 ];

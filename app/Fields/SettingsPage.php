@@ -93,7 +93,7 @@ class SettingsPage
                 ['field', 'posts_image', __('Posts Feed Image', 'alps'), __('Select to display the feature image for the posts.', 'alps'), 50],
                 ['field', 'posts_image_round', __('Posts Round Images', 'alps'), __('Make the post feed images round.', 'alps'), 50],
                 ['heading', __('Sidebar', 'alps')],
-                ['field', 'sidebar_position', __('Sidebar position', 'alps'), __('Where the widget sidebar sits beside posts, pages and archives on wide screens. Left balances the page against the Sabbath column on the right. On phones the sidebar always comes after the content.', 'alps'), 50],
+                ['field', 'sidebar_position', __('Sidebar position', 'alps'), __('Where the widget sidebar sits beside posts, pages and archives on wide screens. Left balances the page against the Sabbath column on the right; Left side column puts it at the left edge of the window, below the header band, like the Sabbath column on the right. On phones the sidebar always comes after the content.', 'alps'), 50],
             ]],
             'sabbath' => [__('SABBATH COLUMN', 'alps'), [
                 ['field', 'sabbath_icon', __('Sabbath Icon', 'alps'), '', 50],
@@ -157,7 +157,7 @@ class SettingsPage
                 'hide-sabbath--until-large' => __('Hide the sabbath column at large screens.', 'alps'),
             ],
             'footer_logo_type' => ['square' => __('Square', 'alps'), 'circle' => __('Circle', 'alps')],
-            'sidebar_position' => ['right' => __('Right', 'alps'), 'left' => __('Left', 'alps')],
+            'sidebar_position' => ['right' => __('Right', 'alps'), 'left' => __('Left', 'alps'), 'rail' => __('Left side column', 'alps')],
         ];
         return isset($choices[$name]) ? $choices[$name] : [];
     }

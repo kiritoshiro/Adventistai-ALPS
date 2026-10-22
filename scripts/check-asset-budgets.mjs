@@ -45,6 +45,8 @@ const budgets = [
   // Embedded on every page (App\SidebarPosition): the left-sidebar order and
   // the page header lined up with the article.
   ['Sidebar layout CSS (minified, embedded)', 'assets/css/sidebar-layout.min.css', 2_300],
+  // Embedded only when Sidebar position is Left side column (incl. dark-theme colours).
+  ['Side column CSS (minified, embedded)', 'assets/css/sidebar-rail.min.css', 1_500],
 ];
 
 let failed = false;
