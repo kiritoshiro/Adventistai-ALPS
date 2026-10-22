@@ -182,6 +182,7 @@ function crb_attach_theme_options()
                 ->add_options([
                     'right' => __('Right', 'alps'),
                     'left' => __('Left', 'alps'),
+                    'rail' => __('Left side column', 'alps'),
                 ]),
         ])
         ->add_tab(__('SABBATH COLUMN', 'alps'), [

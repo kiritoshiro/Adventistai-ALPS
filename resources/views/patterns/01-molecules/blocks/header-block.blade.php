@@ -72,7 +72,8 @@
 </header>
 @endif
 
-@if (@isset($GLOBALS["headerSubtitle"]))
+{{-- Only with a subtitle: an empty one left a bordered empty block (a stray line) under the band. --}}
+@if (!empty($GLOBALS["headerSubtitle"]))
   <div class="c-page-header__subtitle c-page-header__long__subtitle l-grid l-grid--7-col u-space--top--zero">
     <div class="l-grid-wrap l-grid-wrap--5-of-7 u-shift--left--1-col--at-medium u-border--left u-font--secondary--m">
       {{ $headerSubtitle }}

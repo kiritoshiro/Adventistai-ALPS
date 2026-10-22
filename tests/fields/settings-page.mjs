@@ -74,6 +74,7 @@ await page.click('.nav-tab[data-tab="posts"]');
 await page.fill('#alps-posts_page_title', 'Home title from the test');
 await page.uncheck('#alps-posts_grid');
 check('sidebar on the right by default', await page.inputValue('#alps-sidebar_position') === 'right');
+check('sidebar positions: right, left, side column', (await page.locator('#alps-sidebar_position option').evaluateAll((o) => o.map((x) => x.value))).join() === 'right,left,rail');
 await page.selectOption('#alps-sidebar_position', 'left');
 
 // SABBATH COLUMN: the screens choice only shows while the column is hidden.
