@@ -73,6 +73,8 @@ check('logo preview shown', await page.locator('[data-image] >> nth=0 >> img').c
 await page.click('.nav-tab[data-tab="posts"]');
 await page.fill('#alps-posts_page_title', 'Home title from the test');
 await page.uncheck('#alps-posts_grid');
+check('sidebar on the right by default', await page.inputValue('#alps-sidebar_position') === 'right');
+await page.selectOption('#alps-sidebar_position', 'left');
 
 // SABBATH COLUMN: the screens choice only shows while the column is hidden.
 await page.click('.nav-tab[data-tab="sabbath"]');
@@ -135,6 +137,7 @@ const values = {
   logo: await page.inputValue('#alps-logo'),
   posts_page_title: await page.inputValue('#alps-posts_page_title'),
   posts_grid: await page.isChecked('#alps-posts_grid'),
+  sidebar_position: await page.inputValue('#alps-sidebar_position'),
   sabbath_hide: await page.isChecked('#alps-sabbath_hide'),
   verse_rows: await page.locator('[data-rows="sabbath_timer_verses"] [data-row]').count(),
   verse_2: await page.inputValue('#alps-sabbath_timer_verses-1-sabbath_verse_text'),
@@ -151,7 +154,7 @@ const values = {
 };
 const expected = {
   theme_color: 'forest', dark_theme: true, site_branding_statement: 'Statement from the test', logo: logo_id,
-  posts_page_title: 'Home title from the test', posts_grid: false, sabbath_hide: true, screens: true,
+  posts_page_title: 'Home title from the test', posts_grid: false, sidebar_position: 'left', sabbath_hide: true, screens: true,
   verse_rows: 2, verse_2: 'Second verse from the test',
   footer_copyright: 'Copyright from the test', footer_en: 'Footer EN from the test', footer_rows: 1,
   city: 'Vilnius', circle: true, footer_logo_icon: '', avif: '60',
@@ -171,6 +174,7 @@ check('front end: address city', html.includes('Vilnius'));
 check('front end: forest stylesheet', html.includes('main-forest'));
 check('front end: forest palette', await front.evaluate(() => getComputedStyle(document.body).getPropertyValue('--wp--preset--color--darker').trim()) === '#101a00');
 check('front end: sabbath column hidden until large', html.includes('hide-sabbath--until-large'));
+check('front end: left sidebar class and its rule', /<body[^>]*\balps-sidebar-left\b/.test(html) && html.includes('.alps-sidebar-left .l-main__content>.c-sidebar{order:-1}'));
 
 // Front page (the seeded plain page for now): the timer carries the saved verses; once
 // hidden, no timer.

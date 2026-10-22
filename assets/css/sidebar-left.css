@@ -1,0 +1,12 @@
+/* Sidebar on the left (App\SidebarPosition; ALPS Theme Settings → POSTS
+ * OPTIONS → Sidebar position). Embedded only when "Left" is chosen.
+ *
+ * The article stays first in the HTML; on wide screens, where ALPS puts the
+ * article and the sidebar side by side (901px and up), the sidebar is moved
+ * in front of it visually. Below that the sidebar still follows the article.
+ */
+@media (min-width: 901px) {
+  .alps-sidebar-left .l-main__content > .c-sidebar {
+    order: -1;
+  }
+}

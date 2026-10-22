@@ -33,7 +33,7 @@
 
 <section id="top" class="l-main__content l-grid l-grid--7-col {{ $section_offset }} l-grid-wrap--6-of-7 u-spacing--double--until-large">
   <div class="c-article l-grid-item {{ $article_cols }} {{ $article_offset }}">
-    <article @php post_class('text c-article__body u-spacing @isset($GLOBALS["classes"])') @endphp>
+    <article @php post_class('text c-article__body u-spacing') @endphp>
 
       @if ($is_sermon)
         @if (!empty($sermon_bible_passage))

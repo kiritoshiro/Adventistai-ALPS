@@ -175,6 +175,14 @@ function crb_attach_theme_options()
                 ->set_option_value('true')
                 ->set_help_text(__('Make the post feed images round.', 'alps'))
                 ->set_width(50),
+            // Added in 3.37.0, after the move away from Carbon Fields. Defined
+            // here so compare.php checks it is read and stored in its format too.
+            Field
+                ::make('select', 'sidebar_position', __('Sidebar position', 'alps'))
+                ->add_options([
+                    'right' => __('Right', 'alps'),
+                    'left' => __('Left', 'alps'),
+                ]),
         ])
         ->add_tab(__('SABBATH COLUMN', 'alps'), [
             Field

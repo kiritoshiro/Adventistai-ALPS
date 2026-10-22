@@ -194,6 +194,8 @@ class Registry
             'posts_grid_3up' => $check,
             'posts_image' => $check,
             'posts_image_round' => $check,
+            // Added in 3.37.0, after Carbon Fields (App\SidebarPosition)
+            'sidebar_position' => ['type' => 'select', 'options' => ['right', 'left']],
             // SABBATH COLUMN
             'sabbath_icon' => ['type' => 'image'],
             'sabbath_background' => ['type' => 'image'],

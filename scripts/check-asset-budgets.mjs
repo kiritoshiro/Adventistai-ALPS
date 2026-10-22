@@ -42,6 +42,8 @@ const budgets = [
   // Embedded only on pages whose header shows an image (page-header.blade.php).
   ['Page header image CSS', 'assets/css/page-hero.css', 3_500],
   ['Page header image CSS (minified, embedded)', 'assets/css/page-hero.min.css', 2_100],
+  // Embedded only when Sidebar position is Left (App\SidebarPosition).
+  ['Left sidebar CSS (minified, embedded)', 'assets/css/sidebar-left.min.css', 300],
 ];
 
 let failed = false;
