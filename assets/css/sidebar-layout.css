@@ -1,0 +1,95 @@
+/* Article, sidebar and page header on wide screens (App\SidebarPosition;
+ * ALPS Theme Settings → POSTS OPTIONS → Sidebar position). Embedded on every
+ * front-end page; the rules apply only where the article and the sidebar sit
+ * side by side: above 1000px (site-overrides.css stacks them up to 1000px,
+ * responsive-zoom-fixes.css), on pages that show a sidebar (body class
+ * alps-has-sidebar, set by the templates before <body> is printed, so the
+ * header never changes layout while the page loads). Pages without a
+ * sidebar, and narrower screens, keep the usual layout.
+ *
+ * The geometry (site-overrides.css "(c)" and "(d)"): the content block is
+ * M = min(content column, 90rem), centred in the column left of the Sabbath
+ * rail; the article is 62% of it and the sidebar 38%, and text starts one
+ * --site-gutter into each. The gap between the article's text and the
+ * widgets is therefore centred on the line between the two columns.
+ *
+ * In the page header: the title starts where the article text starts, and
+ * the whole featured image sits over the sidebar column, its faded edge
+ * ending (sidebar left) or starting (sidebar right) on that line between the
+ * columns. The blurred copy fills the rest; an image wider than the sidebar
+ * column is shown smaller, still whole.
+ *
+ * The header with an image is the alps-hero container and as wide as the
+ * content column, so 100cqi is the column. Title text = text box + 2px border
+ * + 1.25rem padding (page-hero.css).
+ */
+@media (min-width: 1001px) {
+  /* 1. Sidebar on the left: shown before the article. The article stays
+     first in the HTML, so screen readers and search engines still get it
+     first. */
+  .alps-sidebar-left .l-main__content > .c-sidebar {
+    order: -1;
+  }
+
+  /* 2. Headers with an image. */
+  .alps-has-sidebar .alps-hero__row {
+    --alps-col-edge: calc((100cqi - min(100cqi, 90rem)) / 2);
+    --alps-measure: min(100cqi, 90rem);
+    --alps-text-inset: calc(2px + 1.25rem);
+    --alps-image-max: calc(var(--alps-hero-max) * var(--alps-hero-ratio, 1.7778));
+  }
+  .alps-has-sidebar .alps-hero__text {
+    flex: none;
+  }
+
+  /* Sidebar right: title over the article, image after it from the line
+     between the columns, fading in from its left edge. */
+  .alps-has-sidebar:not(.alps-sidebar-left) .alps-hero__text {
+    margin-left: calc(var(--alps-col-edge) + var(--site-gutter, 1.25rem) - var(--alps-text-inset));
+    margin-right: var(--site-gutter, 1.25rem);
+    width: calc(0.62 * var(--alps-measure) - 2 * var(--site-gutter, 1.25rem) + var(--alps-text-inset));
+  }
+  .alps-has-sidebar:not(.alps-sidebar-left) .alps-hero__media {
+    order: 1;
+    flex: none;
+    width: min(var(--alps-image-max), 100cqi - var(--alps-col-edge) - 0.62 * var(--alps-measure));
+    -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 2rem), transparent);
+    mask-image: linear-gradient(to left, #000 calc(100% - 2rem), transparent);
+  }
+
+  /* Sidebar left: image over the sidebar column, ending on the line between
+     the columns; title after it, over the article. */
+  .alps-sidebar-left.alps-has-sidebar .alps-hero__row {
+    --alps-line: calc(var(--alps-col-edge) + 0.38 * var(--alps-measure));
+    --alps-image: min(var(--alps-image-max), var(--alps-line));
+  }
+  .alps-sidebar-left.alps-has-sidebar .alps-hero__media {
+    flex: none;
+    width: var(--alps-image);
+    margin-left: calc(var(--alps-line) - var(--alps-image));
+  }
+  .alps-sidebar-left.alps-has-sidebar .alps-hero__text {
+    margin-left: max(0px, var(--site-gutter, 1.25rem) - var(--alps-text-inset));
+    margin-right: var(--site-gutter, 1.25rem);
+    width: calc(0.62 * var(--alps-measure) - 2 * var(--site-gutter, 1.25rem) + var(--alps-text-inset));
+  }
+
+  /* 3. Headers without an image: without its side padding the header's inner
+     box is the same capped, centred box as the content, so the title moves to
+     the article text: by the gutter, plus the sidebar's 38% when the sidebar
+     is on the left, less its own border (1px) and padding (1.25rem). Five
+     classes, to outrank the full-width rule for grid wraps in
+     site-overrides.css "(b)". */
+  .alps-has-sidebar .c-page-header__long:not(.alps-hero) {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .alps-has-sidebar .l-wrap__content .c-page-header__long .c-page-header__long--inner > .c-page-header__content {
+    margin-left: calc(var(--site-gutter, 1.25rem) - 1.25rem - 1px) !important;
+    width: calc(62% - 2 * var(--site-gutter, 1.25rem) + 1.25rem + 1px) !important;
+    max-width: none !important;
+  }
+  .alps-sidebar-left.alps-has-sidebar .l-wrap__content .c-page-header__long .c-page-header__long--inner > .c-page-header__content {
+    margin-left: calc(38% + var(--site-gutter, 1.25rem) - 1.25rem - 1px) !important;
+  }
+}

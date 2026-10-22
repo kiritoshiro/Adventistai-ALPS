@@ -87,6 +87,7 @@ add_action('wp_footer', [\App\DeferredImages::class, 'printScript'], 20);
 \App\Authors\EditorPanel::register();
 \App\Authors\Output::register();
 \App\Authors\Cli::register();
+\App\SidebarPosition::register();
 add_action('widgets_init', [\App\Widgets\AlpsWidget::class, 'registerAll']);
 add_action('init', [\App\WrappedImageTextBlock::class, 'register']);
 add_action('init', [\App\CardScrollerBlock::class, 'register']);

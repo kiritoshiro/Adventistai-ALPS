@@ -3,7 +3,17 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.37.0]
+### Added
+- **Sidebar position** (Appearance → ALPS Theme Settings → POSTS OPTIONS → Sidebar): Right (default, as before) or Left. With Left, on screens wider than 1000px (where the article and the sidebar sit side by side), the widget sidebar of posts, pages and archives sits on the left, so the article is between the sidebar and the Sabbath column instead of everything heavy being on the right: at 1440px the article's centre moves from 337px left of the screen centre to 132px right, at 1920px from 410px left to 137px right.
+  - Only the visual order changes: the article stays first in the HTML, so phones, screen readers and search engines still get it before the widgets, and phones look the same.
+
+### Changed
+- **The page header lines up with the article** (either sidebar position, screens wider than 1000px, pages that show a sidebar): the title starts exactly where the article text starts (also on pages without an image), and the whole featured image sits over the sidebar column, its faded edge on the line between the article and the widgets. With the sidebar on the right the image follows the title; on the left it comes before it. The blurred copy fills the rest of the band; an image wider than the sidebar column is shown smaller (still whole), so such headers are lower (a 16:9 image at 1440px: 264px instead of 416px). Pages without a sidebar and narrower screens keep the previous header. `assets/css/sidebar-layout.css`, 2.1 KB embedded on every page. Whether a page shows a sidebar is set on `<body>` by the templates (class `alps-has-sidebar`), so the header's layout is fixed from the first byte and never shifts while the page loads.
+
+### Fixed
+- Posts no longer carry a stray `@isset($GLOBALS["classes"])` in the article's class list (template code left in `content-single.blade.php` since the theme was imported).
+
 ### Changed
 - **Requires PHP 8.4** (was 8.3): `style.css` "Requires PHP", `composer.json` (`php` and `config.platform.php`) and the README. The sites run on the production server's PHP 8.4, so WordPress now refuses to install the theme on older PHP instead of the theme claiming support for a version nothing tests.
 - CI tests PHP 8.4 only: the PHP validation and Playground runs no longer repeat on 8.3, and the PHP compatibility sniff checks 8.4.

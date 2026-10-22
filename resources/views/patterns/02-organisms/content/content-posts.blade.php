@@ -244,6 +244,7 @@
   </article>
 
   @if ($hasSidebar)
+    @php \App\SidebarPosition::markShown() @endphp
     <div class="c-sidebar l-grid-item l-grid-item--l--2-col l-grid-item--xl--2-col u-padding--zero--sides">
       <div class="u-spacing--double u-padding--right">
         @php dynamic_sidebar($sidebar['id']) @endphp
