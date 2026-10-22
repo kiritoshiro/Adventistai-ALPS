@@ -9,19 +9,24 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * ALPS Theme Settings → POSTS OPTIONS → Sidebar position (3.37.0).
+ * ALPS Theme Settings → POSTS OPTIONS → Sidebar position (3.37.0), and the
+ * page header lined up with the article.
  *
- * "Right" (the default) keeps the ALPS layout. "Left" puts the widget
+ * "Right" (the default) keeps the sidebar on the right; "Left" puts the widget
  * sidebar of posts, pages and archives on the left on wide screens, so the
  * article sits between the sidebar and the Sabbath column instead of
- * everything heavy being on the right. Only the visual order changes
- * (assets/css/sidebar-left.css, embedded only when "Left" is chosen): the
+ * everything heavy being on the right. Only the visual order changes: the
  * article stays first in the HTML, so phones, screen readers and search
  * engines still get it before the widgets.
+ *
+ * With either position, on wide screens and pages with a sidebar, the page
+ * header's title starts where the article text starts and the featured image
+ * sits over the sidebar column (assets/css/sidebar-layout.css, embedded on
+ * every page).
  */
 class SidebarPosition
 {
-    const CSS = '/assets/css/sidebar-left.css';
+    const CSS = '/assets/css/sidebar-layout.css';
 
     public static function register()
     {
@@ -45,7 +50,7 @@ class SidebarPosition
 
     public static function styles()
     {
-        if (! self::left() || ! wp_style_is('adventistai-overrides')) {
+        if (! wp_style_is('adventistai-overrides')) {
             return;
         }
         $css = embedded_css(get_template_directory() . self::CSS);

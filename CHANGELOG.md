@@ -6,8 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [3.37.0]
 ### Added
 - **Sidebar position** (Appearance → ALPS Theme Settings → POSTS OPTIONS → Sidebar): Right (default, as before) or Left. With Left, on screens wider than 1000px (where the article and the sidebar sit side by side), the widget sidebar of posts, pages and archives sits on the left, so the article is between the sidebar and the Sabbath column instead of everything heavy being on the right: at 1440px the article's centre moves from 337px left of the screen centre to 132px right, at 1920px from 410px left to 137px right.
-  - The page title in the header band starts exactly where the article text starts (also on pages without an image). In headers with an image, the whole image sits just left of the title; when it is narrower than that space the blurred copy fills the rest on the left, and when it is wider it is shown smaller (still whole), so such headers are lower (a 16:9 image at 1440px: 243px instead of 416px).
-  - Only the visual order changes (`assets/css/sidebar-left.css`, about 1 KB, embedded only when Left is chosen): the article stays first in the HTML, so phones, screen readers and search engines still get it before the widgets, and phones look the same.
+  - Only the visual order changes: the article stays first in the HTML, so phones, screen readers and search engines still get it before the widgets, and phones look the same.
+
+### Changed
+- **The page header lines up with the article** (either sidebar position, screens wider than 1000px, pages that show a sidebar): the title starts exactly where the article text starts (also on pages without an image), and the whole featured image sits over the sidebar column, its faded edge on the line between the article and the widgets. With the sidebar on the right the image follows the title; on the left it comes before it. The blurred copy fills the rest of the band; an image wider than the sidebar column is shown smaller (still whole), so such headers are lower (a 16:9 image at 1440px: 264px instead of 416px). Pages without a sidebar and narrower screens keep the previous header. `assets/css/sidebar-layout.css`, 2.1 KB embedded on every page (needs `:has()`; older browsers keep the previous header).
 
 ### Fixed
 - Posts no longer carry a stray `@isset($GLOBALS["classes"])` in the article's class list (template code left in `content-single.blade.php` since the theme was imported).
