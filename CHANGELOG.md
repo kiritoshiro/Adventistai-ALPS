@@ -8,6 +8,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Requires PHP 8.4** (was 8.3): `style.css` "Requires PHP", `composer.json` (`php` and `config.platform.php`) and the README. The sites run on the production server's PHP 8.4, so WordPress now refuses to install the theme on older PHP instead of the theme claiming support for a version nothing tests.
 - CI tests PHP 8.4 only: the PHP validation and Playground runs no longer repeat on 8.3, and the PHP compatibility sniff checks 8.4.
 
+## [3.36.0]
+### Added
+- **Author profiles** (off until turned on in Appearance → ALPS Theme Settings → AUTHORS). Posts and pages are credited to authors, a list of names, instead of user accounts, so old accounts can be deleted without changing who a post is credited to. See `docs/authors.md`.
+  - **Posts → Authors** (editors and administrators): add, edit (name, URL slug, bio, photo, website, Facebook, optional linked account), delete (the posts go to an author you choose) and merge duplicates.
+  - **Author panel in the editor**: choose one or more authors in order, or add a new one on the spot (editors and administrators; an existing author with the same name is offered instead of a duplicate). Contributors choose from the list. A new post starts with its account's author; the pre-publish panel warns when none is chosen. A post published with no author (also through REST, e.g. WPBridge) gets its account's author, else the default author "Adventistai". The post list gets an author filter and an Authors column.
+  - **Author pages** at `/autorius/<slug>/` (photo, bio, links, posts; paged normally; the photo and bio also show before the first post). `/author/<login>/`, its feed and `?author=N` redirect there (301) or give 404, never revealing a login.
+  - A post with no author shows the default author, or no name, never the account. Authors can't be deleted through REST (that would skip reassigning their posts); the default author setting follows merges and is cleared if its author is deleted.
+  - Visitors see the authors everywhere the account showed: the author name and link, RSS `dc:creator`, oEmbed, the Author Box widget and Yoast SEO's author meta, Slack data, schema `Person` (from the author; the account's Person and Gravatar are removed) and sitemaps (no user sitemap; an author sitemap). An optional byline under post titles (off).
+  - **Hide user accounts** (on by default): `/wp-json/wp/v2/users` answers 401 to visitors who are not logged in, the core users sitemap is off, comment classes don't name accounts.
+  - **WP-CLI**: `wp alps authors migrate [--dry-run]` makes an author from each account that wrote posts and credits its posts (idempotent; the default author "Adventistai" is reused, not duplicated; near-duplicate names are reported), `verify`, `list`, and `holder-account`, which creates the locked "Redakcija" account (no role, no login with a password or an application password, no password reset) to hold deleted accounts' posts. Deleting an account first gives its posts the account's author.
+- Tests: `tests/authors/run.py` (Playground, in CI), `tests/authors/e2e.py` (Playground with Yoast SEO and Playwright), and the Playground smoke test turns author profiles on and loads an author page and old `/author/` addresses.
+
+### Changed
+- The editor bundle's size budget is 36 KB (was 30 KB) for the Author panel; it loads only in the block editor.
+
 ## [3.35.3]
 ### Fixed
 - Archive and category pages with no posts (an empty tag, for example) no longer log `Attempt to read property "ID" on null` from `TemplateHelpers::getRootPostData()` when no posts page is set. The header fields are read exactly as before; pages look the same.

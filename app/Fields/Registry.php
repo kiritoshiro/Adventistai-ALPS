@@ -235,6 +235,12 @@ class Registry
             // Added after Carbon Fields (OriginalImageRetention)
             'alps_image_keep_originals' => ['type' => 'checkbox', 'value' => 'true', 'default' => 'true'],
             'alps_image_original_days' => ['type' => 'text'],
+            // AUTHORS (added in 3.36.0, after Carbon Fields; App\Authors)
+            'alps_authors_enabled' => $check,
+            'alps_authors_base' => ['type' => 'text'],
+            'alps_authors_default' => ['type' => 'text'],
+            'alps_authors_byline' => $check,
+            'alps_authors_hide_users' => ['type' => 'checkbox', 'value' => 'true', 'default' => 'true'],
         ];
         return $fields;
     }

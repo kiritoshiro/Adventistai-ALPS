@@ -84,6 +84,8 @@ def blueprint(config, logs_vfs):
         steps.append({"step": "activatePlugin", "pluginPath": plugin})
     if config.get("theme"):
         steps.append({"step": "activateTheme", "themeFolderName": config["theme"]})
+    # Steps that need the theme's code (e.g. author profiles on).
+    steps += config.get("after_theme", [])
     fixture = config.get("fixture")
     if fixture:
         steps.append({"step": "runPHP", "code": (
@@ -211,6 +213,17 @@ def main():
         check_page(opener, "/?tag=playground-smoke-empty", "empty tag archive")
         # ...and with posts (the default post's category), now that "/" is a static page.
         check_page(opener, "/?cat=1", "category archive")
+        for path in config.get("front_paths", []):
+            check_page(opener, path)
+        # Old addresses that must end up elsewhere (e.g. /author/<login>/ → the author page).
+        for redirect in config.get("redirects", []):
+            status, final, body = get(opener, redirect["from"])
+            if status != 200 or urllib.parse.urlparse(final).path != redirect["to"]:
+                fail(f"{redirect['from']}: expected {redirect['to']}, got HTTP {status} at {final}")
+            elif PAGE_ERROR.search(body):
+                fail(f"{redirect['from']}: page shows a PHP error or the critical-error screen")
+            else:
+                print(f"ok  {redirect['from']} -> {redirect['to']}")
 
         get(opener, "/wp-login.php")  # sets the test cookie
         form = urllib.parse.urlencode({"log": USER, "pwd": PASSWORD, "wp-submit": "Log In",

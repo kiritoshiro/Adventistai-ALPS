@@ -68,6 +68,9 @@ msgstr "El. paštas"
 msgid "Website"
 msgstr "Svetainė"
 
+msgid "Author"
+msgstr "Autorius"
+
 msgid "Category"
 msgstr "Kategorija"
 

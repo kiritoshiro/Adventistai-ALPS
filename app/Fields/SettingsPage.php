@@ -120,6 +120,14 @@ class SettingsPage
                 ['field', 'alps_image_keep_originals', __('Keep the uploaded originals', 'alps'), __('Unticked: they are deleted a few minutes after the upload, and those kept so far by the next clean-up.', 'alps'), 50],
                 ['field', 'alps_image_original_days', __('Keep them for (days)', 'alps'), __('1–365. Empty: 7. Also applies to the originals kept so far.', 'alps'), 50, ['type' => 'number', 'min' => 1, 'max' => 365, 'placeholder' => '7', 'data-shown-with' => 'alps_image_keep_originals']],
             ]],
+            'authors' => [__('AUTHORS', 'alps'), [
+                ['html', \App\Authors\AdminPage::settingsHtml()],
+                ['field', 'alps_authors_enabled', __('Use author profiles', 'alps'), __('Posts and pages are credited to authors from a list (Posts → Authors) instead of user accounts. Run the migration first (wp alps authors migrate).', 'alps'), 100],
+                ['field', 'alps_authors_base', __('Author page address', 'alps'), __('Author pages are at /<this>/<author>/. Empty: autorius.', 'alps'), 50, ['placeholder' => 'autorius', 'data-shown-with' => 'alps_authors_enabled']],
+                ['field', 'alps_authors_default', __('Default author', 'alps'), __('Credited when a post is published without an author and its account has no linked author.', 'alps'), 50, ['options' => \App\Authors\AdminPage::defaultChoices(), 'data-shown-with' => 'alps_authors_enabled']],
+                ['field', 'alps_authors_byline', __('Show the authors under post titles', 'alps'), __('A byline linked to the author pages.', 'alps'), 50, ['data-shown-with' => 'alps_authors_enabled']],
+                ['field', 'alps_authors_hide_users', __('Hide user accounts', 'alps'), __('Visitors who are not logged in get no user list from the REST API (/wp-json/wp/v2/users) and no users sitemap; old /author/ addresses never show a login.', 'alps'), 50, ['data-shown-with' => 'alps_authors_enabled']],
+            ]],
             'cache' => [__('CACHE', 'alps'), [
                 ['html', \App\ThemeCache::settingsHtml()],
             ]],
@@ -306,6 +314,15 @@ class SettingsPage
                 printf('<button type="button" class="button" data-image-choose>%s</button> <button type="button" class="button-link button-link-delete" data-image-remove%s>%s</button></div>', esc_html__('Select image', 'alps'), $image_id ? '' : ' hidden', esc_html__('Remove', 'alps'));
                 return;
             default:
+                if (isset($attrs['options'])) {
+                    // A text field picked from a list made at runtime (e.g. the authors).
+                    printf('<select id="%s" name="%s">', esc_attr($id), esc_attr($input_name));
+                    foreach ($attrs['options'] as $key => $text) {
+                        printf('<option value="%s"%s>%s</option>', esc_attr((string) $key), selected((string) $value, (string) $key, false), esc_html($text));
+                    }
+                    echo '</select>';
+                    return;
+                }
                 printf('<input class="regular-text" id="%s" name="%s" value="%s"', esc_attr($id), esc_attr($input_name), esc_attr((string) $value));
                 foreach ($attrs + ['type' => 'text'] as $attr => $attr_value) {
                     echo ' ' . esc_attr($attr) . '="' . esc_attr((string) $attr_value) . '"';

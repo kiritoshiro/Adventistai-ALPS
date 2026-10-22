@@ -46,6 +46,13 @@ jobs:
         env:
           PHP_VERSION: ${{ matrix.php }}
         run: python3 .github/playground/smoke.py --php "$PHP_VERSION"
+      # Author profiles (App\Authors): migration, deleting accounts, the locked
+      # holder account, merge, the REST safety net and what visitors see.
+      # See tests/authors/run.php.
+      - name: Author profiles
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: python3 tests/authors/run.py --php "$PHP_VERSION"
       # App\Fields\Store (the theme's own field reader) must return exactly
       # what Carbon Fields returns, for saved, empty, invalid and hand-written
       # edge rows. See tests/fields/compare.php.

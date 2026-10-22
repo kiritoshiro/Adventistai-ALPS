@@ -324,6 +324,23 @@ function crb_attach_theme_options()
             Field
                 ::make('text', 'alps_image_original_days', __('Keep them for (days)', 'alps')),
         ])
+        // Added in 3.36.0, after the move away from Carbon Fields. Defined here
+        // so compare.php checks they are read and stored in its format too.
+        ->add_tab(__('AUTHORS', 'alps'), [
+            Field
+                ::make('checkbox', 'alps_authors_enabled', __('Use author profiles', 'alps'))
+                ->set_option_value('true'),
+            Field
+                ::make('text', 'alps_authors_base', __('Author page address', 'alps')),
+            Field
+                ::make('text', 'alps_authors_default', __('Default author', 'alps')),
+            Field
+                ::make('checkbox', 'alps_authors_byline', __('Show the authors under post titles', 'alps'))
+                ->set_option_value('true'),
+            Field
+                ::make('checkbox', 'alps_authors_hide_users', __('Hide user accounts', 'alps'))
+                ->set_option_value('true')->set_default_value('true'),
+        ])
         ->add_tab(__('CACHE', 'alps'), [
             Field
                 ::make('html', 'crb_theme_cache')
