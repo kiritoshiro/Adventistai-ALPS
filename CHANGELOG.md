@@ -3,6 +3,11 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- **Requires PHP 8.4** (was 8.3): `style.css` "Requires PHP", `composer.json` (`php` and `config.platform.php`) and the README. The sites run on the production server's PHP 8.4, so WordPress now refuses to install the theme on older PHP instead of the theme claiming support for a version nothing tests.
+- CI tests PHP 8.4 only: the PHP validation and Playground runs no longer repeat on 8.3, and the PHP compatibility sniff checks 8.4.
+
 ## [3.36.0]
 ### Added
 - **Author profiles** (off until turned on in Appearance → ALPS Theme Settings → AUTHORS). Posts and pages are credited to authors, a list of names, instead of user accounts, so old accounts can be deleted without changing who a post is credited to. See `docs/authors.md`.

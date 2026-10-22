@@ -44,7 +44,7 @@
     }
   },
   "require": {
-    "php": "^8.3",
+    "php": "^8.4",
     "roots/acorn": "^6.3"
   },
   "suggest": {
@@ -56,7 +56,7 @@
     "preferred-install": "dist",
     "sort-packages": true,
     "platform": {
-      "php": "8.3.0"
+      "php": "8.4.0"
     }
   },
   "minimum-stability": "dev",
