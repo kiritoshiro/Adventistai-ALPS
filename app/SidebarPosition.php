@@ -28,6 +28,9 @@ class SidebarPosition
 {
     const CSS = '/assets/css/sidebar-layout.css';
 
+    /** Whether the page being rendered shows the widget sidebar. */
+    private static $shown = false;
+
     public static function register()
     {
         add_filter('body_class', [__CLASS__, 'bodyClass']);
@@ -40,10 +43,25 @@ class SidebarPosition
         return Store::option('sidebar_position') === 'left';
     }
 
+    /**
+     * Called by the content templates where they print the sidebar. Blade
+     * renders the page's sections before the layout that prints <body>, so
+     * the body class below already knows, and the header's layout is set from
+     * the first byte instead of changing once the sidebar markup (after the
+     * article) arrives.
+     */
+    public static function markShown()
+    {
+        self::$shown = true;
+    }
+
     public static function bodyClass(array $classes)
     {
         if (self::left()) {
             $classes[] = 'alps-sidebar-left';
+        }
+        if (self::$shown) {
+            $classes[] = 'alps-has-sidebar';
         }
         return $classes;
     }

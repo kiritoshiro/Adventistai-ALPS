@@ -2,7 +2,9 @@
  * ALPS Theme Settings → POSTS OPTIONS → Sidebar position). Embedded on every
  * front-end page; the rules apply only where the article and the sidebar sit
  * side by side: above 1000px (site-overrides.css stacks them up to 1000px,
- * responsive-zoom-fixes.css), on pages that show a sidebar. Pages without a
+ * responsive-zoom-fixes.css), on pages that show a sidebar (body class
+ * alps-has-sidebar, set by the templates before <body> is printed, so the
+ * header never changes layout while the page loads). Pages without a
  * sidebar, and narrower screens, keep the usual layout.
  *
  * The geometry (site-overrides.css "(c)" and "(d)"): the content block is
@@ -30,24 +32,24 @@
   }
 
   /* 2. Headers with an image. */
-  body:has(.c-sidebar) .alps-hero__row {
+  .alps-has-sidebar .alps-hero__row {
     --alps-col-edge: calc((100cqi - min(100cqi, 90rem)) / 2);
     --alps-measure: min(100cqi, 90rem);
     --alps-text-inset: calc(2px + 1.25rem);
     --alps-image-max: calc(var(--alps-hero-max) * var(--alps-hero-ratio, 1.7778));
   }
-  body:has(.c-sidebar) .alps-hero__text {
+  .alps-has-sidebar .alps-hero__text {
     flex: none;
   }
 
   /* Sidebar right: title over the article, image after it from the line
      between the columns, fading in from its left edge. */
-  body:not(.alps-sidebar-left):has(.c-sidebar) .alps-hero__text {
+  .alps-has-sidebar:not(.alps-sidebar-left) .alps-hero__text {
     margin-left: calc(var(--alps-col-edge) + var(--site-gutter, 1.25rem) - var(--alps-text-inset));
     margin-right: var(--site-gutter, 1.25rem);
     width: calc(0.62 * var(--alps-measure) - 2 * var(--site-gutter, 1.25rem) + var(--alps-text-inset));
   }
-  body:not(.alps-sidebar-left):has(.c-sidebar) .alps-hero__media {
+  .alps-has-sidebar:not(.alps-sidebar-left) .alps-hero__media {
     order: 1;
     flex: none;
     width: min(var(--alps-image-max), 100cqi - var(--alps-col-edge) - 0.62 * var(--alps-measure));
@@ -57,16 +59,16 @@
 
   /* Sidebar left: image over the sidebar column, ending on the line between
      the columns; title after it, over the article. */
-  .alps-sidebar-left:has(.c-sidebar) .alps-hero__row {
+  .alps-sidebar-left.alps-has-sidebar .alps-hero__row {
     --alps-line: calc(var(--alps-col-edge) + 0.38 * var(--alps-measure));
     --alps-image: min(var(--alps-image-max), var(--alps-line));
   }
-  .alps-sidebar-left:has(.c-sidebar) .alps-hero__media {
+  .alps-sidebar-left.alps-has-sidebar .alps-hero__media {
     flex: none;
     width: var(--alps-image);
     margin-left: calc(var(--alps-line) - var(--alps-image));
   }
-  .alps-sidebar-left:has(.c-sidebar) .alps-hero__text {
+  .alps-sidebar-left.alps-has-sidebar .alps-hero__text {
     margin-left: max(0px, var(--site-gutter, 1.25rem) - var(--alps-text-inset));
     margin-right: var(--site-gutter, 1.25rem);
     width: calc(0.62 * var(--alps-measure) - 2 * var(--site-gutter, 1.25rem) + var(--alps-text-inset));
@@ -78,16 +80,16 @@
      is on the left, less its own border (1px) and padding (1.25rem). Five
      classes, to outrank the full-width rule for grid wraps in
      site-overrides.css "(b)". */
-  body:has(.c-sidebar) .c-page-header__long:not(.alps-hero) {
+  .alps-has-sidebar .c-page-header__long:not(.alps-hero) {
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
-  body:has(.c-sidebar) .l-wrap__content .c-page-header__long .c-page-header__long--inner > .c-page-header__content {
+  .alps-has-sidebar .l-wrap__content .c-page-header__long .c-page-header__long--inner > .c-page-header__content {
     margin-left: calc(var(--site-gutter, 1.25rem) - 1.25rem - 1px) !important;
     width: calc(62% - 2 * var(--site-gutter, 1.25rem) + 1.25rem + 1px) !important;
     max-width: none !important;
   }
-  .alps-sidebar-left:has(.c-sidebar) .l-wrap__content .c-page-header__long .c-page-header__long--inner > .c-page-header__content {
+  .alps-sidebar-left.alps-has-sidebar .l-wrap__content .c-page-header__long .c-page-header__long--inner > .c-page-header__content {
     margin-left: calc(38% + var(--site-gutter, 1.25rem) - 1.25rem - 1px) !important;
   }
 }

@@ -175,6 +175,9 @@ check('front end: forest stylesheet', html.includes('main-forest'));
 check('front end: forest palette', await front.evaluate(() => getComputedStyle(document.body).getPropertyValue('--wp--preset--color--darker').trim()) === '#101a00');
 check('front end: sabbath column hidden until large', html.includes('hide-sabbath--until-large'));
 check('front end: left sidebar class and its rule', /<body[^>]*\balps-sidebar-left\b/.test(html) && html.includes('.alps-sidebar-left .l-main__content>.c-sidebar{order:-1}'));
+// Set on <body> by the templates, so the header layout never changes while loading.
+check('front end: alps-has-sidebar on <body> exactly when the page shows a sidebar',
+  /<body[^>]*\balps-has-sidebar\b/.test(html) === /class="c-sidebar[\s"]/.test(html), /class="c-sidebar[\s"]/.test(html));
 
 // Front page (the seeded plain page for now): the timer carries the saved verses; once
 // hidden, no timer.
