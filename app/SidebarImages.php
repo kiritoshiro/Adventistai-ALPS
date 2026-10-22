@@ -52,6 +52,14 @@ class SidebarImages
         'single-side' => [[700, 100, 32], [1000, 81.31, 0], [1272, 28.17, 0], [1680, 32.57, 56], [null, 0, -492]],
         'post' => [[700, 100, 32], [1000, 81.31, 0], [1272, 48.74, 0], [1680, 53.14, 56], [null, 0, -837]],
         'footer' => [[700, 100, 32], [1272, 81.31, 0], [1680, 85.71, 56], [null, 0, -1384]],
+        // Sidebar position "Left side column" (sidebar-rail.css), above 1000px:
+        // the column is clamp(17rem, 17vw, 22rem) less its 1.25rem padding on
+        // both sides (its inner padding is removed); the article beside it is
+        // the content column less the side column and both gutters, at most
+        // 90rem. Up to 1000px the same as without it.
+        'rail-side' => [[700, 100, 47], [900, 81.31, 15], [1000, 81.31, 20], [1600, 0, -232], [2071, 17, 40], [null, 0, -312]],
+        'rail-single-side' => [[700, 100, 32], [1000, 81.31, 0], [1600, 0, -232], [2071, 17, 40], [null, 0, -312]],
+        'rail-post' => [[700, 100, 32], [1000, 81.31, 0], [1272, 81.31, 272], [1600, 85.71, 328], [2071, 68.71, 56], [2156, 85.71, 408], [null, 0, -1440]],
     ];
 
     /** On a single post (single()): whether its side column is shown; else null. */
@@ -129,17 +137,24 @@ class SidebarImages
         self::$singleSidebar = $sidebar;
     }
 
-    /** A LAYOUTS key, or '' (left to WordPress), for a widget area id. */
-    public static function layout(string $area): string
+    /**
+     * A LAYOUTS key, or '' (left to WordPress), for a widget area id. $rail:
+     * whether Sidebar position is "Left side column" (null: read the setting).
+     */
+    public static function layout(string $area, ?bool $rail = null): string
     {
+        if (null === $rail) {
+            $rail = class_exists(SidebarPosition::class) && 'rail' === SidebarPosition::position();
+        }
+        $prefix = $rail ? 'rail-' : '';
         if ('sidebar-posts' === $area && null !== self::$singleSidebar) {
-            return 'single-side';
+            return $prefix . 'single-side';
         }
         if (in_array($area, self::SIDE_AREAS, true)) {
-            return 'side';
+            return $prefix . 'side';
         }
         if ('footer-region-post' === $area && true === self::$singleSidebar) {
-            return 'post';
+            return $prefix . 'post';
         }
         return in_array($area, self::FOOTER_AREAS, true) ? 'footer' : '';
     }

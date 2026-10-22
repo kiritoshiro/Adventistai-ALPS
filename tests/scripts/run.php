@@ -241,6 +241,13 @@ check('widgets under a post, a 600px image', '(max-width: 632px) calc(100vw - 32
 $footer = '(max-width: 700px) calc(100vw - 32px), (max-width: 1272px) 81.31vw, (max-width: 1680px) calc(85.71vw - 56px), 1384px';
 check('footer: the content column less the gutters, up to the 90rem measure', $footer === SidebarImages::areaSizes('footer') && $footer === SidebarImages::areaSizes('footer', 2000));
 check('unknown layout: nothing', '' === SidebarImages::areaSizes('other'));
+// Sidebar position "Left side column".
+check('side column (rail) area types', 'rail-side' === SidebarImages::layout('sidebar-page', true) && 'rail-side' === SidebarImages::layout('sidebar-posts', true) && 'footer' === SidebarImages::layout('footer-region', true) && 'side' === SidebarImages::layout('sidebar-page', false));
+$railSide = '(max-width: 700px) calc(100vw - 47px), (max-width: 900px) calc(81.31vw - 15px), (max-width: 1000px) calc(81.31vw - 20px), (max-width: 1600px) 232px, (max-width: 2071px) calc(17vw - 40px), 312px';
+check('side column (rail): clamp(17rem, 17vw, 22rem) less its padding above 1000px', $railSide === SidebarImages::areaSizes('rail-side'));
+check('side column (rail), a 250px image', '(max-width: 297px) calc(100vw - 47px), (max-width: 1000px) 250px, (max-width: 1600px) 232px, (max-width: 1705px) calc(17vw - 40px), 250px' === SidebarImages::areaSizes('rail-side', 250));
+$railPost = '(max-width: 700px) calc(100vw - 32px), (max-width: 1000px) 81.31vw, (max-width: 1272px) calc(81.31vw - 272px), (max-width: 1600px) calc(85.71vw - 328px), (max-width: 2071px) calc(68.71vw - 56px), (max-width: 2156px) calc(85.71vw - 408px), 1440px';
+check('widgets under a post beside the side column (rail): the rest of the content column, at most 90rem', $railPost === SidebarImages::areaSizes('rail-post'));
 
 $widget = '<img width="1280" height="640" src="w.jpg" srcset="w-768.jpg 768w, w.jpg 1280w" sizes="auto, (max-width: 1280px) 100vw, 1280px" loading="lazy">';
 check('outside a sidebar: sizes unchanged', $widget === SidebarImages::sizes($widget));
