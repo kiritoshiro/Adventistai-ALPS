@@ -165,6 +165,11 @@ final class SeoDefaults
         if (is_singular() && $postId) {
             $post = get_post($postId);
             if ($post instanceof \WP_Post) {
+                // No text from a password-protected entry, even once unlocked
+                // (cached pages and link previews would carry it).
+                if ($post->post_password !== '') {
+                    return '';
+                }
                 $source = trim((string) $post->post_excerpt);
                 if ($source === '') {
                     $source = (string) $post->post_content;
@@ -182,7 +187,7 @@ final class SeoDefaults
 
         if (is_home() && get_option('page_for_posts')) {
             $postsPage = get_post((int) get_option('page_for_posts'));
-            if ($postsPage instanceof \WP_Post) {
+            if ($postsPage instanceof \WP_Post && $postsPage->post_password === '') {
                 return ContentHelpers::trimWords((string) $postsPage->post_excerpt, 160);
             }
         }

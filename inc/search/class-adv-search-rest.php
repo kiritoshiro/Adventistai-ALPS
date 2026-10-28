@@ -115,10 +115,7 @@ final class Adv_Search_REST {
 	private static function within_rate_limit( $maximum, $window ) {
 		$maximum = max( 1, $maximum );
 		$window  = max( 10, $window );
-		$ip      = isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) : '';
-		if ( '' === $ip && isset( $_SERVER['REMOTE_ADDR'] ) ) {
-			$ip = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
-		}
+		$ip      = self::client_ip();
 		$key   = 'advs_rl_' . hash_hmac( 'sha256', $ip, wp_salt( 'nonce' ) );
 		$count = (int) get_transient( $key );
 		if ( $count >= $maximum ) {
@@ -126,5 +123,57 @@ final class Adv_Search_REST {
 		}
 		set_transient( $key, $count + 1, $window );
 		return true;
+	}
+
+	/**
+	 * The visitor's address for the rate limit. CF-Connecting-IP is used only
+	 * when the request itself comes from Cloudflare; anyone can send that header
+	 * straight to the origin.
+	 */
+	private static function client_ip() {
+		$remote = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		if ( isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) && self::from_trusted_proxy( $remote ) ) {
+			$forwarded = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) );
+			if ( false !== filter_var( $forwarded, FILTER_VALIDATE_IP ) ) {
+				return $forwarded;
+			}
+		}
+		return $remote;
+	}
+
+	/** Whether an address is in Cloudflare's published ranges (filter: adv_search_trusted_proxies). */
+	private static function from_trusted_proxy( $ip ) {
+		$packed = @inet_pton( $ip ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- invalid input is expected.
+		if ( false === $packed ) {
+			return false;
+		}
+		$ranges = apply_filters(
+			'adv_search_trusted_proxies',
+			array(
+				// https://www.cloudflare.com/ips/ (2026-10-28)
+				'173.245.48.0/20', '103.21.244.0/22', '103.22.200.0/22', '103.31.4.0/22', '141.101.64.0/18',
+				'108.162.192.0/18', '190.93.240.0/20', '188.114.96.0/20', '197.234.240.0/22', '198.41.128.0/17',
+				'162.158.0.0/15', '104.16.0.0/13', '104.24.0.0/14', '172.64.0.0/13', '131.0.72.0/22',
+				'2400:cb00::/32', '2606:4700::/32', '2803:f800::/32', '2405:b500::/32', '2405:8100::/32',
+				'2a06:98c0::/29', '2c0f:f248::/32',
+			)
+		);
+		foreach ( (array) $ranges as $range ) {
+			list( $subnet, $bits ) = array_pad( explode( '/', (string) $range, 2 ), 2, null );
+			$net = @inet_pton( $subnet ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			if ( false === $net || strlen( $net ) !== strlen( $packed ) ) {
+				continue;
+			}
+			$bits  = null === $bits ? strlen( $net ) * 8 : (int) $bits;
+			$bytes = intdiv( $bits, 8 );
+			if ( substr( $packed, 0, $bytes ) !== substr( $net, 0, $bytes ) ) {
+				continue;
+			}
+			$rest = $bits % 8;
+			if ( 0 === $rest || ( ( ord( $packed[ $bytes ] ) ^ ord( $net[ $bytes ] ) ) & ( 0xff << ( 8 - $rest ) ) & 0xff ) === 0 ) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

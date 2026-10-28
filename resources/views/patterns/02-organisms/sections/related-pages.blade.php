@@ -94,6 +94,11 @@
             }
             $excerpt_length = 55;
           }
+          // A password-protected page shows no text here, even once unlocked,
+          // so a cached copy of this page never holds it.
+          if (get_post_field('post_password', $id) !== '') {
+            $excerpt = '';
+          }
 
           $body = false;
           $category = NULL;

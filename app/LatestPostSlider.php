@@ -246,6 +246,8 @@ class LatestPostSlider
         $query = [
             'post_type' => 'post',
             'post_status' => 'publish',
+            // Slides show the body text; password-protected posts stay out.
+            'has_password' => false,
             'posts_per_page' => $count,
             'orderby' => 'date',
             'order' => 'DESC',
@@ -297,7 +299,8 @@ class LatestPostSlider
     }
 
     /**
-     * Preserve the editorial order of manually selected published posts/pages.
+     * Preserve the editorial order of manually selected published posts/pages
+     * (password-protected ones are left out).
      *
      * @param mixed $items
      * @return array<int, \WP_Post>
@@ -309,7 +312,7 @@ class LatestPostSlider
         foreach (self::associationIds($items) as $id) {
             $post = get_post($id);
 
-            if (! $post || $post->post_status !== 'publish' || ! in_array($post->post_type, ['post', 'page'], true)) {
+            if (! $post || $post->post_status !== 'publish' || $post->post_password !== '' || ! in_array($post->post_type, ['post', 'page'], true)) {
                 continue;
             }
 

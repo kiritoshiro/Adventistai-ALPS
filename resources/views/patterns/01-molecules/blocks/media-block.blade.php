@@ -79,7 +79,7 @@
         @if (isset($title))
           <{{ $h_tag }} class="c-media-block__title c-block__title @if (isset($block_title_class)){{ $block_title_class }}@endif @if (isset($kicker)){{ 'u-space--zero'}}@endif">
             @if (isset($link))
-              <a href="{{ $link }}" class="c-block__title-link @if (isset($block_title_link_class)){{ $block_title_link_class }}@else{{ 'u-theme--link-hover--dark' }}@endif">
+              <a href="{!! esc_url($link) !!}" class="c-block__title-link @if (isset($block_title_link_class)){{ $block_title_link_class }}@else{{ 'u-theme--link-hover--dark' }}@endif">
             @endif
               @if (isset($eyebrow))<em class="u-theme--color--lighter">{{ $eyebrow . ' ' }}</em>@endif
               {!! $title !!}
@@ -110,7 +110,7 @@
       @endif
       @if (isset($cta))
          <?php if (isset($cta)): ?>
-        <a href="{{ $link }}" class="c-block__button o-button o-button--outline"><span class="u-icon u-icon--m u-path-fill--base u-space--half--right">@include('patterns.00-atoms.icons.icon-arrow-long-right')</span>{{ $cta }}</a>
+        <a href="{!! esc_url($link) !!}" class="c-block__button o-button o-button--outline"><span class="u-icon u-icon--m u-path-fill--base u-space--half--right">@include('patterns.00-atoms.icons.icon-arrow-long-right')</span>{{ $cta }}</a>
       <?php endif; ?>
       @endif
     </div>
