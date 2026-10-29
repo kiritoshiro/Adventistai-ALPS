@@ -78,21 +78,21 @@ $ok(str_contains($html, 'c-carousel__item-cta') && stripos($html, 'javascript:')
 
 // 2. Password-protected text, for a logged-out visitor.
 wp_set_current_user(0);
-$secret = 'ALPS_PASSWORD_SECRET_73019';
+$hidden_text = 'ALPS_HIDDEN_TEXT_73019';
 $open_text = 'ALPS_OPEN_TEXT_51122';
-$protected = wp_insert_post(['post_title' => 'Protected post', 'post_status' => 'publish', 'post_password' => 'pw', 'post_content' => "$secret Behind the password form."]);
+$protected = wp_insert_post(['post_title' => 'Protected post', 'post_status' => 'publish', 'post_password' => 'pw', 'post_content' => "$hidden_text Behind the password form."]);
 $open = wp_insert_post(['post_title' => 'Open post', 'post_status' => 'publish', 'post_content' => "$open_text Anyone may read this."]);
 $ok(post_password_required($protected), 'core requires the password');
 
 $slider = LatestPostSliderBlock::render(['modules' => [['source' => 'custom', 'items' => [$protected, $open], 'title' => 'Custom']]]);
-$ok(! str_contains($slider, $secret) && ! str_contains($slider, 'Protected post'), 'custom slider leaves the protected post out');
+$ok(! str_contains($slider, $hidden_text) && ! str_contains($slider, 'Protected post'), 'custom slider leaves the protected post out');
 $ok(str_contains($slider, $open_text), 'custom slider still shows an open post');
 $slider = LatestPostSliderBlock::render(['modules' => [['source' => 'latest', 'count' => 20, 'title' => 'Latest']]]);
-$ok(! str_contains($slider, $secret) && str_contains($slider, $open_text), 'latest slider leaves the protected post out');
+$ok(! str_contains($slider, $hidden_text) && str_contains($slider, $open_text), 'latest slider leaves the protected post out');
 
 $parent = wp_insert_post(['post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Parent']);
-$child_secret = 'ALPS_CHILD_SECRET_91240';
-$child = wp_insert_post(['post_type' => 'page', 'post_parent' => $parent, 'post_status' => 'publish', 'post_password' => 'pw', 'post_title' => 'Protected child', 'post_content' => "$child_secret Private."]);
+$child_text = 'ALPS_HIDDEN_CHILD_91240';
+$child = wp_insert_post(['post_type' => 'page', 'post_parent' => $parent, 'post_status' => 'publish', 'post_password' => 'pw', 'post_title' => 'Protected child', 'post_content' => "$child_text Private."]);
 $sibling = wp_insert_post(['post_type' => 'page', 'post_parent' => $parent, 'post_status' => 'publish', 'post_title' => 'Open child', 'post_content' => "$open_text Open child."]);
 $related = function ($mode) use ($parent) {
     Store::setPost($parent, 'related', $mode);
@@ -101,11 +101,11 @@ $related = function ($mode) use ($parent) {
     return view('patterns.02-organisms.sections.related-pages', ['post' => get_post($parent)])->render();
 };
 $html = $related('related_top_level');
-$ok(! str_contains($html, $child_secret) && str_contains($html, 'Protected child'), 'related pages list the protected child without its text');
+$ok(! str_contains($html, $child_text) && str_contains($html, 'Protected child'), 'related pages list the protected child without its text');
 $ok(str_contains($html, $open_text), 'related pages still show an open child\'s text');
 Store::setPost($parent, 'related_custom_value', [['type' => 'post', 'subtype' => 'page', 'id' => $child], ['type' => 'post', 'subtype' => 'post', 'id' => $protected]]);
 $html = $related('related_custom');
-$ok(! str_contains($html, $child_secret) && ! str_contains($html, $secret), 'custom related pages show no protected text');
+$ok(! str_contains($html, $child_text) && ! str_contains($html, $hidden_text), 'custom related pages show no protected text');
 
 $seo = function ($id) {
     $GLOBALS['wp_query'] = new WP_Query(['p' => $id, 'post_type' => 'post']);
@@ -117,7 +117,7 @@ $seo = function ($id) {
     SeoDefaults::render();
     return ob_get_clean();
 };
-$ok(! str_contains($seo($protected), $secret), 'theme SEO description leaves protected text out');
+$ok(! str_contains($seo($protected), $hidden_text), 'theme SEO description leaves protected text out');
 $ok(str_contains($seo($open), $open_text), 'theme SEO description still uses an open post\'s text');
 
 // 3. Search rate limit.
