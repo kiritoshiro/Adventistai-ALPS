@@ -308,7 +308,8 @@ class PostPanels
             default:
                 $value = is_scalar($value) ? (string) $value : '';
                 $value = current_user_can('unfiltered_html') ? $value : wp_kses_post($value);
-                if (in_array($name, self::URL_FIELDS, true) && wp_kses_bad_protocol($value, wp_allowed_protocols()) !== $value) {
+                // Core lowercases an allowed scheme (HTTPS: → https:); only a removed one means unsafe.
+                if (in_array($name, self::URL_FIELDS, true) && strcasecmp(wp_kses_bad_protocol($value, wp_allowed_protocols()), $value) !== 0) {
                     return '';
                 }
                 return $value;

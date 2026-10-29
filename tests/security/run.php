@@ -44,13 +44,13 @@ $hero_fields = ['hero_type' => 'default', 'hero_image' => (string) $thumb, 'hero
 
 wp_set_current_user($contributor);
 $ok(! current_user_can('unfiltered_html'), 'contributor has no unfiltered HTML');
-foreach (['javascript:alert(1)', ' JaVaScRiPt:alert(1)', "java\tscript:alert(1)", 'javascript&#58;alert(1)', 'data:text/html,<script>alert(1)</script>', 'vbscript:x'] as $i => $bad) {
+foreach (['javascript:alert(1)', ' JaVaScRiPt:alert(1)', "java\tscript:alert(1)", 'javascript&#58;alert(1)', 'data:text/html,<script>alert(1)</script>', 'vbscript:x', 'JAVASCRIPT:alert(1)'] as $i => $bad) {
     $response = $rest($draft, $hero_fields + ['hero_link_url' => $bad]);
     $ok($response->get_status() === 200 && Store::post($draft, 'hero_link_url') === '', "contributor hero_link_url #$i is not stored");
 }
 $rest($draft, ['hero_type' => 'carousel', 'hero_carousel' => [['slide_image' => (string) $thumb, 'slide_heading' => 'S', 'slide_dek' => 'D', 'slide_url' => 'javascript:alert(1)', 'slide_cta' => 'Go']]]);
 $ok((Store::post($draft, 'hero_carousel')[0]['slide_url'] ?? null) === '', 'contributor slide_url is not stored');
-foreach (['https://example.test/a?b=1&c=2', '/kontaktai/', '#apie', 'mailto:info@example.test', 'Text hero_link_url'] as $i => $good) {
+foreach (['https://example.test/a?b=1&c=2', '/kontaktai/', '#apie', 'mailto:info@example.test', 'Text hero_link_url', 'HTTPS://example.test/Page', 'MAILTO:info@example.test', 'Http://example.test/'] as $i => $good) {
     $rest($draft, $hero_fields + ['hero_link_url' => $good]);
     $ok(Store::post($draft, 'hero_link_url') === wp_kses_post($good), "safe hero_link_url #$i is kept");
 }
