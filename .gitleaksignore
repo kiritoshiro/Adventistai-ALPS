@@ -1,0 +1,2 @@
+# Harmless test marker in tests/security/run.php, renamed in 530ec9b; the old commit stays in history.
+8745ed1bf6c68551dac074d1b8c17c3f46488dc1:tests/security/run.php:generic-api-key:94
