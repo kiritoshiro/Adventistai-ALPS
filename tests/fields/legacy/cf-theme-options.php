@@ -183,6 +183,7 @@ function crb_attach_theme_options()
                     'right' => __('Right', 'alps'),
                     'left' => __('Left', 'alps'),
                     'rail' => __('Left side column', 'alps'),
+                    'rail-scaled' => __('Left side column, scaled like the Sabbath column', 'alps'),
                 ]),
         ])
         ->add_tab(__('SABBATH COLUMN', 'alps'), [

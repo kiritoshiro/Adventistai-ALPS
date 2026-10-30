@@ -1,6 +1,8 @@
 /* Left side column (App\SidebarPosition, ALPS Theme Settings → POSTS OPTIONS →
- * Sidebar position → "Left side column"). Embedded only when that is chosen;
- * applies above 1000px (where the article and the sidebar sit side by side)
+ * Sidebar position → "Left side column", or its scaled form with
+ * sidebar-rail-scaled.css after it). Embedded only when one of them is
+ * chosen, inside a media query added there: above 1000px (where the article
+ * and the sidebar sit side by side), or above 700px for the scaled form. Only
  * on pages that show a sidebar (body class alps-has-rail, set by the
  * templates before <body> is printed).
  *
@@ -11,64 +13,100 @@
  * the flex row (shown first, the article stays first in the HTML), so the
  * column is always as tall as the taller of the article and the widgets.
  */
-@media (min-width: 1001px) {
-  .alps-has-rail {
-    --alps-rail: clamp(17rem, 17vw, 22rem);
+.alps-has-rail {
+  --alps-rail: clamp(17rem, 17vw, 22rem);
+}
+/* .l-main is at least as tall as the window; on a short page the row
+   grows to fill it, so the column still reaches the footer. */
+.alps-has-rail .l-main {
+  padding-bottom: 0 !important;
+  display: flex;
+  flex-direction: column;
+}
+.alps-has-rail .l-main > .l-main__content {
+  flex: 1 0 auto;
+}
+.alps-has-rail .l-wrap .l-main .l-main__content {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+.alps-has-rail .l-main__content > .c-sidebar {
+  order: -1;
+  flex: 0 0 var(--alps-rail);
+  width: var(--alps-rail) !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 1.75rem 1.25rem 2.5rem !important;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.04);
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+}
+/* Light colours only without the dark theme, whose widget text is white
+   (main.scss); there the widgets keep their own background. */
+.alps-has-rail:not(.u-theme--dark) .l-main__content > .c-sidebar {
+  background: #eef1f5;
+  border-right-color: #dde3ea;
+}
+.alps-has-rail:not(.u-theme--dark) .l-main__content > .c-sidebar .c-widget {
+  background: #fff !important;
+}
+.alps-has-rail .l-main__content > .c-sidebar > div {
+  padding: 0 !important;
+}
+/* Iframes keep their own height (FitVids sizes video embeds to their box). */
+.alps-has-rail .l-main__content > .c-sidebar img,
+.alps-has-rail .l-main__content > .c-sidebar iframe {
+  max-width: 100% !important;
+}
+.alps-has-rail .l-main__content > .c-sidebar img {
+  height: auto;
+}
+.alps-has-rail .l-main__content > .c-article {
+  flex: 1 1 auto;
+  width: auto !important;
+  min-width: 0;
+  /* Centred in what is left beside the column, at most 90rem. */
+  padding: 1.75rem max(var(--site-gutter, 1.25rem), (100% - var(--alps-rail) - 90rem) / 2) 2.5rem !important;
+  box-sizing: border-box;
+}
+/* Page headers: the title starts where the article text starts, not over
+   the column. Headers without an image: without its side padding the
+   header's inner box is as wide as the content column (100%); the title
+   moves in by the column and the article's padding, less its own border
+   (1px) and padding (1.25rem). Five classes, to outrank site-overrides.css
+   "(b)". */
+.alps-has-rail .c-page-header__long:not(.alps-hero) {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+.alps-has-rail .l-wrap__content .c-page-header__long .c-page-header__long--inner {
+  max-width: none !important;
+}
+.alps-has-rail .l-wrap__content .c-page-header__long .c-page-header__long--inner > .c-page-header__content {
+  margin-left: calc(var(--alps-rail) + max(var(--site-gutter, 1.25rem), (100% - var(--alps-rail) - 90rem) / 2) - 1.25rem - 1px) !important;
+  width: calc(min(100% - var(--alps-rail) - 2 * var(--site-gutter, 1.25rem), 90rem) + 1.25rem + 1px) !important;
+  max-width: none !important;
+}
+/* Headers with an image (page-hero.css; 100cqi is the content column), while
+   the title sits beside the image: the title at the article text too, the
+   whole image just before it, a gutter away, fading into the title side. An
+   image wider than the room left of the title is shown smaller; the blurred
+   copy fills the rest. */
+@container alps-hero (width > 42rem) {
+  .alps-has-rail .alps-hero__row {
+    /* Where the title's border starts: the article text less 2px + 1.25rem. */
+    --alps-title-x: calc(var(--alps-rail) + max(var(--site-gutter, 1.25rem), (100cqi - var(--alps-rail) - 90rem) / 2) - 2px - 1.25rem);
+    --alps-image: min(var(--alps-hero-max) * var(--alps-hero-ratio, 1.7778), var(--alps-title-x) - var(--site-gutter, 1.25rem));
   }
-  /* .l-main is at least as tall as the window; on a short page the row
-     grows to fill it, so the column still reaches the footer. */
-  .alps-has-rail .l-main {
-    padding-bottom: 0 !important;
-    display: flex;
-    flex-direction: column;
+  .alps-has-rail .alps-hero__media {
+    flex: none;
+    width: var(--alps-image);
+    margin-left: calc(var(--alps-title-x) - var(--site-gutter, 1.25rem) - var(--alps-image));
   }
-  .alps-has-rail .l-main > .l-main__content {
-    flex: 1 0 auto;
-  }
-  .alps-has-rail .l-wrap .l-main .l-main__content {
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    flex-wrap: nowrap;
-    align-items: stretch;
-  }
-  .alps-has-rail .l-main__content > .c-sidebar {
-    order: -1;
-    flex: 0 0 var(--alps-rail);
-    width: var(--alps-rail) !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 1.75rem 1.25rem 2.5rem !important;
-    box-sizing: border-box;
-    background: rgba(255, 255, 255, 0.04);
-    border-right: 1px solid rgba(255, 255, 255, 0.12);
-  }
-  /* Light colours only without the dark theme, whose widget text is white
-     (main.scss); there the widgets keep their own background. */
-  .alps-has-rail:not(.u-theme--dark) .l-main__content > .c-sidebar {
-    background: #eef1f5;
-    border-right-color: #dde3ea;
-  }
-  .alps-has-rail:not(.u-theme--dark) .l-main__content > .c-sidebar .c-widget {
-    background: #fff !important;
-  }
-  .alps-has-rail .l-main__content > .c-sidebar > div {
-    padding: 0 !important;
-  }
-  /* Iframes keep their own height (FitVids sizes video embeds to their box). */
-  .alps-has-rail .l-main__content > .c-sidebar img,
-  .alps-has-rail .l-main__content > .c-sidebar iframe {
-    max-width: 100% !important;
-  }
-  .alps-has-rail .l-main__content > .c-sidebar img {
-    height: auto;
-  }
-  .alps-has-rail .l-main__content > .c-article {
-    flex: 1 1 auto;
-    width: auto !important;
-    min-width: 0;
-    /* Centred in what is left beside the column, at most 90rem. */
-    padding: 1.75rem max(var(--site-gutter, 1.25rem), (100% - var(--alps-rail) - 90rem) / 2) 2.5rem !important;
-    box-sizing: border-box;
+  .alps-has-rail .alps-hero__text {
+    margin-inline: var(--site-gutter, 1.25rem);
   }
 }

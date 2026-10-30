@@ -194,8 +194,8 @@ class Registry
             'posts_grid_3up' => $check,
             'posts_image' => $check,
             'posts_image_round' => $check,
-            // Added in 3.37.0, after Carbon Fields (App\SidebarPosition); "rail" in 3.38.0
-            'sidebar_position' => ['type' => 'select', 'options' => ['right', 'left', 'rail']],
+            // Added in 3.37.0, after Carbon Fields (App\SidebarPosition); "rail" in 3.38.0, "rail-scaled" in 3.40.0
+            'sidebar_position' => ['type' => 'select', 'options' => ['right', 'left', 'rail', 'rail-scaled']],
             // SABBATH COLUMN
             'sabbath_icon' => ['type' => 'image'],
             'sabbath_background' => ['type' => 'image'],

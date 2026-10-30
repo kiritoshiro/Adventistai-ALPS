@@ -242,12 +242,17 @@ $footer = '(max-width: 700px) calc(100vw - 32px), (max-width: 1272px) 81.31vw, (
 check('footer: the content column less the gutters, up to the 90rem measure', $footer === SidebarImages::areaSizes('footer') && $footer === SidebarImages::areaSizes('footer', 2000));
 check('unknown layout: nothing', '' === SidebarImages::areaSizes('other'));
 // Sidebar position "Left side column".
-check('side column (rail) area types', 'rail-side' === SidebarImages::layout('sidebar-page', true) && 'rail-side' === SidebarImages::layout('sidebar-posts', true) && 'footer' === SidebarImages::layout('footer-region', true) && 'side' === SidebarImages::layout('sidebar-page', false));
+check('side column (rail) area types', 'rail-side' === SidebarImages::layout('sidebar-page', 'rail') && 'rail-side' === SidebarImages::layout('sidebar-posts', 'rail') && 'footer' === SidebarImages::layout('footer-region', 'rail') && 'side' === SidebarImages::layout('sidebar-page', 'right') && 'side' === SidebarImages::layout('sidebar-page', 'left'));
 $railSide = '(max-width: 700px) calc(100vw - 47px), (max-width: 900px) calc(81.31vw - 15px), (max-width: 1000px) calc(81.31vw - 20px), (max-width: 1600px) 232px, (max-width: 2071px) calc(17vw - 40px), 312px';
 check('side column (rail): clamp(17rem, 17vw, 22rem) less its padding above 1000px', $railSide === SidebarImages::areaSizes('rail-side'));
 check('side column (rail), a 250px image', '(max-width: 297px) calc(100vw - 47px), (max-width: 1000px) 250px, (max-width: 1600px) 232px, (max-width: 1705px) calc(17vw - 40px), 250px' === SidebarImages::areaSizes('rail-side', 250));
 $railPost = '(max-width: 700px) calc(100vw - 32px), (max-width: 1000px) 81.31vw, (max-width: 1272px) calc(81.31vw - 272px), (max-width: 1600px) calc(85.71vw - 328px), (max-width: 2071px) calc(68.71vw - 56px), (max-width: 2156px) calc(85.71vw - 408px), 1440px';
 check('widgets under a post beside the side column (rail): the rest of the content column, at most 90rem', $railPost === SidebarImages::areaSizes('rail-post'));
+// Sidebar position "Left side column, scaled like the Sabbath column".
+check('scaled side column area types', 'rail-scaled-side' === SidebarImages::layout('sidebar-page', 'rail-scaled') && 'rail-scaled-side' === SidebarImages::layout('sidebar-posts', 'rail-scaled') && 'footer' === SidebarImages::layout('footer-region', 'rail-scaled'));
+check('scaled side column: 14.5/17 of a seventh of the window above 700px', '(max-width: 700px) calc(100vw - 47px), 12.19vw' === SidebarImages::areaSizes('rail-scaled-side') && '(max-width: 700px) calc(100vw - 32px), 12.19vw' === SidebarImages::areaSizes('rail-scaled-single-side'));
+check('scaled side column, a 250px image', '(max-width: 297px) calc(100vw - 47px), (max-width: 700px) 250px, (max-width: 2050px) 12.19vw, 250px' === SidebarImages::areaSizes('rail-scaled-side', 250));
+check('widgets under a post beside the scaled side column: the rest of the content column, at most 90rem', '(max-width: 700px) calc(100vw - 32px), (max-width: 727px) calc(71.43vw - 32px), (max-width: 1272px) 67.03vw, (max-width: 2094px) calc(71.43vw - 56px), 1440px' === SidebarImages::areaSizes('rail-scaled-post'));
 
 $widget = '<img width="1280" height="640" src="w.jpg" srcset="w-768.jpg 768w, w.jpg 1280w" sizes="auto, (max-width: 1280px) 100vw, 1280px" loading="lazy">';
 check('outside a sidebar: sizes unchanged', $widget === SidebarImages::sizes($widget));
