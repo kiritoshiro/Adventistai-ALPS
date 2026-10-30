@@ -19,6 +19,9 @@
       case 'header-block-featured':
         $feature_image_hero = 'patterns.01-molecules.blocks.header-block-featured';
         break;
+      default:
+        // Never include a view named by a stored value.
+        $feature_image_hero = 'patterns.02-organisms.sections.page-header';
     }
   }
   else {

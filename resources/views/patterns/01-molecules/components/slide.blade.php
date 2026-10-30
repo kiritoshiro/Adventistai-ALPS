@@ -37,7 +37,7 @@
           @endif
         </div>
         @if ( isset($url) && !empty($cta) )
-          <a href="{{ $url }}" class="c-carousel__item-cta o-button o-button--small u-theme--secondary-background-color">
+          <a href="{!! esc_url($url) !!}" class="c-carousel__item-cta o-button o-button--small u-theme--secondary-background-color">
             {!! $cta !!}
           </a>
         @endif

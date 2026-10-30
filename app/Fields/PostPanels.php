@@ -34,6 +34,9 @@ class PostPanels
     const PAGE_ONLY = ['related', 'related_custom_value', 'related_grid', 'related_grid_3up', 'related_image', 'related_image_crop'];
     const ROWS = ['hero_column' => [3, 3], 'hero_carousel' => [1, 9]];
 
+    /** Text fields printed as link addresses: only allowed protocols (no javascript:). */
+    const URL_FIELDS = ['hero_link_url', 'slide_url'];
+
     /** Status of each post before the current REST update, by ID. */
     private static $statusBefore = [];
 
@@ -304,7 +307,12 @@ class PostPanels
                 return $entries;
             default:
                 $value = is_scalar($value) ? (string) $value : '';
-                return current_user_can('unfiltered_html') ? $value : wp_kses_post($value);
+                $value = current_user_can('unfiltered_html') ? $value : wp_kses_post($value);
+                // Core lowercases an allowed scheme (HTTPS: → https:); only a removed one means unsafe.
+                if (in_array($name, self::URL_FIELDS, true) && strcasecmp(wp_kses_bad_protocol($value, wp_allowed_protocols()), $value) !== 0) {
+                    return '';
+                }
+                return $value;
         }
     }
 

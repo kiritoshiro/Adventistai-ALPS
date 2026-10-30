@@ -3,6 +3,13 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.38.1]
+### Security
+- **Hero and slide links** ("Hero" link URL, column links, carousel slide URLs) no longer accept `javascript:`, `data:` or other unsafe addresses: saving one from the editor stores an empty link (also for administrators), and links already stored are passed through `esc_url()` where the hero, column, carousel and media blocks print them, so an unsafe stored address prints no link target. Before, a contributor could store a `javascript:` link on their own draft that ran script in the site's origin when a viewer clicked it. Ordinary addresses (`https://…`, `/path/`, `#anchor`, `mailto:`) are kept.
+- **Password-protected posts and pages** no longer show their text outside the password form: the Latest Post Slider leaves them out (latest, category and hand-picked slides), Related Pages still lists a protected page but without its opening words, and the theme's own SEO description (used when no SEO plugin is active) is empty for them. This holds even for a visitor who has entered the password, so a cached page never carries the text.
+- **Search rate limit**: the `CF-Connecting-IP` header is trusted only when the request comes from a Cloudflare address (Cloudflare's published ranges, filter `adv_search_trusted_proxies`); otherwise the connecting address is used. Before, anyone reaching the server directly could change the header on each request to get past the per-visitor limit.
+- `symfony/mime` 7.4.19 → 7.4.22 (CVE-2026-45070, email header injection; a Laravel dependency shipped in the theme package).
+
 ## [3.38.0]
 ### Added
 - **Sidebar position → "Left side column"** (Appearance → ALPS Theme Settings → POSTS OPTIONS): on screens wider than 1000px, on posts, pages and archives with a sidebar, the widgets become a column at the left edge of the window, from the bottom of the header band down to the footer, like the Sabbath column on the right. The article is centred in the rest, at most 90rem wide. The logo bar and the header band keep their full width and usual layout. The column is 17% of the window wide, 17–22rem (272px at 1440px, 326px at 1920px, 352px at 2560px), always as tall as the article or the widgets, whichever is taller, and reaches the footer on short pages too. Narrower screens and phones are unchanged; the article stays first in the HTML. `assets/css/sidebar-rail.css` (1.1 KB), embedded only when this option is chosen.

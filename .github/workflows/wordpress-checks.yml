@@ -53,6 +53,13 @@ jobs:
         env:
           PHP_VERSION: ${{ matrix.php }}
         run: python3 tests/authors/run.py --php "$PHP_VERSION"
+      # Security regressions: unsafe hero/slide links, password-protected text
+      # in sliders, related pages and SEO tags, the search rate-limit address.
+      # See tests/security/run.php.
+      - name: Security regressions
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: python3 tests/security/run.py --php "$PHP_VERSION"
       # App\Fields\Store (the theme's own field reader) must return exactly
       # what Carbon Fields returns, for saved, empty, invalid and hand-written
       # edge rows. See tests/fields/compare.php.

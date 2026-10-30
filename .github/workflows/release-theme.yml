@@ -95,6 +95,7 @@ jobs:
           rsync -a ./ build/adventistai/ \
             --exclude='.git/' \
             --exclude='.github/' \
+            --exclude='/.gitleaksignore' \
             --exclude='/build/' \
             --exclude='/vendor/roots/acorn/tests/' \
             --exclude='/tests/' \
