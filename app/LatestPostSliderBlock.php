@@ -133,6 +133,8 @@ class LatestPostSliderBlock
             'alps_latest_slider_interval' => min(30, max(2, absint($module['interval'] ?? 5))),
             'alps_latest_slider_autoplay' => ! empty($module['autoplay']),
             'alps_latest_slider_navigation' => ($module['navigationStyle'] ?? '') === 'buttons' ? 'buttons' : 'arrows',
+            // 0 keeps the automatic text height; 1-8 shows at most that many lines.
+            'alps_latest_slider_excerpt_lines' => min(8, absint($module['excerptLines'] ?? 0)),
         ];
     }
 
@@ -153,6 +155,7 @@ class LatestPostSliderBlock
             'interval' => 5,
             'autoplay' => true,
             'navigationStyle' => 'arrows',
+            'excerptLines' => 0,
         ];
     }
 }
