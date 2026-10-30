@@ -60,6 +60,13 @@ class SidebarImages
         'rail-side' => [[700, 100, 47], [900, 81.31, 15], [1000, 81.31, 20], [1600, 0, -232], [2071, 17, 40], [null, 0, -312]],
         'rail-single-side' => [[700, 100, 32], [1000, 81.31, 0], [1600, 0, -232], [2071, 17, 40], [null, 0, -312]],
         'rail-post' => [[700, 100, 32], [1000, 81.31, 0], [1272, 81.31, 272], [1600, 85.71, 328], [2071, 68.71, 56], [2156, 85.71, 408], [null, 0, -1440]],
+        // "Left side column, scaled like the Sabbath column" (sidebar-rail-scaled.css),
+        // above 700px: a seventh of the window, laid out as 17rem less its padding
+        // (14.5rem) and zoomed to fit, so 14.5/17 of 14.29vw; the article beside it
+        // is the rest of the content column (71.43vw) less both gutters, at most 90rem.
+        'rail-scaled-side' => [[700, 100, 47], [null, 12.19, 0]],
+        'rail-scaled-single-side' => [[700, 100, 32], [null, 12.19, 0]],
+        'rail-scaled-post' => [[700, 100, 32], [727, 71.43, 32], [1272, 67.03, 0], [2094, 71.43, 56], [null, 0, -1440]],
     ];
 
     /** On a single post (single()): whether its side column is shown; else null. */
@@ -138,15 +145,15 @@ class SidebarImages
     }
 
     /**
-     * A LAYOUTS key, or '' (left to WordPress), for a widget area id. $rail:
-     * whether Sidebar position is "Left side column" (null: read the setting).
+     * A LAYOUTS key, or '' (left to WordPress), for a widget area id.
+     * $position: the Sidebar position (null: read the setting).
      */
-    public static function layout(string $area, ?bool $rail = null): string
+    public static function layout(string $area, ?string $position = null): string
     {
-        if (null === $rail) {
-            $rail = class_exists(SidebarPosition::class) && 'rail' === SidebarPosition::position();
+        if (null === $position) {
+            $position = class_exists(SidebarPosition::class) ? SidebarPosition::position() : '';
         }
-        $prefix = $rail ? 'rail-' : '';
+        $prefix = in_array($position, ['rail', 'rail-scaled'], true) ? $position . '-' : '';
         if ('sidebar-posts' === $area && null !== self::$singleSidebar) {
             return $prefix . 'single-side';
         }

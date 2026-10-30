@@ -1,0 +1,1 @@
+.alps-has-rail{--alps-rail:calc(100cqw/6)}.alps-has-rail .l-main__content,.alps-has-rail .c-page-header__long:not(.alps-hero){container-type:inline-size}@supports (zoom:tan(atan2(1px, 1px))){.alps-has-rail .l-main__content>.c-sidebar{zoom:tan(atan2(100cqw/6,17rem));flex-basis:17rem;width:17rem!important}}

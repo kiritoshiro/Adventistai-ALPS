@@ -1,0 +1,30 @@
+/* Left side column, scaled like the Sabbath column (App\SidebarPosition,
+ * Sidebar position → "Left side column, scaled like the Sabbath column").
+ * Embedded after sidebar-rail.css, in the same media query, which starts
+ * above 700px for this option (where the Sabbath column is a seventh too).
+ *
+ * The column is a seventh of the window, as wide as the Sabbath column on
+ * the right, at every window width and browser zoom. Its widgets are laid
+ * out as in a 17rem column and the whole column is zoomed to fit, so they
+ * look the same at every zoom, only larger or smaller, like the Sabbath
+ * logo. .l-main__content (full width in sidebar-rail.css) is the six
+ * sevenths beside the Sabbath column, so a seventh is 100cqw / 6; with the
+ * Sabbath column hidden it is a sixth. tan(atan2(a, b)) is a / b as a plain
+ * number, which zoom needs. Without zoom the column is still a seventh wide,
+ * with its widgets at their usual size.
+ */
+.alps-has-rail {
+  --alps-rail: calc(100cqw / 6);
+}
+/* The header, like the content row, is the content column's width. */
+.alps-has-rail .l-main__content,
+.alps-has-rail .c-page-header__long:not(.alps-hero) {
+  container-type: inline-size;
+}
+@supports (zoom: tan(atan2(1px, 1px))) {
+  .alps-has-rail .l-main__content > .c-sidebar {
+    flex-basis: 17rem;
+    width: 17rem !important;
+    zoom: tan(atan2(100cqw / 6, 17rem));
+  }
+}

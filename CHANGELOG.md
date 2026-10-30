@@ -3,6 +3,13 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.40.0]
+### Added
+- **Sidebar position → "Left side column, scaled like the Sabbath column"** (Appearance → ALPS Theme Settings → POSTS OPTIONS): the left side column is a seventh of the window wide, exactly as wide as the Sabbath column on the right, from 701px up. Its widgets are laid out as in a 17rem column and the whole column is zoomed to fit, so at any window width or browser zoom they look the same, only larger or smaller, like the Sabbath logo; the article between the two columns follows the zoom as usual. The column starts below the header band, as with "Left side column". Narrower screens and phones are unchanged. `assets/css/sidebar-rail-scaled.css` (0.3 KB), embedded after `sidebar-rail.css` only with this option; widget images get matching `sizes`. Uses CSS `zoom` and container units; a browser without them shows the column a seventh wide with its widgets at their usual size.
+
+### Changed
+- **Left side column (both forms): the page header title starts where the article text starts**, instead of over the side column. Headers without an image move the title in; in headers with an image the title is at the article text too and the whole image sits just before it, shown smaller when there is less room left of the title (narrow image headers, which put the title under the image, are unchanged). The media query of `sidebar-rail.css` is now added by `App\SidebarPosition` (1001px, or 701px for the scaled form).
+
 ## [3.38.1]
 ### Security
 - **Hero and slide links** ("Hero" link URL, column links, carousel slide URLs) no longer accept `javascript:`, `data:` or other unsafe addresses: saving one from the editor stores an empty link (also for administrators), and links already stored are passed through `esc_url()` where the hero, column, carousel and media blocks print them, so an unsafe stored address prints no link target. Before, a contributor could store a `javascript:` link on their own draft that ran script in the site's origin when a viewer clicked it. Ordinary addresses (`https://…`, `/path/`, `#anchor`, `mailto:`) are kept.
