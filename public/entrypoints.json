@@ -4,16 +4,16 @@
       "js/app.fe6815.js"
     ],
     "css": [
-      "css/app.56a408.css"
+      "css/app.a5da7c.css"
     ],
     "dependencies": []
   },
   "editor": {
     "js": [
-      "js/editor.c4abd4.js"
+      "js/editor.436651.js"
     ],
     "css": [
-      "css/editor.7ab06d.css"
+      "css/editor.c7361b.css"
     ],
     "dependencies": [
       "wp-api-fetch",

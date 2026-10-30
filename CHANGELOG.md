@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - **Left side column (both forms): the page header title starts where the article text starts**, instead of over the side column. Headers without an image move the title in; in headers with an image the title is at the article text too and the whole image sits just before it, shown smaller when there is less room left of the title (narrow image headers, which put the title under the image, are unchanged). The media query of `sidebar-rail.css` is now added by `App\SidebarPosition` (1001px, or 701px for the scaled form).
 
+## [3.39.0]
+### Added
+- **Latest Post Slider → "Teksto eilutės"** (per slider, in the block's settings): "Automatiškai" (default, as before) or 1–8 lines. With a number, each slide shows at most that many lines of text, ending in "…", and the slider no longer reserves room for longer text (14rem body, 16rem for slides without an image), so it is as tall as its tallest slide needs. When one slider per row puts the image beside the text, the image still sets the minimum height.
+
+### Changed
+- Latest Post Slider: slides of a category slider no longer repeat the category in small grey capitals above the post title (the slider's heading already names it). Latest-posts and hand-picked sliders keep it.
+- Latest Post Slider: 0.75rem of space between the slider's heading and the slide image.
+
 ## [3.38.1]
 ### Security
 - **Hero and slide links** ("Hero" link URL, column links, carousel slide URLs) no longer accept `javascript:`, `data:` or other unsafe addresses: saving one from the editor stores an empty link (also for administrators), and links already stored are passed through `esc_url()` where the hero, column, carousel and media blocks print them, so an unsafe stored address prints no link target. Before, a contributor could store a `javascript:` link on their own draft that ran script in the site's origin when a viewer clicked it. Ordinary addresses (`https://…`, `/path/`, `#anchor`, `mailto:`) are kept.

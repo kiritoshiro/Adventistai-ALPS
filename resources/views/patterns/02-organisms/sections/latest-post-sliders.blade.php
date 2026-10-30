@@ -64,10 +64,13 @@
         $sliderId = wp_unique_id('alps-latest-slider-');
         $slideCount = count($sliderPosts);
         $navigationStyle = ($module['alps_latest_slider_navigation'] ?? '') === 'buttons' ? 'buttons' : 'arrows';
+        // 0: the text fills the reserved height; 1-8: at most that many lines, nothing reserved.
+        $excerptLines = min(8, absint($module['alps_latest_slider_excerpt_lines'] ?? 0));
       @endphp
 
       <article
-        class="alps-latest-slider"
+        class="alps-latest-slider{{ $excerptLines ? ' alps-latest-slider--short-text' : '' }}"
+        @if ($excerptLines) style="--alps-slider-excerpt-lines: {{ $excerptLines }};" @endif
         data-alps-latest-slider
         data-alps-slider-interval="{{ $interval }}"
         data-alps-slider-autoplay="{{ $autoplay ? 'true' : 'false' }}"
@@ -105,7 +108,8 @@
                 $postExcerpt = get_post_field('post_content', $postId);
               }
 
-              $postExcerpt = wp_trim_words(wp_strip_all_tags((string) $postExcerpt), $thumbnailId ? 80 : 200, '…');
+              // A line holds well under 20 words; CSS cuts the rest.
+              $postExcerpt = wp_trim_words(wp_strip_all_tags((string) $postExcerpt), $excerptLines ? $excerptLines * 20 : ($thumbnailId ? 80 : 200), '…');
               $postExcerpt = html_entity_decode($postExcerpt, ENT_QUOTES | ENT_HTML5, 'UTF-8');
               $thumbnailAlt = $thumbnailId ? get_post_meta($thumbnailId, '_wp_attachment_image_alt', true) : '';
               $thumbnailAlt = $thumbnailAlt ?: $postTitle;
@@ -154,7 +158,8 @@
                 @endif
 
                 <div class="alps-latest-slider__body">
-                  @if ($categoryName)
+                  {{-- A category slider's heading already names the category. --}}
+                  @if ($categoryName && $source !== 'category')
                     <span class="alps-latest-slider__meta">{{ $categoryName }}</span>
                   @endif
                   <h3 class="alps-latest-slider__post-title">{{ $postTitle }}</h3>

@@ -27,6 +27,7 @@ const createModule = () => ({
   interval: 5,
   autoplay: true,
   navigationStyle: 'arrows',
+  excerptLines: 0,
 });
 
 const normalizeModule = (module = {}) => ({
@@ -38,6 +39,7 @@ const normalizeModule = (module = {}) => ({
   interval: Number(module.interval || 5),
   autoplay: module.autoplay !== false,
   navigationStyle: module.navigationStyle === 'buttons' ? 'buttons' : 'arrows',
+  excerptLines: Math.min(8, Math.max(0, Number(module.excerptLines) || 0)),
 });
 
 const stripHtml = (value) => {
@@ -156,6 +158,20 @@ const ModuleSettings = ({module, index, categories, records, onChange, onRemove,
           {label: __('Dideli mygtukai po taškais', 'alps'), value: 'buttons'},
         ]}
         onChange={(value) => setValue('navigationStyle', value)}
+      />
+
+      <SelectControl
+        label={__('Teksto eilutės', 'alps')}
+        help={__('Mažiau eilučių – žemesnis slankiklis.', 'alps')}
+        value={module.excerptLines}
+        options={[
+          {label: __('Automatiškai', 'alps'), value: 0},
+          ...[1, 2, 3, 4, 5, 6, 7, 8].map((lines) => ({
+            label: `${lines} ${lines === 1 ? __('eilutė', 'alps') : __('eilutės', 'alps')}`,
+            value: lines,
+          })),
+        ]}
+        onChange={(value) => setValue('excerptLines', Number(value))}
       />
 
       {canRemove && (

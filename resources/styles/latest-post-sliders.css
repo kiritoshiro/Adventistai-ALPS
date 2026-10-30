@@ -101,6 +101,7 @@
   position: relative;
   flex-shrink: 0;
   width: 100%;
+  margin-top: 0.75rem;
   aspect-ratio: 16 / 9;
   background: #fff;
 }
@@ -185,6 +186,32 @@
   font-family: var(--alps-font-secondary, inherit);
   font-size: 0.95rem;
   line-height: 1.5;
+}
+
+/*
+ * "Teksto eilutės" set: at most that many lines and no reserved height, so
+ * the slider is only as tall as its tallest slide needs.
+ */
+.alps-latest-slider--short-text .alps-latest-slider__body {
+  min-height: 0;
+}
+
+.alps-latest-slider--short-text .alps-latest-slider__excerpt-wrap,
+.alps-latest-slider--short-text .alps-latest-slider__slide--no-image .alps-latest-slider__excerpt-wrap {
+  flex: none;
+  min-height: 0;
+}
+
+.alps-latest-slider--short-text .alps-latest-slider__excerpt-wrap::after {
+  content: none;
+}
+
+.alps-latest-slider--short-text .alps-latest-slider__excerpt {
+  position: static;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--alps-slider-excerpt-lines);
 }
 
 .alps-latest-slider__read-more {
