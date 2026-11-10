@@ -21,7 +21,7 @@
     "browserslist": "^4.29.3",
     "esbuild": "^0.28.2",
     "lightningcss": "1.27.0",
-    "terser": "5.34.1"
+    "terser": "5.51.2"
   },
   "dependencies": {
     "@wordpress/browserslist-config": "^6.56.0"
