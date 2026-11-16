@@ -27,10 +27,13 @@ add_action('wp_enqueue_scripts', function () {
  * corrections remain authoritative without modifying the accumulated override
  * stylesheet itself. Embedded because the file is small and a separate
  * stylesheet would be one more render-blocking request. The minified copy is
- * printed (see embedded_css()).
+ * printed (see embedded_css()). The identity fixes and section headings
+ * (brand-identity.css: logo clear space, Denim bands, front-page headings)
+ * follow them.
  */
 add_action('wp_enqueue_scripts', function () {
-    $css = embedded_css(get_template_directory() . '/assets/css/responsive-zoom-fixes.css');
+    $css = embedded_css(get_template_directory() . '/assets/css/responsive-zoom-fixes.css')
+        . embedded_css(get_template_directory() . '/assets/css/brand-identity.css');
 
     if (wp_style_is('adventistai-overrides') && $css !== '') {
         wp_add_inline_style('adventistai-overrides', $css);
