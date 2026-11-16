@@ -41,6 +41,14 @@ class LatestPostSliderBlock
                 'type' => 'array',
                 'default' => [self::defaultModule()],
             ],
+            // v4 card layout: the category above the title, a heading only
+            // when one is typed in. Sliding, arrows and dots stay; one post
+            // (Number of posts = 1) gives a still card. Off by default, so
+            // existing sliders keep their look.
+            'cardLayout' => [
+                'type' => 'boolean',
+                'default' => false,
+            ],
         ];
     }
 
@@ -57,12 +65,14 @@ class LatestPostSliderBlock
         $attributes = is_array($attributes) ? $attributes : [];
         $columns = min(4, max(1, absint($attributes['columns'] ?? 1)));
         $modules = self::normalizeModules($attributes['modules'] ?? []);
+        $cardLayout = ! empty($attributes['cardLayout']);
 
         if (empty($modules)) {
             return '';
         }
 
-        $class = 'wp-block-alps-latest-post-slider alps-latest-sliders u-space--double--top';
+        $class = 'wp-block-alps-latest-post-slider alps-latest-sliders u-space--double--top'
+            . ($cardLayout ? ' alps-latest-sliders--cards' : '');
         $style = sprintf('--alps-latest-slider-columns: %d;', $columns);
 
         if (function_exists('get_block_wrapper_attributes')) {
@@ -82,6 +92,7 @@ class LatestPostSliderBlock
             'configuredSliderModules' => $modules,
             'sliderColumns' => $columns,
             'sectionAttributes' => $sectionAttributes,
+            'cardLayout' => $cardLayout,
         ])->render();
     }
 

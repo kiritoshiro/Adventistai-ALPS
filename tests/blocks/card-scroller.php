@@ -86,6 +86,11 @@ $ok(strpos($logo, 'sizes="auto, 156px"') !== false, 'logo sizes hint');
 $ok(strpos($logo, '<span class="alps-card-scroller__description">Biblijos studijos</span>') !== false, 'description rendered');
 $ok(strpos($logo, '<a class="alps-card-scroller__card alps-card-scroller__card--more" href="https://adventistai.lt/naudingos-nurodos/">Daugiau') !== false, 'more card is a real link');
 $ok(strpos($logo, 'aria-label="Kortelės"') !== false, 'unlabelled list gets a generic name');
+$ok(strpos($logo, 'alps-card-scroller__head"') === false, 'no heading row without a heading');
+$ok(strpos($html, 'alps-card-scroller__head"') === false, 'a heading without a Daugiau link stays a plain heading');
+$headed = Block::render(['heading' => 'Naudingos nuorodos', 'items' => $items, 'moreLabel' => 'Visos nuorodos', 'moreUrl' => 'https://adventistai.lt/naudingos-nurodos/']);
+$ok(strpos($headed, '<div class="alps-card-scroller__head"><h2 class="alps-card-scroller__heading">Naudingos nuorodos</h2><a class="alps-card-scroller__head-more" href="https://adventistai.lt/naudingos-nurodos/">Visos nuorodos <span aria-hidden="true">→</span></a></div>') !== false, 'the Daugiau link also ends the heading row');
+$ok(strpos($headed, 'alps-card-scroller__card--more') !== false, 'the row still ends with the Daugiau card');
 
 $ok(strpos(Block::render(['layout' => 'evil', 'items' => $items]), 'alps-card-scroller--cover') !== false, 'unknown layout falls back to cover');
 

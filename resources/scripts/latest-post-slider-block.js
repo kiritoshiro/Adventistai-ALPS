@@ -64,7 +64,7 @@ const sourceOptions = [
   {label: __('Selected posts or pages', 'alps'), value: 'custom'},
 ];
 
-const ModuleSettings = ({module, index, categories, records, onChange, onRemove, canRemove}) => {
+const ModuleSettings = ({module, index, categories, records, onChange, onRemove, canRemove, cardLayout}) => {
   const categoryOptions = [
     {label: __('Select a category', 'alps'), value: 0},
     ...(categories || []).map((category) => ({
@@ -86,7 +86,9 @@ const ModuleSettings = ({module, index, categories, records, onChange, onRemove,
     <PanelBody title={panelTitle} initialOpen={index === 0}>
       <TextControl
         label={__('List name', 'alps')}
-        help={__('Optional heading displayed above this slider.', 'alps')}
+        help={cardLayout
+          ? __('Kortelių išdėstyme antraštė rodoma tik tada, kai ji įrašyta.', 'alps')
+          : __('Optional heading displayed above this slider.', 'alps')}
         value={module.title}
         onChange={(value) => setValue('title', value)}
       />
@@ -162,7 +164,9 @@ const ModuleSettings = ({module, index, categories, records, onChange, onRemove,
 
       <SelectControl
         label={__('Teksto eilutės', 'alps')}
-        help={__('Mažiau eilučių – žemesnis slankiklis.', 'alps')}
+        help={cardLayout
+          ? __('Automatiškai – 3 eilutės.', 'alps')
+          : __('Mažiau eilučių – žemesnis slankiklis.', 'alps')}
         value={module.excerptLines}
         options={[
           {label: __('Automatiškai', 'alps'), value: 0},
@@ -256,6 +260,12 @@ const Edit = ({attributes, setAttributes}) => {
             max={4}
             onChange={(value) => setAttributes({columns: Number(value || 1)})}
           />
+          <ToggleControl
+            label={__('Kortelių išdėstymas', 'alps')}
+            help={__('Kategorija virš pavadinimo, antraštė – tik jei įrašyta. Slinkimas, rodyklės ir taškai lieka; nustačius 1 įrašą, kortelė nejuda.', 'alps')}
+            checked={!!attributes.cardLayout}
+            onChange={(value) => setAttributes({cardLayout: !!value})}
+          />
         </PanelBody>
 
         {modules.length > 1 && (
@@ -306,6 +316,7 @@ const Edit = ({attributes, setAttributes}) => {
             onChange={updateModule}
             onRemove={removeModule}
             canRemove={modules.length > 1}
+            cardLayout={!!attributes.cardLayout}
           />
         ))}
 
@@ -325,7 +336,7 @@ const Edit = ({attributes, setAttributes}) => {
       <div {...blockProps}>
         <ServerSideRender
           block="alps/latest-post-slider"
-          attributes={{columns: Number(attributes.columns || 1), modules}}
+          attributes={{columns: Number(attributes.columns || 1), modules, cardLayout: !!attributes.cardLayout}}
           EmptyResponsePlaceholder={() => (
             <Placeholder label={__('Latest Post Slider', 'alps')}>
               {__('Choose a category or add selected posts/pages to display slider content.', 'alps')}
@@ -347,6 +358,7 @@ registerBlockType('alps/latest-post-slider', {
   attributes: {
     columns: {type: 'number', default: 1},
     modules: {type: 'array', default: [createModule()]},
+    cardLayout: {type: 'boolean', default: false},
   },
   supports: {
     align: ['wide', 'full'],

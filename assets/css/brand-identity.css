@@ -1,0 +1,116 @@
+/* ==========================================================================
+   Identity guideline fixes and front-page section headings (v4 mock-up).
+   Embedded on every page after site-overrides.css and the responsive fixes
+   (app/setup.php); the minified copy is written by scripts/minify-assets.mjs.
+   The ALPS stylesheet is linked after these rules, hence the !important flags.
+   ========================================================================== */
+
+/* 1. Logo clear space: about twice the logo's x-height between the logo and
+   the header's top and left edges (28px at 1440px instead of 20px). The logo
+   is drawn smaller (192 instead of 250px wide on wide screens) and its box
+   keeps the old logo's height (the logo file is 550 x 149, ratio .2709), so the
+   header is exactly as tall as before at every width. The "Wide Logo"
+   setting keeps its own sizes. */
+.c-header .c-header__logo:not(.c-header__logo--wide) {
+  /* Phones: ALPS pads the logo .625rem above and .3125rem below a 180px logo. */
+  --logo-box-was: calc(.9375rem + 11.25rem * .2709);
+  --logo-now: 10.25rem;
+  min-height: var(--logo-box-was);
+  padding-top: .875rem !important;
+  padding-left: .3125rem !important;
+}
+.c-header .c-header__logo:not(.c-header__logo--wide) img,
+.c-header .c-header__logo:not(.c-header__logo--wide) svg {
+  max-width: var(--logo-now) !important;
+}
+@media (min-width: 501px) {
+  .c-header .c-header__logo:not(.c-header__logo--wide) {
+    --logo-box-was: calc(.625rem + 11.25rem * .2709);
+    padding-top: .5625rem !important;
+  }
+}
+@media (min-width: 701px) {
+  .c-header .c-header__logo:not(.c-header__logo--wide) {
+    --logo-box-was: calc(.9375rem + 13.75rem * .2709);
+    --logo-now: 12rem;
+    padding-top: 1rem !important;
+    padding-left: .5rem !important;
+  }
+}
+@media (min-width: 901px) {
+  /* The header pads 1.25rem; the navigation is positioned beside the logo,
+     so the logo's box alone sets the header's height. */
+  .c-header .c-header__logo:not(.c-header__logo--wide) {
+    --logo-box-was: calc(15.625rem * .2709);
+    padding-top: .5rem !important;
+  }
+}
+
+/* 2. Denim (#2F557F, the logo palette colour of the Sabbath column) instead
+   of the dark navy #04132B for the footer, page header bands (also the
+   front page's Sabbath countdown band) and the search drawer. #04132B stays
+   for text. White on Denim is 7.7:1. Only with the Denim colour scheme. */
+.u-theme--denim .c-footer.u-theme--background-color--darker,
+.u-theme--denim .c-page-header.u-theme--background-color--dark,
+.u-theme--denim .c-search-drawer.u-theme--background-color--darker {
+  background-color: #2f557f !important;
+}
+
+/* 3. Section headings: the card scroller's heading (Knygos, Naudingos
+   nuorodos) and Heading blocks between the front page's blocks. Left,
+   28px at 1440px, medium weight (the site's Noto Sans has 400 and 700, so
+   it is drawn regular), dark ink, about 24px above the content. Block and
+   card titles inside the sections stay smaller (site-overrides.css 5). */
+.alps-card-scroller .alps-card-scroller__heading,
+.home .text > h2 {
+  font-family: "Noto Sans", Helvetica, Arial, sans-serif !important;
+  font-size: clamp(1.375rem, 1.1rem + .9vw, 1.75rem) !important;
+  font-weight: 500 !important;
+  line-height: 1.25 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  text-align: left !important;
+  color: #04132b !important;
+}
+/* The frame and the track add 17px above the cards; the heading lines up
+   with the first card. */
+.alps-card-scroller .alps-card-scroller__heading,
+.alps-card-scroller__head {
+  margin: 10px 0 .4375rem;
+  padding: 0 8px;
+}
+.home .text > h2 {
+  margin-bottom: 0 !important;
+}
+.home .text > h2 + * {
+  margin-top: 1.5rem !important;
+}
+
+/* A card scroller with a "Daugiau" link also shows it at the end of the
+   heading row, in Denim with an arrow. */
+.alps-card-scroller__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .25rem 1.5rem;
+}
+.alps-card-scroller__head .alps-card-scroller__heading {
+  margin: 0;
+  padding: 0;
+}
+/* Heavier than site-overrides.css 2, which underlines every link in .text. */
+html body .alps-card-scroller .alps-card-scroller__head a.alps-card-scroller__head-more {
+  color: #2f557f !important;
+  font-family: "Noto Sans", Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-decoration: none;
+  border: 0 none !important;
+}
+html body .alps-card-scroller .alps-card-scroller__head a.alps-card-scroller__head-more:hover {
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}

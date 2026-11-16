@@ -13,6 +13,7 @@ const assets = [
   ['assets/css/card-scroller.css', 'assets/css/card-scroller.min.css'],
   ['assets/css/page-hero.css', 'assets/css/page-hero.min.css'],
   ['assets/css/responsive-zoom-fixes.css', 'assets/css/responsive-zoom-fixes.min.css'],
+  ['assets/css/brand-identity.css', 'assets/css/brand-identity.min.css'],
   ['assets/css/sabbath-timer.css', 'assets/css/sabbath-timer.min.css'],
   ['assets/css/adv-search.css', 'assets/css/adv-search.min.css'],
   ['assets/css/sidebar-layout.css', 'assets/css/sidebar-layout.min.css'],

@@ -198,8 +198,12 @@ class LatestPostSlider
      * one-column slider and 840px shared by the columns on wide screens.
      * WordPress' default (the full file width, up to 1000px) made browsers
      * download 743-1000px files for 160-400px frames.
+     *
+     * In the card layout ("Kortelių išdėstymas") the image is always on top in
+     * a 16:9 frame as wide as the card, so a one-column card is sized like one
+     * column of the multi-column rows: up to the whole 840px, not 560px.
      */
-    public static function imageSizes(int $columns, int $width, int $height): string
+    public static function imageSizes(int $columns, int $width, int $height, bool $card = false): string
     {
         $columns = max(1, min(4, $columns));
         $fit = static function (float $frameRatio) use ($width, $height): float {
@@ -212,7 +216,7 @@ class LatestPostSlider
         $px = static fn (float $value): string => max(1, (int) round($value)) . 'px';
 
         $parts = ['(max-width: 700px) ' . $scale('100vw - 34px', $wide)];
-        if (1 === $columns) {
+        if (1 === $columns && !$card) {
             // Stacked below 560px of slider width, otherwise 40% beside the text.
             $parts[] = $px(max(560 * $wide, 380 * $fit(3 / 4)));
         } else {

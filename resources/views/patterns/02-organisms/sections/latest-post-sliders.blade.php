@@ -2,6 +2,8 @@
   $sectionAttributes = $sectionAttributes ?? '';
   $configuredSliderModules = $configuredSliderModules ?? [];
   $sliderColumns = $sliderColumns ?? 1;
+  // v4 card layout: category above the title, heading only when typed in.
+  $cardLayout = !empty($cardLayout);
   $renderableSliderModules = [];
 
   foreach ($configuredSliderModules as $configuredSliderModule) {
@@ -39,6 +41,8 @@
         $sliderPosts = $renderableSliderModule['posts'];
         $source = sanitize_key((string) ($module['alps_latest_slider_source'] ?? 'latest'));
         $moduleTitle = trim(wp_strip_all_tags((string) ($module['alps_latest_slider_title'] ?? '')));
+        // A card-layout module has a heading only when one was typed in.
+        $showHeading = !$cardLayout || $moduleTitle !== '';
         $moduleUrl = esc_url($module['alps_latest_slider_title_url'] ?? '', ['http', 'https']);
 
         if (!$moduleUrl && $source === 'category') {
@@ -65,16 +69,21 @@
         $slideCount = count($sliderPosts);
         $navigationStyle = ($module['alps_latest_slider_navigation'] ?? '') === 'buttons' ? 'buttons' : 'arrows';
         // 0: the text fills the reserved height; 1-8: at most that many lines, nothing reserved.
+        // A card-layout module shows three lines unless set otherwise.
         $excerptLines = min(8, absint($module['alps_latest_slider_excerpt_lines'] ?? 0));
+        if ($cardLayout && !$excerptLines) {
+          $excerptLines = 3;
+        }
       @endphp
 
       <article
-        class="alps-latest-slider{{ $excerptLines ? ' alps-latest-slider--short-text' : '' }}"
+        class="alps-latest-slider{{ $excerptLines ? ' alps-latest-slider--short-text' : '' }}{{ $cardLayout ? ' alps-latest-slider--card' : '' }}"
         @if ($excerptLines) style="--alps-slider-excerpt-lines: {{ $excerptLines }};" @endif
         data-alps-latest-slider
         data-alps-slider-interval="{{ $interval }}"
         data-alps-slider-autoplay="{{ $autoplay ? 'true' : 'false' }}"
       >
+        @if ($showHeading)
         <div class="alps-latest-slider__heading">
           <h2 class="alps-latest-slider__title">
             @if ($moduleUrl)
@@ -84,6 +93,7 @@
             @endif
           </h2>
         </div>
+        @endif
 
         <div
           class="alps-latest-slider__viewport"
@@ -116,6 +126,13 @@
               $categoryName = html_entity_decode(\App\ContentHelpers::categoryName((int) $postId), ENT_QUOTES | ENT_HTML5, 'UTF-8');
               $isActive = $slideIndex === 0;
               $firstRow = $isActive && $thumbnailId && $moduleIndex < $eagerSliders;
+              $thumbnailFile = $thumbnailId ? wp_get_attachment_image_src($thumbnailId, 'full') : false;
+              $thumbnailWidth = (int) ($thumbnailFile[1] ?? 0);
+              $thumbnailHeight = (int) ($thumbnailFile[2] ?? 0);
+              // Card layout only: the image fills the 16:9 frame when its
+              // shape is close; otherwise it is shown whole on a light backdrop.
+              $thumbnailCover = $cardLayout && $thumbnailWidth && $thumbnailHeight
+                && 'cover' === \App\ImageDelivery::fit($thumbnailWidth / $thumbnailHeight, 16 / 9);
             @endphp
 
             <article
@@ -128,9 +145,8 @@
             >
               <a class="alps-latest-slider__link" href="{{ esc_url($postLink) }}">
                 @if ($thumbnailId)
-                  <div class="alps-latest-slider__image-frame">
+                  <div class="alps-latest-slider__image-frame{{ $thumbnailCover ? ' alps-latest-slider__image-frame--cover' : '' }}">
                     @php
-                      $thumbnailFile = wp_get_attachment_image_src($thumbnailId, 'full');
                       // Every slide image is lazy: on phones the sliders sit below
                       // the first screen. The largest first image in the first row
                       // (priorityIndex above) is still fetched early on wide
@@ -141,7 +157,9 @@
                         'alt' => $thumbnailAlt,
                         'loading' => 'lazy',
                         'decoding' => 'async',
-                        'sizes' => \App\LatestPostSlider::imageSizes((int) $sliderColumns, (int) ($thumbnailFile[1] ?? 0), (int) ($thumbnailFile[2] ?? 0)),
+                        // A filled frame is drawn at the frame's full width; a
+                        // card's frame is as wide as the card at any column count.
+                        'sizes' => \App\LatestPostSlider::imageSizes((int) $sliderColumns, $thumbnailCover ? 16 : $thumbnailWidth, $thumbnailCover ? 9 : $thumbnailHeight, $cardLayout),
                       ]);
                       // The sizes above, without the "auto" WordPress adds to lazy images.
                       $thumbnailHtml = \App\LatestPostSlider::withoutAutoSizes($thumbnailHtml);
@@ -155,11 +173,18 @@
                     @endif
                     {!! $thumbnailHtml !!}
                   </div>
+                @elseif ($cardLayout)
+                  {{-- Card layout without a featured image: the category on a Denim panel. --}}
+                  <div class="alps-latest-slider__image-frame alps-latest-slider__image-frame--panel" aria-hidden="true">
+                    @if ($categoryName)
+                      <span class="alps-latest-slider__panel-label">{{ $categoryName }}</span>
+                    @endif
+                  </div>
                 @endif
 
                 <div class="alps-latest-slider__body">
-                  {{-- A category slider's heading already names the category. --}}
-                  @if ($categoryName && $source !== 'category')
+                  {{-- A category slider's heading names the category; a card-layout module has no such heading. --}}
+                  @if ($categoryName && ($cardLayout || $source !== 'category'))
                     <span class="alps-latest-slider__meta">{{ $categoryName }}</span>
                   @endif
                   <h3 class="alps-latest-slider__post-title">{{ $postTitle }}</h3>
@@ -184,7 +209,7 @@
             class="alps-latest-slider__dots"
             data-alps-slider-dots
             role="tablist"
-            aria-label="{{ sprintf(__('%s skaidrės', 'alps'), $moduleTitle) }}"
+            aria-label="{{ sprintf(__('%s skaidrės', 'alps'), $moduleTitle !== '' ? $moduleTitle : __('Įrašų', 'alps')) }}"
           >
             @foreach ($sliderPosts as $dotIndex => $sliderPost)
               @php($dotActive = $dotIndex === 0)

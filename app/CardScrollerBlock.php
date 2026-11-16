@@ -99,6 +99,13 @@ class CardScrollerBlock
             $headingHtml = '<h2 class="alps-card-scroller__heading">'
                 . ($headingUrl ? '<a href="' . $headingUrl . '">' . esc_html($heading) . '</a>' : esc_html($heading))
                 . '</h2>';
+            // The Daugiau link also sits at the end of the heading row
+            // (brand-identity.css); the row still ends with its card.
+            if ($moreCard) {
+                $headingHtml = '<div class="alps-card-scroller__head">' . $headingHtml
+                    . '<a class="alps-card-scroller__head-more" href="' . $moreUrl . '">' . esc_html($moreLabel)
+                    . ' <span aria-hidden="true">→</span></a></div>';
+            }
         }
 
         $wrapper = get_block_wrapper_attributes([

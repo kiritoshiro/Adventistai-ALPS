@@ -99,6 +99,15 @@ check('portrait first, landscape second: the landscape gets high priority', 1 ==
 check('equal shares: the first one', 0 === LatestPostSlider::priorityIndex([[1200, 675], [1920, 1080]]));
 check('a slider without an image is skipped', 1 === LatestPostSlider::priorityIndex([null, [640, 940]]));
 check('no images: none', -1 === LatestPostSlider::priorityIndex([null, null]));
+
+// sizes: the default (no card layout) keeps the values it had before the card
+// layout (3.41.0); a one-column card's 16:9 frame is as wide as the card.
+check('default one-column sizes unchanged: 560px beside the text', '(max-width: 700px) calc(100vw - 34px), 560px' === LatestPostSlider::imageSizes(1, 1200, 675));
+check('default one-column sizes unchanged for a portrait image', '(max-width: 700px) calc((100vw - 34px) * 0.383), 214px' === LatestPostSlider::imageSizes(1, 640, 940) && LatestPostSlider::imageSizes(1, 640, 940) === LatestPostSlider::imageSizes(1, 640, 940, false));
+check('default three-column sizes unchanged', '(max-width: 700px) calc(100vw - 34px), (max-width: 1000px) calc((85.71vw - 60px) / 3), 280px' === LatestPostSlider::imageSizes(3, 1200, 675));
+check('one-column card, image filling the frame (passed as 16:9): the whole 840px', '(max-width: 700px) calc(100vw - 34px), (max-width: 1000px) calc((85.71vw - 60px) / 1), 840px' === LatestPostSlider::imageSizes(1, 16, 9, true));
+check('one-column card, portrait image shown whole: 840px times its share of the frame', '(max-width: 700px) calc((100vw - 34px) * 0.383), (max-width: 1000px) calc(((85.71vw - 60px) / 1) * 0.383), 322px' === LatestPostSlider::imageSizes(1, 640, 940, true));
+check('two-, three- and four-column cards: the same 16:9 frames as without cards', LatestPostSlider::imageSizes(2, 16, 9, true) === LatestPostSlider::imageSizes(2, 16, 9) && LatestPostSlider::imageSizes(3, 640, 940, true) === LatestPostSlider::imageSizes(3, 640, 940) && LatestPostSlider::imageSizes(4, 16, 9, true) === LatestPostSlider::imageSizes(4, 16, 9));
 check('only the first section claims eager images', LatestPostSlider::claimEagerSection() && ! LatestPostSlider::claimEagerSection());
 
 // High priority on wide screens only, through a preload that matches the <picture>.

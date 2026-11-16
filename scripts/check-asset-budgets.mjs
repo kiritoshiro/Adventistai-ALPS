@@ -9,7 +9,10 @@ const built = (key) => typeof manifest[key] === 'string' ? `public/${manifest[ke
 const budgets = [
   ['Frontend CSS', built('app.css'), 22_000],
   ['Frontend JS', built('app.js'), 4_500],
-  ['Editor CSS', built('editor.css'), 9_000],
+  // Includes the Latest Post Slider styles for the editor preview, with the
+  // card layout ("Kortelių išdėstymas", 2.1 KB, 3.41.0) as rules of its own
+  // so sliders without it keep their exact styles.
+  ['Editor CSS', built('editor.css'), 11_000],
   // Block editor only (never on the site). Includes the theme's post field
   // panels (resources/scripts/field-panels.js, ~7 KB) since they replaced the
   // Carbon Fields boxes, and the Author panel (resources/scripts/author-panel.js,
@@ -23,6 +26,10 @@ const budgets = [
   ['Site overrides CSS (minified, loaded)', 'assets/css/site-overrides.min.css', 15_000],
   ['Responsive fixes CSS', 'assets/css/responsive-zoom-fixes.css', 8_000],
   ['Responsive fixes CSS (minified, embedded)', 'assets/css/responsive-zoom-fixes.min.css', 4_000],
+  // Embedded on every page after the responsive fixes: logo clear space,
+  // Denim bands and the front page's section headings.
+  ['Identity CSS', 'assets/css/brand-identity.css', 5_000],
+  ['Identity CSS (minified, embedded)', 'assets/css/brand-identity.min.css', 2_500],
   ['Search CSS', 'assets/css/adv-search.css', 7_500],
   ['Search CSS (minified, embedded)', 'assets/css/adv-search.min.css', 5_000],
   ['Sabbath timer CSS', 'assets/css/sabbath-timer.css', 8_000],
