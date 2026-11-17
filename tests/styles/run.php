@@ -141,5 +141,104 @@ check('clearing removes the compiled views', 2 === ThemeCache::clear() && ! glob
 check('Acorn\'s services manifest is kept', is_file(WP_CONTENT_DIR . '/cache/acorn/framework/cache/services.php'));
 check('clearing also removes the minified stylesheet copies', ! glob(WP_CONTENT_DIR . '/cache/adventistai/css/*.css'));
 
+// The v4 identity changes (brand-identity.css, embedded on every page) are for
+// the front page only (3.41.1): every selector goes through <body class="home">
+// (a literal body.home, since any block can be given the class "home"), except
+// the one rule that hides the heading-row "Daugiau" link on the other pages.
+function front_page_only(string $selector): bool
+{
+    $selector = preg_replace('~\s+~', ' ', trim($selector));
+    if ($selector === 'body:not(.home) .alps-card-scroller__head-more') {
+        return true;
+    }
+    // "body.home" as a whole compound (optionally after html or the <html>
+    // colour-scheme class), followed by a descendant or child combinator,
+    // never a sibling one (+, ~, ||), which would leave the body.
+    return (bool) preg_match('#^(html |\.u-theme--[a-z-]+ )?body\.home( ?> ?| )(?![+~|>])\S#', $selector)
+        && ! str_contains($selector, ':not(.home)');
+}
+function css_selectors(string $css): array
+{
+    $css = preg_replace('~/\*.*?\*/~s', '', $css);
+    // Statement at-rules (@layer a;, @import …;, @charset …;) would otherwise
+    // hide the selector that follows them in the same prelude.
+    $css = preg_replace('~@[a-z-]+[^;{}]*;~i', '', $css);
+    preg_match_all('~([^{}]+)\{~', $css, $m);
+    $selectors = [];
+    foreach ($m[1] as $prelude) {
+        if (str_starts_with(trim($prelude), '@')) {
+            continue; // @media, @layer x {…}: their rules are matched on their own
+        }
+        foreach (explode(',', $prelude) as $selector) {
+            $selectors[] = trim($selector);
+        }
+    }
+    return $selectors;
+}
+
+$adversarial = [
+    '.home .c-footer' => false, // any element with class "home"
+    'body .home .c-footer' => false,
+    '.u-theme--denim .home .c-footer' => false,
+    'body:not(.home) .c-footer' => false, // only the Daugiau rule may target other pages
+    'body:not(.home) .alps-card-scroller__head-more, .x' => false,
+    'body.homepage .c-footer' => false,
+    'body.home' => false, // the body itself (no descendant)
+    'body.home:not(.home) .x' => false,
+    'body.home + .x' => false, // siblings of the body, not inside it
+    'body.home ~ .x' => false,
+    'body.home || .x' => false,
+    'body.home+.x' => false,
+    'body.home > + .x' => false,
+    'body.home > .x' => true,
+    '.c-header .c-header__logo' => false,
+    'body.home .c-header .c-header__logo:not(.c-header__logo--wide) img' => true,
+    '.u-theme--denim body.home .c-footer.u-theme--background-color--darker' => true,
+    'html body.home .alps-card-scroller a' => true,
+    'body.home .text>h2+*' => true,
+    'body:not(.home) .alps-card-scroller__head-more' => true,
+];
+$wrong = [];
+foreach ($adversarial as $selector => $expected) {
+    $got = count(css_selectors("$selector{}")) === 1 && front_page_only($selector);
+    if ($got !== $expected) {
+        $wrong[] = $selector;
+    }
+}
+// Rules behind statement at-rules or inside block at-rules are still checked.
+$hidden = [
+    '@layer base;.leak{color:red}',
+    '@import url(x.css);@charset "utf-8";.leak{}',
+    '@media (min-width:1px){.leak{}}',
+    '@layer base{.leak{}}',
+    '@supports (display:grid){@media print{.leak{}}}',
+];
+foreach ($hidden as $css) {
+    if (css_selectors($css) !== ['.leak']) {
+        $wrong[] = $css;
+    }
+}
+check('the front-page check rejects ' . count(array_filter($adversarial, fn ($e) => ! $e)) . ' unscoped selectors, also behind at-rules, and accepts the scoped forms', ! $wrong);
+foreach ($wrong as $selector) {
+    echo "    misjudged: $selector\n";
+}
+
+// The card scroller prints the heading-row link on every page, so the rule that
+// hides it outside the front page must stay (an emptied rule is dropped by the
+// minifier and would pass the scope check).
+check('brand-identity.min.css hides the heading-row Daugiau link on other pages', str_contains(
+    (string) file_get_contents(dirname(__DIR__, 2) . '/assets/css/brand-identity.min.css'),
+    'body:not(.home) .alps-card-scroller__head-more{display:none!important}'
+));
+
+foreach (['brand-identity.css', 'brand-identity.min.css'] as $file) {
+    $selectors = css_selectors((string) file_get_contents(dirname(__DIR__, 2) . '/assets/css/' . $file));
+    $unscoped = array_filter($selectors, fn ($s) => ! front_page_only($s));
+    check($file . ': ' . count($selectors) . ' selectors, all front-page only', count($selectors) > 15 && ! $unscoped);
+    foreach ($unscoped as $selector) {
+        echo "    not scoped: $selector\n";
+    }
+}
+
 echo $failures ? "$failures check(s) failed\n" : "All checks passed\n";
 exit($failures ? 1 : 0);

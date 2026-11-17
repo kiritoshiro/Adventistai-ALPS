@@ -3,6 +3,10 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.41.1]
+### Fixed
+- **The v4 identity changes apply to the front page only.** In 3.41.0 the Denim backgrounds (page header band, footer, search drawer), the smaller logo with more clear space, the 28px card-scroller headings and the "Daugiau →" link in the heading row applied on every page, so for example a page without a featured image got a Denim header band instead of the dark navy. Every rule in `assets/css/brand-identity.css` is now scoped to the front page (`body.home`); all other pages look as they did in 3.40.0, and a card scroller there keeps only the row's Daugiau card. The Sabbath timer styles were already front-page only, and the slider card look still needs "Kortelių išdėstymas".
+
 ## [3.41.0]
 ### Added
 - **Latest Post Slider → "Kortelių išdėstymas"** (block settings, "Slider layout"; off by default): the v4 card look, **only for blocks with this option on**. Sliders without it keep exactly their previous markup and styles (`tests/blocks/latest-post-slider.php` renders the template with the option missing, off and on, and checks that every card rule in the stylesheet, and in the built `app.css`, is scoped to `.alps-latest-sliders--cards`). With the option:
