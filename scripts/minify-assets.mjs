@@ -15,6 +15,7 @@ const assets = [
   ['assets/css/responsive-zoom-fixes.css', 'assets/css/responsive-zoom-fixes.min.css'],
   ['assets/css/brand-identity.css', 'assets/css/brand-identity.min.css'],
   ['assets/css/sabbath-timer.css', 'assets/css/sabbath-timer.min.css'],
+  ['assets/css/campaign-band.css', 'assets/css/campaign-band.min.css'],
   ['assets/css/adv-search.css', 'assets/css/adv-search.min.css'],
   ['assets/css/sidebar-layout.css', 'assets/css/sidebar-layout.min.css'],
   ['assets/css/sidebar-rail.css', 'assets/css/sidebar-rail.min.css'],

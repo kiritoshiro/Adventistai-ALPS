@@ -1,0 +1,11 @@
+"Visa darau nauja" band (App\CampaignBand): the theme's default images.
+
+Cropped and compressed (WebP) from image pair 02 of the "All Things New" /
+"Visa darau nauja" campaign toolkit, photos from Unsplash (Unsplash License):
+
+  old-*.webp   dead leaves   Kier in Sight Archives (unsplash.com/photos/xbR61Bgxj00)
+  new-*.webp   fern          Mykyta Martynenko (unsplash.com/photos/_1UF_3TlKcQ)
+
+Files: old-470 / old-940 (470:360, 1x and 2x) and new-764 / new-1528
+(764:360) for the band from 700px up; old-phone-390 / -780 (3:1) and
+new-phone-390 / -780 (390:330) for phones.

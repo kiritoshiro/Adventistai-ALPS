@@ -231,6 +231,24 @@ function crb_attach_theme_options()
                     Field::make('text', 'sabbath_verse_reference', __('Reference', 'alps')),
                 ]),
         ])
+        // Added in 3.42.0, after the move away from Carbon Fields. Defined here
+        // so compare.php checks they are read and stored in its format too.
+        ->add_tab(__('VISA DARAU NAUJA', 'alps'), [
+            Field
+                ::make('checkbox', 'campaign_band_show', __('Rodyti „Visa darau nauja“ juostą', 'alps'))
+                ->set_option_value('true'),
+            Field::make('image', 'campaign_band_image_old', __('Kairysis vaizdas („sena“)', 'alps')),
+            Field::make('image', 'campaign_band_image_new', __('Dešinysis vaizdas („nauja“)', 'alps')),
+            Field::make('text', 'campaign_band_line_old', __('Ženklo pirma dalis (ant kairiojo vaizdo)', 'alps'))->set_default_value('Visa darau'),
+            Field::make('text', 'campaign_band_line_new', __('Ženklo antra dalis (ant dešiniojo vaizdo)', 'alps'))->set_default_value('nauja'),
+            Field::make('text', 'campaign_band_tagline', __('Šūkis', 'alps'))->set_default_value('Viltis prasideda čia.'),
+            Field::make('text', 'campaign_band_verse', __('Eilutė', 'alps'))->set_default_value('„Štai aš visa darau nauja!“'),
+            Field::make('text', 'campaign_band_verse_reference', __('Eilutės nuoroda', 'alps'))->set_default_value('Apr 21, 5'),
+            Field::make('text', 'campaign_band_button_1_label', __('Pirmasis mygtukas: tekstas', 'alps'))->set_default_value('Sužinokite daugiau'),
+            Field::make('text', 'campaign_band_button_1_url', __('Pirmasis mygtukas: nuoroda', 'alps')),
+            Field::make('text', 'campaign_band_button_2_label', __('Antrasis mygtukas: tekstas', 'alps'))->set_default_value('Rasti bendruomenę'),
+            Field::make('text', 'campaign_band_button_2_url', __('Antrasis mygtukas: nuoroda', 'alps')),
+        ])
         ->add_tab(__('FOOTER CONTENT', 'alps'), [
             Field
                 ::make( 'complex', 'footer_description', __('Footer Description', 'alps'))

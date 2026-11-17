@@ -45,6 +45,10 @@ In the block editor, insert **Latest Post Slider** from the Widgets category. Us
 
 Each slider displays one item at a time with a featured image, title, excerpt, fade cue, and indicator circles. Sliders pause while hovered or focused, and the layout stacks on small screens. The v4 card look comes only with **Kortelių išdėstymas** switched on; sliders without it keep their previous look. With it, each module is a bordered card (a 16:9 image, or a Denim panel with the category; the category above the title; a heading only when typed in) and still slides with its arrows and indicator dots; set "Number of posts" to 1 for a still card. A row of them forms an article grid. Because this is a dynamic block, it can be inserted anywhere in posts or pages.
 
+### Show the "Visa darau nauja" band on the front page
+
+Off by default. In `Appearance->ALPS Theme Settings`, open the **VISA DARAU NAUJA** tab and tick **Rodyti „Visa darau nauja“ juostą**. The band replaces the front page's header band: two photos ("old" and "new", the theme's own unless you pick others from the Media Library), the wordmark as the page title, a tagline, a verse and up to two buttons, with the Sabbath timer at its right end. Every text is editable; a button shows only once it has a URL (`https://…` or a link within the site such as `/bendruomenes/`).
+
 ### Add widgets to sidebar
 
 1. In your WordPress admin panel, navigate to `Appearance->Widgets`

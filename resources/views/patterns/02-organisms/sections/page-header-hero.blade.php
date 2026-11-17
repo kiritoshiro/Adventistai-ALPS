@@ -1,3 +1,7 @@
+@if (\App\CampaignBand::shown())
+  {{-- "Visa darau nauja" (App\CampaignBand, off by default): on the front page it takes the place of the usual header, whichever this would be. --}}
+  @include('partials.campaign-band')
+@else
 @php
   $cf_ = '_';
   $hero_type = get_alps_field('hero_type');
@@ -190,4 +194,5 @@
   </header> <!-- /.c-page-header -->
 @else
     @include($feature_image_hero)
+@endif
 @endif

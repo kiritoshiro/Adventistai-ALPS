@@ -35,6 +35,16 @@ const budgets = [
   ['Sabbath timer CSS', 'assets/css/sabbath-timer.css', 8_000],
   ['Sabbath timer CSS (minified, embedded on the front page)', 'assets/css/sabbath-timer.min.css', 6_000],
   ['Search JS', 'assets/js/adv-search.js', 11_000],
+  // "Visa darau nauja" band (3.42.0): embedded on the front page only while
+  // switched on in the theme settings, with the two Figtree subsets and the
+  // band's photos (the largest files, the 2x desktop crops, are listed).
+  ['Campaign band CSS', 'assets/css/campaign-band.css', 9_500],
+  ['Campaign band CSS (minified, embedded)', 'assets/css/campaign-band.min.css', 6_000],
+  ['Campaign band font: Figtree ExtraBold subset', 'assets/fonts/figtree/Figtree-ExtraBold.woff2', 12_000],
+  ['Campaign band font: Figtree Medium subset', 'assets/fonts/figtree/Figtree-Medium.woff2', 12_000],
+  ['Campaign band image: old, 2x', 'assets/images/visa-darau-nauja/old-940.webp', 120_000],
+  ['Campaign band image: new, 2x', 'assets/images/visa-darau-nauja/new-1528.webp', 120_000],
+  ['Campaign band image: new, phone 2x', 'assets/images/visa-darau-nauja/new-phone-780.webp', 120_000],
   // Readable source; it calculates the sunsets that were embedded as about
   // 16 KB of JSON and places the city list in the top layer. The page embeds
   // the minified copy.
