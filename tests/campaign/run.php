@@ -268,6 +268,30 @@ $newOnWhite = $contrastOnWhite($shade('new'));
 check(sprintf('contrast on a white Media Library image: wordmark on the old half %.2f:1 (3:1 for large text)', $oldOnWhite), $oldOnWhite >= 3.0);
 check(sprintf('contrast on a white Media Library image: everything on the new half %.2f:1 (4.5:1)', $newOnWhite), $newOnWhite >= 4.5);
 
+// The outlined button lays its own background over that shade, at rest and on
+// hover; white text must stay at AA in both states.
+$buttonOnWhite = function (string $state) use ($root, $shade) {
+    $css = (string) file_get_contents($root . '/assets/css/campaign-band.css');
+    $css = preg_replace('~/\*.*?\*/~s', '', $css);
+    preg_match('~\.adventistai-vdn \.adventistai-vdn__button--secondary' . preg_quote($state, '~') . '\s*\{[^}]*?background:\s*rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)~', $css, $m);
+    $under = $shade('new');
+    if (!$m || !$under) {
+        return 0.0;
+    }
+    $lin = fn ($c) => $c <= 0.04045 ? $c / 12.92 : (($c + 0.055) / 1.055) ** 2.4;
+    $l = 0.0;
+    foreach ([0 => 0.2126, 1 => 0.7152, 2 => 0.0722] as $i => $weight) {
+        $c = (1 - $under[3]) + $under[3] * $under[$i] / 255;     // shade over white
+        $c = (1 - (float) $m[4]) * $c + (float) $m[4] * (float) $m[$i + 1] / 255; // button over that
+        $l += $weight * $lin($c);
+    }
+    return 1.05 / ($l + 0.05);
+};
+foreach (['' => 'at rest', ':hover' => 'on hover'] as $state => $label) {
+    $ratio = $buttonOnWhite($state);
+    check(sprintf('contrast on a white Media Library image: the outlined button %s %.2f:1 (4.5:1)', $label, $ratio), $ratio >= 4.5);
+}
+
 // 4. Settings: the fields, their defaults (off), and sanitising on save.
 $fields = Registry::options();
 $names = ['campaign_band_show', 'campaign_band_image_old', 'campaign_band_image_new', 'campaign_band_line_old', 'campaign_band_line_new',

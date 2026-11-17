@@ -197,8 +197,9 @@
   background: #dcdee4;
 }
 
+/* Darker, not lighter, on hover: white text stays at AA on a bright photo. */
 .adventistai-vdn .adventistai-vdn__button--secondary:hover {
-  background: rgba(255, 255, 255, .14);
+  background: rgba(4, 10, 8, .4);
 }
 
 /* A white ring with campaign navy round it: visible on both photos. */
