@@ -28,7 +28,7 @@ add_action('wp_enqueue_scripts', function () {
  * stylesheet itself. Embedded because the file is small and a separate
  * stylesheet would be one more render-blocking request. The minified copy is
  * printed (see embedded_css()). The identity fixes and section headings
- * (brand-identity.css: logo clear space, Denim bands, front-page headings)
+ * (brand-identity.css: logo clear space, front-page headings)
  * follow them.
  */
 add_action('wp_enqueue_scripts', function () {

@@ -231,6 +231,14 @@ check('brand-identity.min.css hides the heading-row Daugiau link on other pages'
     'body:not(.home) .alps-card-scroller__head-more{display:none!important}'
 ));
 
+// The footer, the page header band and the search drawer keep the ALPS navy
+// on the front page too (3.42.1): no rule in the identity CSS recolours them.
+foreach (['brand-identity.css', 'brand-identity.min.css'] as $file) {
+    $css = (string) file_get_contents(dirname(__DIR__, 2) . '/assets/css/' . $file);
+    check($file . ': footer, header band and search drawer keep their ALPS colours',
+        ! preg_match('~c-footer|c-page-header|c-search-drawer|c-drawer|background-color--dark~i', $css));
+}
+
 foreach (['brand-identity.css', 'brand-identity.min.css'] as $file) {
     $selectors = css_selectors((string) file_get_contents(dirname(__DIR__, 2) . '/assets/css/' . $file));
     $unscoped = array_filter($selectors, fn ($s) => ! front_page_only($s));

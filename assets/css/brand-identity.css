@@ -4,6 +4,7 @@
    (app/setup.php); the minified copy is written by scripts/minify-assets.mjs.
    The ALPS stylesheet is linked after these rules, hence the !important flags.
    Front page only (body.home); other pages keep the ALPS look (3.41.1).
+   The footer, header band and search drawer keep ALPS navy (3.42.1).
    ========================================================================== */
 
 /* 1. Logo clear space: about twice the logo's x-height between the logo and
@@ -47,17 +48,7 @@ body.home .c-header .c-header__logo:not(.c-header__logo--wide) svg {
   }
 }
 
-/* 2. Denim (#2F557F, the logo palette colour of the Sabbath column) instead
-   of the dark navy #04132B for the front page's footer, its page header band
-   (the Sabbath countdown band) and its search drawer. #04132B stays
-   for text. White on Denim is 7.7:1. Only with the Denim colour scheme. */
-.u-theme--denim body.home .c-footer.u-theme--background-color--darker,
-.u-theme--denim body.home .c-page-header.u-theme--background-color--dark,
-.u-theme--denim body.home .c-search-drawer.u-theme--background-color--darker {
-  background-color: #2f557f !important;
-}
-
-/* 3. Section headings: the card scroller's heading (Knygos, Naudingos
+/* 2. Section headings: the card scroller's heading (Knygos, Naudingos
    nuorodos) and Heading blocks between the front page's blocks. Left,
    28px at 1440px, medium weight (Noto Sans draws it regular), dark ink,
    about 24px above the content. Block and card titles inside the sections
