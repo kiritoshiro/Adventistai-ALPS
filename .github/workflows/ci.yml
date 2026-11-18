@@ -62,11 +62,12 @@ jobs:
       - name: Run search regression checks
         run: php tests/search/run.php
 
-      - name: Run block and Sabbath timer checks
+      - name: Run block, Sabbath timer and campaign band checks
         run: |
           php tests/blocks/card-scroller.php
           php tests/blocks/latest-post-slider.php
           php tests/sabbath/run.php
+          php tests/campaign/run.php
           php tests/styles/run.php
           php tests/styles/head.php
           php tests/scripts/run.php

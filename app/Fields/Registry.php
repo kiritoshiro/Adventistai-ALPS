@@ -208,6 +208,21 @@ class Registry
                 'sabbath_verse_text' => ['type' => 'textarea'],
                 'sabbath_verse_reference' => ['type' => 'text'],
             ]]],
+            // VISA DARAU NAUJA (front page band; added in 3.42.0, after Carbon
+            // Fields; App\CampaignBand). "clean" picks the settings page's
+            // sanitising: plain text, an http(s)/relative URL, or an image.
+            'campaign_band_show' => $check,
+            'campaign_band_image_old' => ['type' => 'image', 'clean' => 'image'],
+            'campaign_band_image_new' => ['type' => 'image', 'clean' => 'image'],
+            'campaign_band_line_old' => ['type' => 'text', 'default' => \App\CampaignBand::DEFAULTS['campaign_band_line_old'], 'clean' => 'text'],
+            'campaign_band_line_new' => ['type' => 'text', 'default' => \App\CampaignBand::DEFAULTS['campaign_band_line_new'], 'clean' => 'text'],
+            'campaign_band_tagline' => ['type' => 'text', 'default' => \App\CampaignBand::DEFAULTS['campaign_band_tagline'], 'clean' => 'text'],
+            'campaign_band_verse' => ['type' => 'text', 'default' => \App\CampaignBand::DEFAULTS['campaign_band_verse'], 'clean' => 'text'],
+            'campaign_band_verse_reference' => ['type' => 'text', 'default' => \App\CampaignBand::DEFAULTS['campaign_band_verse_reference'], 'clean' => 'text'],
+            'campaign_band_button_1_label' => ['type' => 'text', 'default' => \App\CampaignBand::DEFAULTS['campaign_band_button_1_label'], 'clean' => 'text'],
+            'campaign_band_button_1_url' => ['type' => 'text', 'clean' => 'url'],
+            'campaign_band_button_2_label' => ['type' => 'text', 'default' => \App\CampaignBand::DEFAULTS['campaign_band_button_2_label'], 'clean' => 'text'],
+            'campaign_band_button_2_url' => ['type' => 'text', 'clean' => 'url'],
             // FOOTER CONTENT
             'footer_description' => ['type' => 'complex', 'groups' => ['translatable_footer_description' => [
                 'footer_description_en' => ['type' => 'text', 'default' => __('An official website of the Seventh-day Adventist Church.', 'alps')],

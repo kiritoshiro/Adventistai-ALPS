@@ -81,6 +81,14 @@ add_action('wp_enqueue_scripts', function () {
     if ($timer !== '') {
         wp_add_inline_style('alps-main', $timer);
     }
+
+    // The "Visa darau nauja" band and its Figtree faces, after the timer's
+    // rules (it places the timer in the band). Front page only, while on: the
+    // same decision as the markup (CampaignBand::shown()).
+    $band = CampaignBand::shown() ? CampaignBand::css() : '';
+    if ($band !== '') {
+        wp_add_inline_style('alps-main', $band);
+    }
 }, 9999);
 
 /**
@@ -120,6 +128,14 @@ add_action('wp_head', function () {
             esc_url(get_template_directory_uri() . $font),
             $media === '' ? '' : ' media="' . esc_attr($media) . '"'
         );
+    }
+
+    // The "Visa darau nauja" wordmark and tagline faces (Figtree, about 9 KB
+    // each), only where the band is shown.
+    if (CampaignBand::shown()) {
+        foreach (CampaignBand::fontUrls() as $font) {
+            printf('<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n", esc_url($font));
+        }
     }
 }, 2);
 

@@ -106,6 +106,20 @@ class SettingsPage
                 ['field', 'sabbath_timer_hide', __('Hide the Sabbath timer', 'alps'), __('Select to hide the Sabbath countdown and verse at the top of the front page.', 'alps'), 100],
                 ['field', 'sabbath_timer_verses', __('Sabbath verses', 'alps'), __('Shown at the top of the front page during the Sabbath, one picked at random on each visit. Without entries the timer shows Exodus 20:8.', 'alps')],
             ]],
+            'campaign_band' => [__('VISA DARAU NAUJA', 'alps'), [
+                ['field', 'campaign_band_show', __('Rodyti „Visa darau nauja“ juostą', 'alps'), __('Juosta pirmojo puslapio viršuje: dvi nuotraukos („sena“ ir „nauja“), žodinis ženklas, šūkis, eilutė ir mygtukai. Išjungta – pirmasis puslapis rodomas kaip anksčiau.', 'alps'), 100],
+                ['field', 'campaign_band_image_old', __('Kairysis vaizdas („sena“)', 'alps'), __('Nepasirinkus – tema rodo nudžiūvusius lapus.', 'alps'), 50],
+                ['field', 'campaign_band_image_new', __('Dešinysis vaizdas („nauja“)', 'alps'), __('Nepasirinkus – tema rodo papartį.', 'alps'), 50],
+                ['field', 'campaign_band_line_old', __('Ženklo pirma dalis (ant kairiojo vaizdo)', 'alps'), '', 50],
+                ['field', 'campaign_band_line_new', __('Ženklo antra dalis (ant dešiniojo vaizdo)', 'alps'), '', 50],
+                ['field', 'campaign_band_tagline', __('Šūkis', 'alps'), __('Tuščias – nerodomas.', 'alps'), 100],
+                ['field', 'campaign_band_verse', __('Eilutė', 'alps'), __('Tuščia – nerodoma.', 'alps'), 50],
+                ['field', 'campaign_band_verse_reference', __('Eilutės nuoroda', 'alps'), __('Rodoma skliaustuose po eilute.', 'alps'), 50],
+                ['field', 'campaign_band_button_1_label', __('Pirmasis mygtukas: tekstas', 'alps'), '', 50],
+                ['field', 'campaign_band_button_1_url', __('Pirmasis mygtukas: nuoroda', 'alps'), __('https://… arba /puslapis/. Tuščia – mygtukas nerodomas.', 'alps'), 50, ['placeholder' => '/puslapis/']],
+                ['field', 'campaign_band_button_2_label', __('Antrasis mygtukas: tekstas', 'alps'), '', 50],
+                ['field', 'campaign_band_button_2_url', __('Antrasis mygtukas: nuoroda', 'alps'), __('https://… arba /puslapis/. Tuščia – mygtukas nerodomas.', 'alps'), 50, ['placeholder' => '/puslapis/']],
+            ]],
             'footer' => [__('FOOTER CONTENT', 'alps'), [
                 ['field', 'footer_description', __('Footer Description', 'alps')],
                 ['field', 'footer_copyright', __('Footer Copyright', 'alps')],
@@ -423,6 +437,11 @@ class SettingsPage
             case 'select':
                 return is_string($value) && in_array($value, $field['options'], true) ? $value : '';
             case 'image':
+                if (isset($field['clean']) && $field['clean'] === 'image') {
+                    // Only an image from the Media Library (a crafted ID of a PDF or a post is stored empty).
+                    $id = \App\CampaignBand::imageId($value);
+                    return $id ? (string) $id : '';
+                }
                 return is_scalar($value) && absint($value) ? (string) absint($value) : '';
             case 'complex':
                 $rows = [];
@@ -439,6 +458,14 @@ class SettingsPage
                 return $rows;
             default:
                 $value = is_scalar($value) ? (string) $value : '';
+                // Fields added after Carbon Fields may ask for stricter cleaning.
+                if (isset($field['clean']) && $field['clean'] === 'url') {
+                    $url = \App\CampaignBand::safeUrl($value);
+                    return $url === '' ? '' : esc_url_raw($url, ['http', 'https']);
+                }
+                if (isset($field['clean']) && $field['clean'] === 'text') {
+                    return sanitize_text_field($value);
+                }
                 // Carbon Fields stored text as typed; users without
                 // unfiltered_html (e.g. multisite admins) get safe HTML only.
                 return current_user_can('unfiltered_html') ? $value : wp_kses_post($value);
