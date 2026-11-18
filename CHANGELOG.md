@@ -3,6 +3,10 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.42.1]
+### Fixed
+- **The front page's footer, page header band and search drawer are dark navy again** (#04132B, the ALPS Denim scheme's own colour), as before 3.41.0. 3.41.0 made them a brighter Denim (#2F557F) and 3.41.1 kept that on the front page; the rule is removed from `assets/css/brand-identity.css`, and `tests/styles/run.php` checks that the identity CSS no longer recolours them. The smaller logo, the section headings, the "Daugiau →" link and the "Visa darau nauja" band are unchanged.
+
 ## [3.42.0]
 ### Added
 - **"Visa darau nauja" band on the front page** (the campaign's top band from the v4 mock-up), **off by default**: switch it on in **Appearance → ALPS Theme Settings → VISA DARAU NAUJA → „Rodyti „Visa darau nauja“ juostą“**. Until then every page renders exactly as in 3.41.0 (`tests/campaign/run.php` renders the page, page builder and latest-posts templates through their header views and compares them with the released ones), so other sites on this theme see nothing. Switched on, the band takes the place of the front page's usual header whatever the front page is: a static page with its page header, a hero (any type, carousel included) or a featured header, a page builder page, or the latest posts. One decision (`App\CampaignBand::shown()`) picks the markup and loads the styles and fonts. Fields on that tab (Lithuanian labels):
