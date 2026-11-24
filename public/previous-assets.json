@@ -1,5 +1,9 @@
 [
   [
+    "css/app.e983de.css",
+    "css/editor.62c552.css"
+  ],
+  [
     "css/app.a5da7c.css",
     "css/editor.c7361b.css",
     "js/editor.436651.js"
@@ -14,8 +18,5 @@
   ],
   [
     "js/editor.0eb634.js"
-  ],
-  [
-    "js/editor.448861.js"
   ]
 ]
