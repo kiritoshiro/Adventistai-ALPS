@@ -63,8 +63,9 @@ const budgets = [
   // the page header lined up with the article.
   ['Sidebar layout CSS (minified, embedded)', 'assets/css/sidebar-layout.min.css', 2_300],
   // Embedded only when Sidebar position is Left side column (incl. dark-theme colours
-  // and the header title over the article text).
-  ['Side column CSS (minified, embedded)', 'assets/css/sidebar-rail.min.css', 2_400],
+  // and the header title over the article text). Raised from 2,400 for
+  // lightningcss 1.33, which writes spaces inside calc() (2,389 -> 2,407 B).
+  ['Side column CSS (minified, embedded)', 'assets/css/sidebar-rail.min.css', 2_500],
   // Embedded after it when the side column is scaled like the Sabbath column.
   ['Scaled side column CSS (minified, embedded)', 'assets/css/sidebar-rail-scaled.min.css', 400],
 ];
