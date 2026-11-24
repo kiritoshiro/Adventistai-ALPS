@@ -5,7 +5,8 @@
 //
 // A selector is dropped only when it needs a class missing from
 // scripts/alps-used-classes.txt (classes inside :not(), :is() and the like are
-// ignored, so those selectors stay). A rule goes when all its selectors go.
+// ignored, so those selectors stay), plus the legacy placeholder selectors
+// below. A rule goes when all its selectors go.
 // Nothing else changes, so the rules that stay keep their order.
 //
 //   node scripts/trim-alps-css.mjs           rebuild
@@ -20,7 +21,15 @@ const target = 'app/local/alps/css/main-denim.used.css';
 const used = new Set(
   readFileSync(list, 'utf8').split(/\r?\n/).filter((line) => line && !line.startsWith('#')),
 );
-const canMatch = (selector) => selector.every((part) => part.type !== 'class' || used.has(part.name));
+// lightningcss 1.33 reads IE's :-ms-input-placeholder and old Firefox's
+// :-moz-placeholder as a prefixed :placeholder-shown and writes the first back
+// unprefixed, which would grey every field showing its placeholder (caret,
+// currentColor borders) in current browsers. Both only ever matched browsers
+// the theme doesn't support.
+const legacyPlaceholder = (part) =>
+  part.type === 'pseudo-class' && part.kind === 'placeholder-shown' && part.vendorPrefix?.length > 0;
+const canMatch = (selector) =>
+  selector.every((part) => (part.type !== 'class' || used.has(part.name)) && !legacyPlaceholder(part));
 
 let dropped = 0;
 const output = transform({

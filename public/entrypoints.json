@@ -4,7 +4,7 @@
       "js/app.fe6815.js"
     ],
     "css": [
-      "css/app.e983de.css"
+      "css/app.b93116.css"
     ],
     "dependencies": []
   },
@@ -13,7 +13,7 @@
       "js/editor.7b34c1.js"
     ],
     "css": [
-      "css/editor.62c552.css"
+      "css/editor.f10f55.css"
     ],
     "dependencies": [
       "wp-api-fetch",
