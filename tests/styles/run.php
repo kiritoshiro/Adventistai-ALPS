@@ -259,6 +259,11 @@ check('site-overrides.min.css: no break-out beside a grid sidebar', str_contains
     (string) file_get_contents(dirname(__DIR__, 2) . '/assets/css/site-overrides.min.css'),
     '.alps-has-sidebar .text>.alignfull{width:100%;margin-left:0;transform:none}'
 ));
+// The dark-Cover link colour leaves buttons alone, old and new markup.
+check('site-overrides.min.css: dark-Cover link rule skips both button classes', str_contains(
+    (string) file_get_contents(dirname(__DIR__, 2) . '/assets/css/site-overrides.min.css'),
+    'a:not(.wp-element-button):not(.wp-block-button__link){color:inherit;text-decoration:underline}'
+));
 
 echo $failures ? "$failures check(s) failed\n" : "All checks passed\n";
 exit($failures ? 1 : 0);

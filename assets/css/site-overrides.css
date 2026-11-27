@@ -557,7 +557,7 @@ html { scrollbar-gutter: stable; }
   transform: none;
 }
 /* Links on a dark Cover: the text's colour, underlined. */
-.text .wp-block-cover:not(.is-light) .wp-block-cover__inner-container a:not(.wp-element-button) {
+.text .wp-block-cover:not(.is-light) .wp-block-cover__inner-container a:not(.wp-element-button):not(.wp-block-button__link) {
   color: inherit;
   text-decoration: underline;
 }
