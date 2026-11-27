@@ -2,7 +2,7 @@
   <form action="<?php echo esc_url(home_url('/')); ?>" role="search" method="get">
     <div class="l-grid l-grid--7-col u-shift--left--1-col--at-large u-spacing--until-medium">
       <div class="l-grid-item l-grid-item--m--3-col">
-        <input type="search" value="{{ the_search_query() }}" name="s" class="u-font--secondary--s u-theme--color--darker o-input__search" placeholder="Ieškoti..." />
+        <input type="search" value="{{ the_search_query() }}" name="s" class="u-font--secondary--s u-theme--color--darker o-input__search" aria-label="Ieškoti svetainėje" />
       </div>
       <div class="l-grid-item l-grid-item--m--3-col">
         <div class="u-flex">

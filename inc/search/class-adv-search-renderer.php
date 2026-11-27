@@ -13,22 +13,20 @@ final class Adv_Search_Renderer {
 
 		if ( ! $enabled ) {
 			return sprintf(
-				'<form role="search" method="get" class="search-form" action="%1$s"><label><span class="screen-reader-text">%2$s</span><input type="search" class="search-field" placeholder="%3$s" value="%4$s" name="s"></label><button type="submit" class="search-submit">%5$s</button></form>',
+				'<form role="search" method="get" class="search-form" action="%1$s"><label><span class="screen-reader-text">%2$s</span><input type="search" class="search-field" value="%3$s" name="s"></label><button type="submit" class="search-submit">%4$s</button></form>',
 				esc_url( home_url( '/' ) ),
 				esc_html__( 'Ieškoti:', 'alps' ),
-				esc_attr__( 'Ieškoti…', 'alps' ),
 				esc_attr( $query ),
 				esc_html__( 'Ieškoti', 'alps' )
 			);
 		}
 
 		return sprintf(
-			'<div class="adv-search" data-adv-search><form role="search" method="get" class="search-form adv-search__form" action="%1$s"><label class="screen-reader-text" for="%2$s">%3$s</label><div class="adv-search__control"><input id="%2$s" type="search" class="search-field adv-search__input" value="%4$s" name="s" placeholder="%5$s" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="%2$s-listbox" aria-autocomplete="list" aria-activedescendant=""><button type="submit" class="search-submit adv-search__submit">%6$s</button></div><ul id="%2$s-listbox" class="adv-search__dropdown" role="listbox" hidden></ul><div class="screen-reader-text" data-adv-search-live aria-live="polite" aria-atomic="true"></div></form></div>',
+			'<div class="adv-search" data-adv-search><form role="search" method="get" class="search-form adv-search__form" action="%1$s"><label class="screen-reader-text" for="%2$s">%3$s</label><div class="adv-search__control"><input id="%2$s" type="search" class="search-field adv-search__input" value="%4$s" name="s" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="%2$s-listbox" aria-autocomplete="list" aria-activedescendant=""><button type="submit" class="search-submit adv-search__submit">%5$s</button></div><ul id="%2$s-listbox" class="adv-search__dropdown" role="listbox" hidden></ul><div class="screen-reader-text" data-adv-search-live aria-live="polite" aria-atomic="true"></div></form></div>',
 			esc_url( home_url( '/' ) ),
 			esc_attr( $id ),
 			esc_html__( 'Ieškoti svetainėje', 'alps' ),
 			esc_attr( $query ),
-			esc_attr__( 'Ieškoti…', 'alps' ),
 			esc_html__( 'Ieškoti', 'alps' )
 		);
 	}

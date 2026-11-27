@@ -33,3 +33,14 @@
     hyphens: none;
   }
 }
+
+/* On wide screens every column stays, but core and plugin columns with
+ * percentage widths (author, categories, tags, date, views, search exclude…)
+ * can add up to the whole table, leaving the auto-width title 0px wide.
+ * A share for the title makes the fixed table layout scale the others down. */
+@media screen and (min-width: 1281px) {
+  .wp-list-table.posts.fixed .column-title,
+  .wp-list-table.posts.fixed .column-primary {
+    width: 28%;
+  }
+}
