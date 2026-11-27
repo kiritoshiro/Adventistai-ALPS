@@ -3,6 +3,13 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.42.2]
+### Fixed
+- **Admin post list: titles are readable on wide screens.** Above 1280px every column stays, but the percentage widths of the core and plugin columns (author, categories, tags, date, Bible books, views, search exclude, type) could add up to the whole table and squeeze the title to one or two letters per line. `assets/css/admin-post-list.css` now gives the title 28% of the table there, and the fixed table layout scales the other columns down to make room. The 783–1280px rules are unchanged.
+- **Search fields: no "Ieškoti…" placeholder next to the "Ieškoti" button.** The search form (sidebar widget, `get_search_form()`, with and without the advanced search) and the search results page's form no longer repeat the button's word inside the empty field. Screen readers still get the field's name from its label (the results page's field gets `aria-label="Ieškoti svetainėje"`). The header's search drawer, which has no visible button, keeps its placeholder.
+### Security
+- Symfony `http-kernel`, `routing` and `http-foundation` 7.4.23 → 7.4.24 (patch release on the same 7.4 line, used through Acorn): fixes CVE-2026-133743, CVE-2026-133746 and CVE-2026-133754 (forwarded-header and URL-generator host issues), which failed the Composer audit.
+
 ## [3.42.1]
 ### Fixed
 - **The front page's footer, page header band and search drawer are dark navy again** (#04132B, the ALPS Denim scheme's own colour), as before 3.41.0. 3.41.0 made them a brighter Denim (#2F557F) and 3.41.1 kept that on the front page; the rule is removed from `assets/css/brand-identity.css`, and `tests/styles/run.php` checks that the identity CSS no longer recolours them. The smaller logo, the section headings, the "Daugiau →" link and the "Visa darau nauja" band are unchanged.
