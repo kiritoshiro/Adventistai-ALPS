@@ -34,11 +34,18 @@
   }
 }
 
-/* On wide screens every column stays, but core and plugin columns with
- * percentage widths (author, categories, tags, date, views, search exclude…)
- * can add up to the whole table, leaving the auto-width title 0px wide.
- * A share for the title makes the fixed table layout scale the others down. */
+/* On wide screens every column stays. With WordPress's fixed table layout,
+ * columns without a width (the title, and plugin columns such as a taxonomy's
+ * "Bible books") only share what the percentage-width columns (author,
+ * categories, tags, date, views, search exclude…) leave over, which can be
+ * nothing: 3.42.2 gave the title 28% and the Bible books column became 0px.
+ * The automatic layout never makes a column narrower than its longest word;
+ * the title still asks for 28%. */
 @media screen and (min-width: 1281px) {
+  .wp-list-table.posts.fixed {
+    table-layout: auto;
+  }
+
   .wp-list-table.posts.fixed .column-title,
   .wp-list-table.posts.fixed .column-primary {
     width: 28%;

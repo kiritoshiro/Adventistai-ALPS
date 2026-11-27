@@ -3,6 +3,10 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.42.3]
+### Fixed
+- **Admin post list: the "Bible books" column is readable again on wide screens.** 3.42.2 gave the title 28% of the table above 1280px, but with WordPress's fixed table layout the columns without a width (here the WP Bible Navigation taxonomy column) only get what is left, so "Bible books" shrank to 0px and its letters stacked vertically. Above 1280px the post table now uses the automatic layout, so no column is narrower than its longest word, whichever plugin adds it; the title still gets about 28%. The 783–1280px rules are unchanged.
+
 ## [3.42.2]
 ### Fixed
 - **Admin post list: titles are readable on wide screens.** Above 1280px every column stays, but the percentage widths of the core and plugin columns (author, categories, tags, date, Bible books, views, search exclude, type) could add up to the whole table and squeeze the title to one or two letters per line. `assets/css/admin-post-list.css` now gives the title 28% of the table there, and the fixed table layout scales the other columns down to make room. The 783–1280px rules are unchanged.
