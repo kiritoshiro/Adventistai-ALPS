@@ -32,6 +32,8 @@
   margin: 0 !important;
   flex-wrap: nowrap;
   align-items: stretch;
+  /* 100cqw below is this row: the column plus the article. */
+  container-type: inline-size;
 }
 .alps-has-rail .l-main__content > .c-sidebar {
   order: -1;
@@ -71,6 +73,17 @@
   /* Centred in what is left beside the column, at most 90rem. */
   padding: 1.75rem max(var(--site-gutter, 1.25rem), (100% - var(--alps-rail) - 90rem) / 2) 2.5rem !important;
   box-sizing: border-box;
+}
+/* "Wide" and "Full width" blocks (site-overrides.css section 18) are centred
+   on the article text, which is centred in the article, so only their width
+   changes: the article's whole width (the row less the column) instead of
+   the window less the Sabbath column, which ran over both columns. */
+.alps-has-rail .text > .alignfull {
+  width: calc(100cqw - var(--alps-rail));
+}
+.alps-has-rail .text > .alignwide,
+.alps-has-rail .text .wp-block-column > .alignwide {
+  width: min(100cqw - var(--alps-rail) - 2rem, 105rem);
 }
 /* Page headers: the title starts where the article text starts, not over
    the column. Headers without an image: without its side padding the

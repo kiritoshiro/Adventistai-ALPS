@@ -548,6 +548,19 @@ html { scrollbar-gutter: stable; }
   padding-right: var(--site-gutter);
   box-sizing: border-box;
 }
+/* Beside a grid sidebar: the article's width (side column: sidebar-rail.css). */
+.alps-has-sidebar .text > .alignwide,
+.alps-has-sidebar .text .wp-block-column > .alignwide,
+.alps-has-sidebar .text > .alignfull {
+  width: 100%;
+  margin-left: 0;
+  transform: none;
+}
+/* Links on a dark Cover: the text's colour, underlined. */
+.text .wp-block-cover:not(.is-light) .wp-block-cover__inner-container a:not(.wp-element-button) {
+  color: inherit;
+  text-decoration: underline;
+}
 
 /* ==========================================================================
    19. Footer columns

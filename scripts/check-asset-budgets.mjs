@@ -22,7 +22,9 @@ const budgets = [
   // Trimmed to the classes the site uses (scripts/trim-alps-css.mjs); this
   // is the copy the theme links.
   ['ALPS denim CSS (trimmed, loaded)', 'app/local/alps/css/main-denim.used.css', 130_000],
-  ['Site overrides CSS', 'assets/css/site-overrides.css', 34_000],
+  // Readable source; raised from 34,000 in 3.42.4 for the Wide/Full width
+  // rules beside a sidebar and the links on dark Covers (33,738 -> 34,214 B).
+  ['Site overrides CSS', 'assets/css/site-overrides.css', 34_500],
   ['Site overrides CSS (minified, loaded)', 'assets/css/site-overrides.min.css', 15_000],
   ['Responsive fixes CSS', 'assets/css/responsive-zoom-fixes.css', 8_000],
   ['Responsive fixes CSS (minified, embedded)', 'assets/css/responsive-zoom-fixes.min.css', 4_000],
@@ -65,7 +67,9 @@ const budgets = [
   // Embedded only when Sidebar position is Left side column (incl. dark-theme colours
   // and the header title over the article text). Raised from 2,400 for
   // lightningcss 1.33, which writes spaces inside calc() (2,389 -> 2,407 B).
-  ['Side column CSS (minified, embedded)', 'assets/css/sidebar-rail.min.css', 2_500],
+  // Raised to 2,800 in 3.42.4 for the Wide/Full width block widths beside the
+  // column (2,407 -> 2,637 B).
+  ['Side column CSS (minified, embedded)', 'assets/css/sidebar-rail.min.css', 2_800],
   // Embedded after it when the side column is scaled like the Sabbath column.
   ['Scaled side column CSS (minified, embedded)', 'assets/css/sidebar-rail-scaled.min.css', 400],
 ];

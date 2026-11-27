@@ -248,5 +248,17 @@ foreach (['brand-identity.css', 'brand-identity.min.css'] as $file) {
     }
 }
 
+// Beside the left side column, Wide and Full width blocks take the article's
+// width, measured against the content row (3.42.4); they used to run over the
+// column and the Sabbath column.
+$rail = (string) file_get_contents(dirname(__DIR__, 2) . '/assets/css/sidebar-rail.min.css');
+check('sidebar-rail.min.css: the content row is a size container', (bool) preg_match('~\.alps-has-rail \.l-wrap \.l-main \.l-main__content\{[^}]*container-type:inline-size~', $rail));
+check('sidebar-rail.min.css: Full width blocks are the row less the column', str_contains($rail, '.alps-has-rail .text>.alignfull{width:calc(100cqw - var(--alps-rail))}'));
+check('sidebar-rail.min.css: Wide blocks are capped the same way', str_contains($rail, 'width:min(100cqw - var(--alps-rail) - 2rem, 105rem)'));
+check('site-overrides.min.css: no break-out beside a grid sidebar', str_contains(
+    (string) file_get_contents(dirname(__DIR__, 2) . '/assets/css/site-overrides.min.css'),
+    '.alps-has-sidebar .text>.alignfull{width:100%;margin-left:0;transform:none}'
+));
+
 echo $failures ? "$failures check(s) failed\n" : "All checks passed\n";
 exit($failures ? 1 : 0);

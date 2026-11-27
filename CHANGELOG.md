@@ -3,6 +3,14 @@ A record of the changes made to `ALPS for Wordpress`.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.42.4]
+### Fixed
+- **"Wide" and "Full width" blocks stay beside the left side column.** With Sidebar position "Left side column" (or its scaled form), a block set to Full width (for example a Columns or Cover block) was as wide as the window less the Sabbath column and centred on the article, so it ran over the widgets on the left and the Sabbath column on the right. `assets/css/sidebar-rail.css` now makes the content row a size container and gives such blocks the article's whole width (the row less the side column); Wide blocks are that less 2rem, at most 105rem as before. Checked by adding test blocks to a live page with the scaled side column: at 1300, 1700 and 2200px the full-width block ran from the column's edge to the Sabbath column's edge (before: 127px over each side at 1700px).
+- **No break-out beside a sidebar in the grid.** With the sidebar on the right (or left, not as a column), Wide and Full width blocks keep the article's width instead of running under the sidebar (`assets/css/site-overrides.css` section 18, body class `alps-has-sidebar`).
+- **Links on a dark Cover image are readable.** A link in the text of a dark Cover block (for example an automatically linked Bible reference) takes the text's colour, underlined, instead of the link blue. Buttons are unchanged.
+### Changed
+- Asset budgets: side column CSS 2,500 → 2,800 B (`sidebar-rail.min.css` 2,637 B); readable `site-overrides.css` 34,000 → 34,500 B (34,214 B; the loaded minified copy stays under its 15,000 B budget).
+
 ## [3.42.2]
 ### Fixed
 - **Admin post list: titles are readable on wide screens.** Above 1280px every column stays, but the percentage widths of the core and plugin columns (author, categories, tags, date, Bible books, views, search exclude, type) could add up to the whole table and squeeze the title to one or two letters per line. `assets/css/admin-post-list.css` now gives the title 28% of the table there, and the fixed table layout scales the other columns down to make room. The 783–1280px rules are unchanged.
